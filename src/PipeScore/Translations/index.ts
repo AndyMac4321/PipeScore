@@ -190,4 +190,5 @@ export type TextItems = {
   unsavedChanges: string;
   instrumentPC:string;
   instrumentPipes:string;
+  instrument:string;
 };

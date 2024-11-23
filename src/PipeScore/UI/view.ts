@@ -1006,7 +1006,7 @@ export default function render(state: UIState): m.Children {
       ]),
     ]),
     m('section', [
-      m('h2', "Instrument"),
+      m('h2', text('instrument')),
       
         m('label',
           m('input', {
