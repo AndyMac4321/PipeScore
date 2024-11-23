@@ -15,6 +15,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { onSafari } from '../global/browser';
+import { settings } from '../global/settings';
 
 export class Sample {
   buffer: AudioBuffer | null = null;
@@ -30,7 +31,7 @@ export class Sample {
 
     return new Promise((res) => {
       const request = new XMLHttpRequest();
-      request.open('GET', `/audio/${this.name}.${file_format}`, true);
+      request.open('GET', `/audio/${settings.instrument}${this.name}.${file_format}`, true);
       request.responseType = 'arraybuffer';
       request.onload = () => {
         const data = request.response;

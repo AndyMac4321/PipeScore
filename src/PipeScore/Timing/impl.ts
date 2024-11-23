@@ -345,8 +345,20 @@ export class SingleTiming extends Timing {
     ];
   }
 
-  play() {
-    // TODO : support single timings ... ?
-    return null;
+  play(elements: Playback[]): PlaybackSecondTiming {
+    let start_index = -1;
+    let end_index = -1;
+    for (let i = 0; i < elements.length; i++) {
+      const n = elements[i];
+      if (n instanceof PlaybackObject) {
+        if (n.type === 'object-start' && n.id === this.start) {
+          start_index = i;
+        }  else if (n.type === 'object-end' && n.id === this.end) {
+          end_index = i;
+          break;
+        }
+      }
+    }
+    return new PlaybackSecondTiming(start_index, -1, end_index, true);
   }
 }

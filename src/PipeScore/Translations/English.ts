@@ -226,4 +226,6 @@ export const EnglishTextItems: TextItems = {
   save: 'Save',
   allChangesSaved: 'All changes saved!',
   unsavedChanges: 'Unsaved changes',
+  instrumentPC: 'Practice Chanter',
+  instrumentPipes: 'Bagpipe',
 };

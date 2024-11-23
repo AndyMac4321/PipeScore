@@ -1005,6 +1005,32 @@ export default function render(state: UIState): m.Children {
         ),
       ]),
     ]),
+    m('section', [
+      m('h2', "Instrument"),
+      
+        m('label',
+          m('input', {
+            type: 'radio',
+            id: "Pipes",
+            name: 'test',
+            checked: settings.instrument === "",
+            onchange: () => settings.instrument = "",
+            value: ""
+          }),
+          text('instrumentPipes')
+        ),
+        m('label',
+          m('input', {
+            type: 'radio',
+            id: "Practice Chanter",
+            name: 'test',
+            checked: settings.instrument === "pc",
+            onchange: () => settings.instrument = "pc",
+            value: "pc"
+          }),
+          text('instrumentPC')
+        )
+    ]),
   ];
 
   const documentMenu = [

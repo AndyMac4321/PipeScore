@@ -67,11 +67,13 @@ export class PlaybackSecondTiming {
   start: number;
   middle: number;
   end: number;
+  isSingleTiming: boolean;
 
-  constructor(start: number, middle: number, end: number) {
+  constructor(start: number, middle: number, end: number, isSingleTiming:boolean=false) {
     this.start = start;
     this.middle = middle;
     this.end = end;
+    this.isSingleTiming = isSingleTiming;
   }
   in(index: number) {
     return this.start <= index && index <= this.end;

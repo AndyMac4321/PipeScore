@@ -232,4 +232,6 @@ export const FrenchTextItems: TextItems = {
   save: '',
   allChangesSaved: '',
   unsavedChanges: '',
+  instrumentPC:'Practice Chanter',
+  instrumentPipes:'Bagpipe',
 };

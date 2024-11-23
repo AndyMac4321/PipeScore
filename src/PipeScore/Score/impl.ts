@@ -22,7 +22,7 @@ import type { IBar } from '../Bar';
 import { Update } from '../Events/types';
 import { nextBar, nextNote, previousBar, previousNote } from '../Measure';
 import type { NoteOrTriplet } from '../Note';
-import type { Playback } from '../Playback';
+import { PlaybackSecondTiming, type Playback } from '../Playback';
 import { type SavedScore, scoreHasStavesNotTunes } from '../SavedModel';
 import type { IStave } from '../Stave';
 import { Stave } from '../Stave/impl';
@@ -31,7 +31,7 @@ import { MovableTextBox } from '../TextBox/impl';
 import type { ITimeSignature } from '../TimeSignature';
 import { TimeSignature } from '../TimeSignature/impl';
 import type { ITiming, TimingPart } from '../Timing';
-import { Timing } from '../Timing/impl';
+import { SecondTiming, Timing } from '../Timing/impl';
 import { ITune } from '../Tune';
 import { Tune } from '../Tune/impl';
 import type { ID } from '../global/id';
@@ -434,6 +434,31 @@ export class Score extends IScore {
   }
 
   playbackTimings(elements: Playback[]) {
-    return removeNulls(this._timings.map((st) => st.play(elements)));
+    let tempTimings = removeNulls(this._timings.map((st) => st.play(elements)));
+    let timings=[];
+    let firsTiming =null;
+    // Convert 2 Single PlaybackSecondTiming into a single PlaybackSecondTiming
+    for (let i = 0; i < tempTimings.length; i++) {
+      if(tempTimings[i].isSingleTiming)
+      {
+        if(firsTiming==null)
+          firsTiming = tempTimings[i];
+        else
+        {
+          // adjust middle and end index 
+          firsTiming.middle = firsTiming.end;
+          firsTiming.end=tempTimings[i].end
+          timings.push(firsTiming);
+          firsTiming = null;
+        }
+      }
+      else
+      {
+        timings.push(tempTimings[i]);
+        firsTiming = null;
+      }
+      
+    }
+    return timings;
   }
 }
