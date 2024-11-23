@@ -6,7 +6,7 @@
 - [x] Multiple scores per page
 - [ ] Download playback
 - [ ] Actually useful triplets
-- [ ] 2 of 2. etc. play back correctly
+- [x] 2 of 2. etc. play back correctly
 - [x] Marker showing where playback is
 - [x] Playback ties properly
 - [ ] Snapping for text box dragging
