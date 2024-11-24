@@ -228,4 +228,5 @@ export const EnglishTextItems: TextItems = {
   unsavedChanges: 'Unsaved changes',
   instrumentPC: 'Practice Chanter',
   instrumentPipes: 'Bagpipe',
+  instrument: 'Instrument',
 };

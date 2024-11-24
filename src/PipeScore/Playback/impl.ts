@@ -348,3 +348,21 @@ async function play(
   state.userPressedStop = false;
   dispatch(updateView());
 }
+export async function reloadSamples() {
+  const context = new AudioContext();
+  const samples = await Promise.all([
+    lowg.load(),
+    lowa.load(),
+    b.load(),
+    c.load(),
+    d.load(),
+    e.load(),
+    f.load(),
+    highg.load(),
+    higha.load(),
+    drones.load(),
+  ]);
+  for (const fn of samples) {
+    fn(context);
+  }
+}

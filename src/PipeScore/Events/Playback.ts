@@ -14,7 +14,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { playback } from '../Playback/impl';
+import { reloadSamples, playback } from '../Playback/impl';
 import { ScoreSelection } from '../Selection/score';
 import type { State } from '../State';
 import type { ID } from '../global/id';
@@ -86,6 +86,16 @@ export function updatePlaybackCursor(id: ID | null): ScoreEvent {
   return async (state: State) => {
     if (id !== state.playback.cursor) {
       state.playback.cursor = id;
+      return Update.ViewChanged;
+    }
+    return Update.NoChange;
+  };
+}
+export function updateInstrument(id: string): ScoreEvent {
+  return async (state: State) => {
+    if (id !== settings.instrument) {
+      settings.instrument = id;
+      await reloadSamples();
       return Update.ViewChanged;
     }
     return Update.NoChange;
