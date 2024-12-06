@@ -6,6 +6,7 @@ package-lock.json
 firebase-debug.log
 firestore-debug.log
 .firebase
+.vscode
 
 public/*.html
 public/styles
