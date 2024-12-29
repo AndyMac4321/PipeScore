@@ -8,5 +8,7 @@ class handler(BaseHTTPRequestHandler):
             self.path = "/pipescore.html"
         elif self.path == "/":
             self.path = "/index.html"
+        elif "." not in re.search("(/.*?)$", self.path).group(0):
+            self.path += ".html"
 
-        return super().do_GET(self)
+        return super().do_GET()
