@@ -9,4 +9,4 @@ class handler(BaseHTTPRequestHandler):
         elif self.path == "/":
             self.path = "/index.html"
 
-        return super().do_GET()
+        return super().do_GET(self)
