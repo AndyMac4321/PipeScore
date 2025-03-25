@@ -88,9 +88,15 @@ To build a production JS bundle run:
 $ npm run build    # build minified bundle
 ```
 
+Windows using VSCode try these alternate script commands in the Terminal Window
+
+$ npm run buildvscode # build JS, static pages and icons
+$ npm run watchvscode # rebuild JS on changes
+
 ## Contributors
 
 Thank you to any and all who have contributed code to PipeScore!
 
 - [benjaminelliot](https://github.com/benjaminelliot) - the initial implementation of BWW file parsing
 - [HerveDubois](https://github.com/HervePierreDubois) - translations of gracenote names into French
+- [AndyMac4321](https://github.com/AndyMac4321) - initial implementation of chanter playback

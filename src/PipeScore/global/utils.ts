@@ -19,8 +19,13 @@
 export function foreach<A>(times: number, action: (i: number) => A): A[] {
   return [...new Array(times).keys()].map((i: number) => action(i));
 }
+
 export function capitalise(st: string) {
   return st[0].toUpperCase() + st.slice(1);
+}
+
+export function unreachable(o: never, msg = ''): never {
+  throw new Error(msg || `Expected never, got ${o}`);
 }
 
 export function passert(cond: boolean, ...msg: object[]): cond is true {

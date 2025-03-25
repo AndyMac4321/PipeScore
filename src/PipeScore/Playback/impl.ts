@@ -19,19 +19,25 @@
 //  <https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API>
 
 import {
-  PlaybackGracenote,
   PlaybackIndex,
   PlaybackMeasure,
-  PlaybackNote,
-  PlaybackObject,
+  type PlaybackNote,
   type PlaybackSecondTiming,
-  itemLength,
+  itemDuration,
 } from '.';
 import { dispatch } from '../Controller';
 import { updateView } from '../Events/Misc';
 import type { ID } from '../global/id';
 import { settings } from '../global/settings';
-import { isRoughlyZero, last, nlast, passert, sleep, sum } from '../global/utils';
+import {
+  isRoughlyZero,
+  last,
+  nlast,
+  passert,
+  sleep,
+  sum,
+  unreachable,
+} from '../global/utils';
 import { Drone, type SoundedMeasure, SoundedPitch, SoundedSilence } from './sounds';
 import type { PlaybackState } from './state';
 
@@ -77,7 +83,7 @@ function sliceMeasures(
           break;
         }
 
-        partLength += itemLength(item);
+        partLength += itemDuration(item);
       }
     }
 
@@ -108,10 +114,10 @@ function sliceMeasures(
           // The last item was too long, shave off the difference
           // Note that the last item must be a note since it was
           // the thing that increased the partLength
-          // Note also that it's gracenote won't be played, but that
+          // Note also that its gracenote won't be played, but that
           // is the desired behaviour when we're starting in the middle
           // of the note
-          passert(part[itemIndex - 1] instanceof PlaybackNote);
+          passert(part[itemIndex - 1].type === 'note');
 
           (part[itemIndex - 1] as PlaybackNote).duration -=
             partLength - end.timeOffset;
@@ -120,7 +126,7 @@ function sliceMeasures(
           break;
         }
 
-        partLength += itemLength(item);
+        partLength += itemDuration(item);
       }
     }
   }
@@ -128,10 +134,9 @@ function sliceMeasures(
   return measures;
 }
 
-// TODO : better typing
 /**
- * Removes all PlaybackObjects from `elements`, duplicates notes where necessary
- * for repeats / second timings, and removes the notes before start/ after end.
+ * Duplicates playback items where necessary
+ * for repeats / second timings, and removes the notes before start/after end.
  *
  * This code is not pretty.
  * @param measures
@@ -177,26 +182,24 @@ function expandRepeats(
       for (const item of part) {
         // If the item is a playback object and it corresponds to the start/end objects
         // assign startIndex/endIndex based on the current outputIndex
-        if (item instanceof PlaybackObject) {
-          if (
-            item.type === 'object-start' &&
-            item.id === start &&
-            startIndex === null
-          ) {
-            startIndex = outputIndex;
+        if (
+          item.type === 'object-start' &&
+          item.id === start &&
+          startIndex === null
+        ) {
+          startIndex = outputIndex;
+        }
+        if (item.type === 'object-end') {
+          if (item.id === end && endIndex === null && startIndex !== null) {
+            endIndex = outputIndex;
           }
-          if (item.type === 'object-end') {
-            if (item.id === end && endIndex === null && startIndex !== null) {
-              endIndex = outputIndex;
-            }
-            if (repeating) {
-              if (timingOverRepeat) {
-                // Only stop repeating when the timing that went over the repeat
-                // mark is done (allowing other second timings to be present earlier
-                // in a part)
-                if (timingOverRepeat.end.isAtOrBefore(inputIndex)) {
-                  repeating = false;
-                }
+          if (repeating) {
+            if (timingOverRepeat) {
+              // Only stop repeating when the timing that went over the repeat
+              // mark is done (allowing other second timings to be present earlier
+              // in a part)
+              if (timingOverRepeat.end.isAtOrBefore(inputIndex)) {
+                repeating = false;
               }
             }
           }
@@ -294,20 +297,28 @@ function getSoundedPitches(
       let currentID = null;
 
       for (const e of part) {
-        if (e instanceof PlaybackGracenote) {
-          soundedPart.push(
-            new SoundedPitch(e.pitch, gracenoteDuration, ctx, currentID)
-          );
-          currentGracenoteDuration += gracenoteDuration;
-        } else if (e instanceof PlaybackNote) {
-          const duration = e.duration - currentGracenoteDuration;
-          soundedPart.push(new SoundedPitch(e.pitch, duration, ctx, currentID));
-          currentGracenoteDuration = 0;
-        } else if (e instanceof PlaybackObject) {
-          currentID = e.id;
-        } else {
-          console.log(e);
-          throw new Error(`Unexpected playback element ${e}`);
+        switch (e.type) {
+          case 'note': {
+            const duration = e.duration - currentGracenoteDuration;
+            soundedPart.push(new SoundedPitch(e.pitch, duration, ctx, currentID));
+            currentGracenoteDuration = 0;
+            break;
+          }
+          case 'gracenote': {
+            soundedPart.push(
+              new SoundedPitch(e.pitch, gracenoteDuration, ctx, currentID)
+            );
+            currentGracenoteDuration += gracenoteDuration;
+            break;
+          }
+          case 'object-start': {
+            currentID = e.id;
+            break;
+          }
+          case 'object-end':
+            break;
+          default:
+            unreachable(e);
         }
       }
 

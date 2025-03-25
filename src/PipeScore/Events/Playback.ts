@@ -18,6 +18,7 @@ import { playback } from '../Playback/impl';
 import { ScoreSelection } from '../Selection/score';
 import type { State } from '../State';
 import type { ID } from '../global/id';
+import type { Instrument } from '../global/instrument';
 import { settings } from '../global/settings';
 import { type ScoreEvent, Update } from './types';
 
@@ -94,6 +95,16 @@ export function updatePlaybackCursor(id: ID | null): ScoreEvent {
     if (id !== state.playback.cursor) {
       state.playback.cursor = id;
       return Update.ViewChanged;
+    }
+    return Update.NoChange;
+  };
+}
+
+export function updateInstrument(instrument: Instrument): ScoreEvent {
+  return async () => {
+    if (instrument !== settings.instrument) {
+      settings.instrument = instrument;
+      return Update.ShouldSave;
     }
     return Update.NoChange;
   };
