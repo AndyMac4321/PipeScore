@@ -60,10 +60,45 @@ export class Drone {
 }
 
 /**
+ * Metronome tick playback.
+ */
+export class Tick {
+  private sample: Sample | null;
+  private stopped = false;
+
+  constructor(context: AudioContext) {
+    const tick = getInstrumentResources().tick;
+    this.sample = tick && new Sample(tick, context);
+  }
+
+  /**
+   * Start the drone, looping forever until .stop() is called.
+   */
+  async start() {
+    
+    while (!this.stopped && this.sample) {
+      const duration = (1000 * 60) / settings.bpm;
+      this.sample.start(1);
+      await sleep(duration);
+    }
+  }
+
+  /**
+   * Stop the tick.
+   */
+  stop() {
+    if (this.sample) {
+      this.sample.stop();
+    }
+    this.stopped = true;
+  }
+}
+/**
  * Pitched note playback (used for notes and gracenotes).
  */
 export class SoundedPitch {
   private sample: Sample;
+  private tick:Sample;
 
   public id: ID | null;
   public pitch: Pitch;
@@ -79,6 +114,7 @@ export class SoundedPitch {
 
   constructor(pitch: Pitch, duration: number, ctx: AudioContext, id: ID | null) {
     this.sample = new Sample(pitchToAudioResource(pitch), ctx);
+    this.tick = new Sample(pitchToAudioResource(pitch), ctx);
     this.pitch = pitch;
     this.duration = duration;
     this.durationIncludingTies = duration;

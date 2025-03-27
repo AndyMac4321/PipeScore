@@ -28,6 +28,7 @@ import {
 import { dispatch } from '../Controller';
 import { updateView } from '../Events/Misc';
 import type { ID } from '../global/id';
+import { Pitch } from '../global/pitch';
 import { settings } from '../global/settings';
 import {
   isRoughlyZero,
@@ -38,7 +39,7 @@ import {
   sum,
   unreachable,
 } from '../global/utils';
-import { Drone, type SoundedMeasure, SoundedPitch, SoundedSilence } from './sounds';
+import { Drone, type SoundedMeasure, SoundedPitch, SoundedSilence, Tick } from './sounds';
 import type { PlaybackState } from './state';
 
 function shouldDeleteBecauseOfSecondTimings(
@@ -279,7 +280,6 @@ function collapsePitches(measures: SoundedMeasure[]): SoundedMeasure[] {
 
   return collapsed;
 }
-
 function getSoundedPitches(
   measures: PlaybackMeasure[],
   timings: PlaybackSecondTiming[],
@@ -329,6 +329,27 @@ function getSoundedPitches(
   return collapsePitches(soundedMeasuresToPlay);
 }
 
+// Get the duration of parts in first bar
+function startingNotesDuration(
+  measures: PlaybackMeasure[],
+): number {
+    let duration:number=0;
+    measures[0].parts.map((part) => {
+      for (const e of part) {
+        switch (e.type) {
+          case 'note': {
+            duration += e.duration;
+            break;
+          }
+        }
+      }
+    });
+    // bit of an assumption here if the notes are more than 1 beat this wont work 
+    // and Playback Metronome will be out of sync
+    if(duration>1) return 0;
+    return duration;
+}
+
 export async function playback(
   state: PlaybackState,
   measures: PlaybackMeasure[],
@@ -348,17 +369,26 @@ export async function playback(
 
   document.body.classList.add('loading');
 
+  const tick = new Tick(context);
+
+  tick.start();
+  startingNotesDuration(measures)
+  
+  await sleep((5 * 1000 * 60) / settings.bpm);
+
   const drone = new Drone(context);
-
   drone.start();
-
-  await sleep(1000);
+  await sleep((2 * 1000 * 60) / settings.bpm);
+  
+  const ePitch = new SoundedPitch(Pitch.E,1-startingNotesDuration(measures),context,null); //
+  await ePitch.play(settings.bpm,false);
+  //await sleep(countin);
   document.body.classList.remove('loading');
 
   await playPitches(state, measures, timings, context, start, end, loop);
 
   drone.stop();
-
+  tick.stop();
   state.playing = false;
 }
 
