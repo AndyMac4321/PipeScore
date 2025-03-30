@@ -17,7 +17,7 @@
 //  Drone and SoundedPitch classes enable playback of drones and notes (including gracenotes).
 
 import { dispatch } from '../Controller';
-import { updatePlaybackCursor } from '../Events/Playback';
+import { updateBeatIndicator, updatePlaybackCursor } from '../Events/Playback';
 import type { ID } from '../global/id';
 import type { Pitch } from '../global/pitch';
 import { settings } from '../global/settings';
@@ -60,10 +60,39 @@ export class Drone {
 }
 
 /**
+ * Drone playback.
+ */
+export class Snare {
+  private sample: Sample;
+  private sampleTap: Sample;
+  private stopped = false;
+
+  constructor(context: AudioContext) {
+    const snareRoll = getInstrumentResources().snareRoll;
+    const snareTap = getInstrumentResources().snareTap;
+    this.sample = new Sample(snareRoll, context);
+    this.sampleTap = new Sample(snareTap, context);
+  }
+
+  /**
+   * Play the snare roll and tap for duration in ms.
+   */
+  async Roll(count:number,hasEndTap:boolean) {
+    const tapDuration:number = 285;
+    const rollDuration:number = (count * 1000 * 60 / settings.bpm)-(hasEndTap? tapDuration: 0);
+    this.sample.start(0.5);
+    await sleep(rollDuration);
+    this.sample.stop();
+    if(hasEndTap) this.sampleTap.start(0.5);
+  }
+     
+}
+
+/**
  * Metronome tick playback.
  */
 export class Tick {
-  private sample: Sample | null;
+  private sample: Sample;
   private stopped = false;
 
   constructor(context: AudioContext) {
@@ -72,14 +101,20 @@ export class Tick {
   }
 
   /**
-   * Start the drone, looping forever until .stop() is called.
+   * Start the metronome tick, looping forever until .stop() is called.
    */
   async start() {
     
-    while (!this.stopped && this.sample) {
+    while (!this.stopped) {
       const duration = (1000 * 60) / settings.bpm;
+      const beatIndicatorDuration = 200; // duration of beat indicator on UI in ms
+      const tickLeadInDuration = 200 // Aligns the centre of the audio tick to the beat indicator in ms
       this.sample.start(1);
-      await sleep(duration);
+      await sleep(tickLeadInDuration);
+      dispatch(updateBeatIndicator(true));
+      await sleep(beatIndicatorDuration);
+      dispatch(updateBeatIndicator(false));
+      await sleep(duration-beatIndicatorDuration-tickLeadInDuration);
     }
   }
 

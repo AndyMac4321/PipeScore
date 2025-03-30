@@ -55,10 +55,12 @@ import {
 } from '../Events/Note';
 import {
   playbackLoopingSelection,
+  startPlayMetronome,
   setHarmonyVolume,
   setPlaybackBpm,
   startPlayback,
   startPlaybackAtSelection,
+  stopMetronome,
   stopPlayback,
   updateInstrument,
 } from '../Events/Playback';
@@ -108,6 +110,8 @@ export interface UIState {
   loggedIn: boolean;
   loadingAudio: boolean;
   isPlaying: boolean;
+  isPlayingMetronome: boolean;
+  beatIndicator:boolean,
   selectedGracenote: IGracenote | null;
   selectedStaves: IStave[];
   selectedMeasures: IMeasure[];
@@ -920,37 +924,58 @@ export default function render(state: UIState): m.Children {
       m('div.section-content', [
         help(
           'play',
-          m(
-            'button.double-width.text',
-            {
-              disabled: state.isPlaying,
-              onclick: () => state.dispatch(startPlayback()),
-            },
-            text('playFromBeginning')
-          ),
+          m('button', {
+            disabled: state.isPlaying || state.isPlayingMetronome,
+            onclick: () =>
+              state.dispatch(
+                startPlayback()
+              ),
+            class: 'play-button',
+          }),
           state.dispatch
         ),
         help(
           'play-from-selection',
           m(
-            'button.double-width.text',
-            {
-              disabled: state.isPlaying || !barsSelected,
+            'button',{
+              disabled: state.isPlaying || state.isPlayingMetronome || !barsSelected,
               onclick: () => state.dispatch(startPlaybackAtSelection()),
+              class: 'play-fromselection',
             },
-            text('playFromSelection')
           ),
           state.dispatch
         ),
         help(
           'play-looping-selection',
           m(
-            'button.double-width.text',
-            {
-              disabled: state.isPlaying || state.selectedNotes.length === 0,
+            'button',{
+              disabled: state.isPlaying || state.isPlayingMetronome || state.selectedNotes.length === 0,
               onclick: () => state.dispatch(playbackLoopingSelection()),
+              class: 'play-loopedselection',
             },
-            text('playLoopedSelection')
+          ),
+          state.dispatch
+        ),
+        help(
+          state.isPlayingMetronome ? 'stop' : 'play-metronome',
+          m('button', {
+            disabled: state.isPlaying || state.isPlayingMetronome,
+            onclick: () =>
+              state.dispatch(
+                startPlayMetronome()
+              ),
+            class: 'play-metronome',
+          }),
+          state.dispatch
+        ),
+        help(
+          'stop',
+          m(
+            'button',
+            {
+              disabled: !state.isPlayingMetronome,
+              class: state.beatIndicator ? 'beat-indicator-on' : 'beat-indicator-off',
+            },
           ),
           state.dispatch
         ),
@@ -959,10 +984,10 @@ export default function render(state: UIState): m.Children {
           m(
             'button',
             {
-              disabled: !state.isPlaying,
+              disabled: !state.isPlaying && !state.isPlayingMetronome,
               onclick: () => state.dispatch(stopPlayback()),
+              class: 'stop-button',
             },
-            text('stop')
           ),
           state.dispatch
         ),
@@ -1369,11 +1394,12 @@ function mobileView(state: UIState): m.Children {
         m('section', [
           m(
             'div.section-content',
-            { class: state.isPlaying ? 'play-button' : 'stop-button' },
+            { class: state.isPlaying ? 'stop-button':'play-button' },
             [
               help(
                 state.isPlaying ? 'stop' : 'play',
                 m('button', {
+                  disabled: state.isPlayingMetronome,
                   onclick: () =>
                     state.dispatch(
                       state.isPlaying
@@ -1382,13 +1408,33 @@ function mobileView(state: UIState): m.Children {
                           ? startPlayback()
                           : startPlaybackAtSelection()
                     ),
-                  class: state.isPlaying ? 'stop-button' : 'play-button',
+                  class: state.isPlaying ? 'stop-button-mobile' : 'play-button',
                 }),
                 state.dispatch
               ),
             ]
           ),
         ]),
+        m(
+          'div.section-content',
+          { class: state.isPlayingMetronome ? 'stop-metronome' :'play-metronome'},
+          [
+            help(
+              state.isPlaying ? 'stop-metronome' : 'play-metronome',
+              m('button', {
+                disabled: state.isPlaying, 
+                onclick: () =>
+                  state.dispatch(
+                    state.isPlayingMetronome
+                      ? stopPlayback()
+                      : startPlayMetronome()
+                  ),
+                class: state.isPlayingMetronome ? 'stop-metronome' : 'play-metronome',
+              }),
+              state.dispatch
+            ),
+          ]
+        ),
         m('div.section-content', [
           m('input', {
             type: 'range',
@@ -1420,9 +1466,9 @@ function mobileView(state: UIState): m.Children {
             ]),
             state.dispatch
           ),
-          m('section', [
-            m('h2', text('instrument')),
-
+        ]),
+        m('div.section-content', [
+          m('div.section-content.vertical', [
             m(
               'label',
               m('input', {
@@ -1435,6 +1481,8 @@ function mobileView(state: UIState): m.Children {
               }),
               text('instrumentPipes')
             ),
+          ]),
+          m('div.section-content.vertical', [
             m(
               'label',
               m('input', {

@@ -27,6 +27,7 @@ import { type Settings, settings } from '../global/settings';
 import { last } from '../global/utils';
 import { stopInputMode } from './common';
 import { type ScoreEvent, Update } from './types';
+import { playMetronome, updateBeatIndicator } from './Playback';
 
 export function setPageNumberVisibility(element: HTMLInputElement): ScoreEvent {
   return async (state: State) => {
@@ -179,6 +180,8 @@ export function exportPDF(): ScoreEvent {
         userPressedStop: false,
         loading: false,
         cursor: null,
+        playingMetronome:false,
+        beatIndicator:false,
       },
       dispatch: async () => void 0,
     };

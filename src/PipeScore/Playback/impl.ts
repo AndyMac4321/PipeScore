@@ -39,7 +39,7 @@ import {
   sum,
   unreachable,
 } from '../global/utils';
-import { Drone, type SoundedMeasure, SoundedPitch, SoundedSilence, Tick } from './sounds';
+import { Drone, Snare, type SoundedMeasure, SoundedPitch, SoundedSilence, Tick } from './sounds';
 import type { PlaybackState } from './state';
 
 function shouldDeleteBecauseOfSecondTimings(
@@ -330,7 +330,7 @@ function getSoundedPitches(
 }
 
 // Get the duration of parts in first bar
-function startingNotesDuration(
+function leadInBarDuration(
   measures: PlaybackMeasure[],
 ): number {
     let duration:number=0;
@@ -356,33 +356,51 @@ export async function playback(
   timings: PlaybackSecondTiming[],
   start: ID | null = null,
   end: ID | null = null,
-  loop = false
+  loop = false,
 ): Promise<void> {
   if (state.playing || state.loading) return;
 
   const context = new AudioContext();
 
   state.playing = true;
-
   // Due to browser restrictions, await may not be used
   // until after sound has already been played
-
   document.body.classList.add('loading');
-
-  const tick = new Tick(context);
-
-  tick.start();
-  startingNotesDuration(measures)
-  
-  await sleep((5 * 1000 * 60) / settings.bpm);
-
   const drone = new Drone(context);
-  drone.start();
-  await sleep((2 * 1000 * 60) / settings.bpm);
-  
-  const ePitch = new SoundedPitch(Pitch.E,1-startingNotesDuration(measures),context,null); //
-  await ePitch.play(settings.bpm,false);
-  //await sleep(countin);
+  const tick = new Tick(context);
+  const snare = new Snare(context);
+  if(start!=null){ // No roll attack for playing from selection or loop selection 
+    drone.start();
+  }
+  else{
+    tick.start();
+    while(1){
+      await snare.Roll(2, true);
+      if(state.userPressedStop) break;
+      await sleep(2 * 1000 * 60 / settings.bpm);
+      if(state.userPressedStop) break;
+      await snare.Roll(1, false);
+      if(state.userPressedStop) break;
+      drone.start();
+      if(state.userPressedStop) break;
+      await snare.Roll(1, true);
+      if(state.userPressedStop) break;
+      const leadInDuration =  leadInBarDuration(measures);
+      const pitchEIntro = new SoundedPitch(Pitch.E, 2-leadInDuration, context, null);
+      await pitchEIntro.play(settings.bpm,false);
+      if(state.userPressedStop) break;
+      tick.stop();
+      break;
+    }
+    if(state.userPressedStop){
+      tick.stop();
+      drone.stop();
+      state.playing = false;
+      state.userPressedStop = false;
+      dispatch(updateView());
+      return;
+    }
+  }   
   document.body.classList.remove('loading');
 
   await playPitches(state, measures, timings, context, start, end, loop);
@@ -435,5 +453,30 @@ async function playPitches(
   } while (loop);
 
   state.userPressedStop = false;
+  dispatch(updateView());
+}
+export async function playMetronome(
+  state: PlaybackState,
+)
+{
+  if (state.playing || state.loading) return;
+
+  const context = new AudioContext();
+  const tick = new Tick(context);
+  state.playingMetronome = true;
+
+  // Due to browser restrictions, await may not be used
+  // until after sound has already been played
+  document.body.classList.add('loading');
+  tick.start();
+  while(true) // Loop until user presses stop
+  {
+    await sleep(1000);
+    if(state.userPressedStop)
+      break;
+  }
+  tick.stop();
+  state.userPressedStop = false;
+  state.playingMetronome = false;
   dispatch(updateView());
 }
