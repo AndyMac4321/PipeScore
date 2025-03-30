@@ -373,23 +373,24 @@ export async function playback(
     drone.start();
   }
   else{
-    tick.start();
+    //tick.start();
     while(1){
-      await snare.Roll(2, true);
+      await snare.Roll(2, true);  //1 ,2 - Drum Roll
       if(state.userPressedStop) break;
-      await sleep(2 * 1000 * 60 / settings.bpm);
+      await sleep(2 * 1000 * 60 / settings.bpm); //3, 4 - Right hand on bag  
       if(state.userPressedStop) break;
-      await snare.Roll(1, false);
+      drone.start();             //5 - Strike in Drones
+      await snare.Roll(2, true); //5 , 6 - 2nd Drum Roll
       if(state.userPressedStop) break;
-      drone.start();
-      if(state.userPressedStop) break;
-      await snare.Roll(1, true);
+      await sleep(1 * 1000 * 60 / settings.bpm); // Right hand on bag , 4 
       if(state.userPressedStop) break;
       const leadInDuration =  leadInBarDuration(measures);
       const pitchEIntro = new SoundedPitch(Pitch.E, 2-leadInDuration, context, null);
-      await pitchEIntro.play(settings.bpm,false);
+      await pitchEIntro.play(settings.bpm,false); // 7 Start Chanter (intro E) 
+                                                  // 8 Start Tune if it has 1 beat of pickup
+                                                  // 9 Start Tune (if no pickup)
       if(state.userPressedStop) break;
-      tick.stop();
+      //tick.stop();
       break;
     }
     if(state.userPressedStop){

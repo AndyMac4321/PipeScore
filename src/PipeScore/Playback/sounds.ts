@@ -42,7 +42,7 @@ export class Drone {
    */
   async start() {
     while (!this.stopped && this.sample) {
-      this.sample.start(0.1);
+      this.sample.start(0.5);
       const sleepLength = this.sample.duration() - 3;
       await sleep(1000 * sleepLength);
     }
@@ -83,7 +83,7 @@ export class Snare {
     this.sample.start(0.5);
     await sleep(rollDuration);
     this.sample.stop();
-    if(hasEndTap) this.sampleTap.start(0.5);
+    if(hasEndTap) await this.sampleTap.start(0.5);
   }
      
 }
