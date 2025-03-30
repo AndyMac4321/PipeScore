@@ -1408,7 +1408,7 @@ function mobileView(state: UIState): m.Children {
                           ? startPlayback()
                           : startPlaybackAtSelection()
                     ),
-                  class: state.isPlaying ? 'stop-button-mobile' : 'play-button',
+                  class: state.isPlaying ? 'stop-button' : 'play-button',
                 }),
                 state.dispatch
               ),
