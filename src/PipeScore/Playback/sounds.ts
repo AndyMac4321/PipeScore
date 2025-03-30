@@ -42,7 +42,7 @@ export class Drone {
    */
   async start() {
     while (!this.stopped && this.sample) {
-      this.sample.start(0.5);
+      this.sample.start(0.1);
       const sleepLength = this.sample.duration() - 3;
       await sleep(1000 * sleepLength);
     }
@@ -105,16 +105,16 @@ export class Tick {
    */
   async start() {
     
+    const beatIndicatorDuration = 200;  // duration of beat indicator on UI in ms
+    const tickLeadInDuration = 150      // Aligns the centre of the audio tick to the beat indicator in ms
     while (!this.stopped) {
       const duration = (1000 * 60) / settings.bpm;
-      const beatIndicatorDuration = 200; // duration of beat indicator on UI in ms
-      const tickLeadInDuration = 200 // Aligns the centre of the audio tick to the beat indicator in ms
       this.sample.start(1);
-      await sleep(tickLeadInDuration);
-      dispatch(updateBeatIndicator(true));
-      await sleep(beatIndicatorDuration);
-      dispatch(updateBeatIndicator(false));
-      await sleep(duration-beatIndicatorDuration-tickLeadInDuration);
+        await sleep(tickLeadInDuration);
+        dispatch(updateBeatIndicator(true));
+        await sleep(beatIndicatorDuration);
+        dispatch(updateBeatIndicator(false));
+        await sleep(duration-beatIndicatorDuration-tickLeadInDuration);
     }
   }
 
@@ -126,6 +126,14 @@ export class Tick {
       this.sample.stop();
     }
     this.stopped = true;
+  }
+  /**
+   * Aligns the metronome to the playback score.
+   * Not sure why this doesn't work on some scores.
+   */
+  async syncMetronomeStart(){
+    const tickLeadInDuration:number = 1.6 * 1000 * 60 / settings.bpm; 
+    await sleep(tickLeadInDuration);
   }
 }
 /**

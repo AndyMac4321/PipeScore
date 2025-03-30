@@ -27,7 +27,6 @@ import { type Settings, settings } from '../global/settings';
 import { last } from '../global/utils';
 import { stopInputMode } from './common';
 import { type ScoreEvent, Update } from './types';
-import { playMetronome, updateBeatIndicator } from './Playback';
 
 export function setPageNumberVisibility(element: HTMLInputElement): ScoreEvent {
   return async (state: State) => {

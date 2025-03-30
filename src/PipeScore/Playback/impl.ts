@@ -373,24 +373,29 @@ export async function playback(
     drone.start();
   }
   else{
-    //tick.start();
+    tick.start();
+    await tick.syncMetronomeStart();  // Sync metronome audio and wait 2 beats
     while(1){
-      await snare.Roll(2, true);  //1 ,2 - Drum Roll
+      //1 ,2 - Drum Roll
+      await snare.Roll(2, true);
       if(state.userPressedStop) break;
-      await sleep(2 * 1000 * 60 / settings.bpm); //3, 4 - Right hand on bag  
+      let silent2Beats = new SoundedSilence(2,null);
+      //3, 4 - Right hand on bag 
+      await silent2Beats.play(settings.bpm,false);  
       if(state.userPressedStop) break;
-      drone.start();             //5 - Strike in Drones
-      await snare.Roll(2, true); //5 , 6 - 2nd Drum Roll
+      //5 , 6 - 2nd Drum Roll
+      //5 - Strike in Drones
+      drone.start();             
+      await snare.Roll(2, true); 
       if(state.userPressedStop) break;
-      await sleep(1 * 1000 * 60 / settings.bpm); // Right hand on bag , 4 
-      if(state.userPressedStop) break;
+      // 7 Start Chanter (intro E) 
+      // 8 Start Tune if it has 1 beat of pickup
+      // 9 Start Tune (if no pickup)
       const leadInDuration =  leadInBarDuration(measures);
       const pitchEIntro = new SoundedPitch(Pitch.E, 2-leadInDuration, context, null);
-      await pitchEIntro.play(settings.bpm,false); // 7 Start Chanter (intro E) 
-                                                  // 8 Start Tune if it has 1 beat of pickup
-                                                  // 9 Start Tune (if no pickup)
+      await pitchEIntro.play(settings.bpm,false); 
       if(state.userPressedStop) break;
-      //tick.stop();
+      tick.stop();
       break;
     }
     if(state.userPressedStop){

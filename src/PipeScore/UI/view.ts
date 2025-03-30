@@ -60,7 +60,6 @@ import {
   setPlaybackBpm,
   startPlayback,
   startPlaybackAtSelection,
-  stopMetronome,
   stopPlayback,
   updateInstrument,
 } from '../Events/Playback';
