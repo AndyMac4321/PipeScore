@@ -62,6 +62,7 @@ import {
   startPlaybackAtSelection,
   stopPlayback,
   updateInstrument,
+  updateAttack,
 } from '../Events/Playback';
 import { copy, deleteSelection, paste } from '../Events/Selection';
 import {
@@ -99,6 +100,7 @@ import { Instrument } from '../global/instrument';
 import { Relative } from '../global/relativeLocation';
 import { type Settings, settings } from '../global/settings';
 import type { Menu } from './model';
+import { Attack, attackToString } from '../global/attack';
 
 export interface UIState {
   saved: boolean;
@@ -968,7 +970,7 @@ export default function render(state: UIState): m.Children {
           state.dispatch
         ),
         help(
-          'stop',
+          'beatindicator',
           m(
             'button',
             {
@@ -1045,35 +1047,73 @@ export default function render(state: UIState): m.Children {
           ]),
           state.dispatch
         ),
+        m('div.section-content.vertical', [
+          m(
+            'label',
+            m('input', {
+              type: 'radio',
+              name: 'attack',
+              disabled: state.isPlaying,
+              checked: settings.attack === Attack.Off,
+              onchange: () => state.dispatch(updateAttack(Attack.Off)),
+              value: '',
+            }),
+            text('attackoff')
+          ),
+          m(
+            'label',
+            m('input', {
+              type: 'radio',
+              name: 'attack',
+              disabled: state.isPlaying,
+              checked: settings.attack === Attack.QuickMarchAttack,
+              onchange: () => state.dispatch(updateAttack(Attack.QuickMarchAttack)),
+              value: '',
+            }),
+            text('attackquick')
+          ),
+          m(
+            'label',
+            m('input', {
+              type: 'radio',
+              name: 'attack',
+              disabled: state.isPlaying,
+              checked: settings.attack === Attack.SlowMarchAttack,
+              onchange: () => state.dispatch(updateAttack(Attack.SlowMarchAttack)),
+              value: 'pc',
+            }),
+            text('attackslow')
+          ),
+        ]),
       ]),
     ]),
-    m('section', [
-      m('h2', text('instrument')),
+    m('section',[
+      m('div.section-content.vertical', [
+        m('h2', text('instrument')),
 
-      m(
-        'label',
-        m('input', {
-          type: 'radio',
-          name: 'instrument',
-          disabled: state.isPlaying,
-          checked: settings.instrument === Instrument.GHB,
-          onchange: () => state.dispatch(updateInstrument(Instrument.GHB)),
-          value: '',
-        }),
-        text('instrumentPipes')
-      ),
-      m(
-        'label',
-        m('input', {
-          type: 'radio',
-          name: 'instrument',
-          disabled: state.isPlaying,
-          checked: settings.instrument === Instrument.Chanter,
-          onchange: () => state.dispatch(updateInstrument(Instrument.Chanter)),
-          value: 'pc',
-        }),
-        text('instrumentPC')
-      ),
+        m('label',
+          m('input', {
+            type: 'radio',
+            name: 'instrument',
+            disabled: state.isPlaying,
+            checked: settings.instrument === Instrument.GHB,
+            onchange: () => state.dispatch(updateInstrument(Instrument.GHB)),
+            value: '',
+          }),
+          text('instrumentPipes')
+        ),
+        m('label',
+          m('input', {
+            type: 'radio',
+            name: 'instrument',
+            disabled: state.isPlaying,
+            checked: settings.instrument === Instrument.Chanter,
+            onchange: () => state.dispatch(updateInstrument(Instrument.Chanter)),
+            value: 'pc',
+          }),
+          text('instrumentPC')
+        ),
+      ]),
     ]),
   ];
 
@@ -1430,6 +1470,23 @@ function mobileView(state: UIState): m.Children {
                   ),
                 class: state.isPlayingMetronome ? 'stop-metronome' : 'play-metronome',
               }),
+              state.dispatch
+            ),
+          ]
+        ),
+        m(
+          'div.section-content',
+          { class: state.beatIndicator ? 'beat-indicator-on' : 'beat-indicator-off'},
+          [
+            help(
+              'beatindicator',
+              m(
+                'button',
+                {
+                  disabled: !state.isPlayingMetronome,
+                  class: state.beatIndicator ? 'beat-indicator-on' : 'beat-indicator-off',
+                },
+              ),
               state.dispatch
             ),
           ]

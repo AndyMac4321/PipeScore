@@ -127,14 +127,6 @@ export class Tick {
     }
     this.stopped = true;
   }
-  /**
-   * Aligns the metronome to the playback score.
-   * Not sure why this doesn't work on some scores.
-   */
-  async syncMetronomeStart(){
-    const tickLeadInDuration:number = 1.6 * 1000 * 60 / settings.bpm; 
-    await sleep(tickLeadInDuration);
-  }
 }
 /**
  * Pitched note playback (used for notes and gracenotes).

@@ -27,6 +27,7 @@ import {
 } from '.';
 import { dispatch } from '../Controller';
 import { updateView } from '../Events/Misc';
+import { Attack } from '../global/attack';
 import type { ID } from '../global/id';
 import { Pitch } from '../global/pitch';
 import { settings } from '../global/settings';
@@ -328,8 +329,9 @@ function getSoundedPitches(
 
   return collapsePitches(soundedMeasuresToPlay);
 }
-
-// Get the duration of parts in first bar
+/**
+ * Get the duration of first parts in first bar
+ */
 function leadInBarDuration(
   measures: PlaybackMeasure[],
 ): number {
@@ -344,9 +346,8 @@ function leadInBarDuration(
         }
       }
     });
-    // bit of an assumption here if the notes are more than 1 beat this wont work 
-    // and Playback Metronome will be out of sync
-    if(duration>1) return 0;
+    // bit of an assumption here if the notes are more than 1 beat then the bar is not a lead in
+    if(duration > 1) return 0;
     return duration;
 }
 
@@ -373,32 +374,25 @@ export async function playback(
     drone.start();
   }
   else{
-    tick.start();
-    await tick.syncMetronomeStart();  // Sync metronome audio and wait 2 beats
-    while(1){
-      //1 ,2 - Drum Roll
-      await snare.Roll(2, true);
-      if(state.userPressedStop) break;
-      let silent2Beats = new SoundedSilence(2,null);
-      //3, 4 - Right hand on bag 
-      await silent2Beats.play(settings.bpm,false);  
-      if(state.userPressedStop) break;
-      //5 , 6 - 2nd Drum Roll
-      //5 - Strike in Drones
-      drone.start();             
-      await snare.Roll(2, true); 
-      if(state.userPressedStop) break;
-      // 7 Start Chanter (intro E) 
-      // 8 Start Tune if it has 1 beat of pickup
-      // 9 Start Tune (if no pickup)
-      const leadInDuration =  leadInBarDuration(measures);
-      const pitchEIntro = new SoundedPitch(Pitch.E, 2-leadInDuration, context, null);
-      await pitchEIntro.play(settings.bpm,false); 
-      if(state.userPressedStop) break;
-      tick.stop();
-      break;
+    let stopAttack: boolean = false;
+    switch(settings.attack){
+      case Attack.QuickMarchAttack:{
+        stopAttack = await quickAttack(tick, state, snare, drone, measures, context);
+        break;
+      }
+      case Attack.SlowMarchAttack:{
+        stopAttack = await slowAttack(tick, state, snare, drone, measures, context);
+        break;
+      }
+      case Attack.Off:{
+        drone.start();
+        let silent2Beats = new SoundedSilence(2, null);
+        await silent2Beats.play(settings.bpm, true);
+        break;
+      }
+
     }
-    if(state.userPressedStop){
+    if(stopAttack){
       tick.stop();
       drone.stop();
       state.playing = false;
@@ -406,7 +400,8 @@ export async function playback(
       dispatch(updateView());
       return;
     }
-  }   
+  }
+    
   document.body.classList.remove('loading');
 
   await playPitches(state, measures, timings, context, start, end, loop);
@@ -414,6 +409,72 @@ export async function playback(
   drone.stop();
   tick.stop();
   state.playing = false;
+}
+
+/**
+ * play quick march attack before tune starts
+ */
+async function quickAttack(
+  tick: Tick, 
+  state: PlaybackState, 
+  snare: Snare, 
+  drone: Drone, 
+  measures: PlaybackMeasure[], 
+  context: AudioContext):Promise<boolean> {
+  // PM calls 1 2 
+  tick.start();
+  let silent2Beats = new SoundedSilence(2, null);
+  await silent2Beats.play(settings.bpm, true);
+  tick.stop();
+  if (state.userPressedStop) return true;
+  //1 ,2 - Drum Roll
+  await snare.Roll(2, true);
+  if (state.userPressedStop) return true;
+  //3, 4 - Right hand on bag 
+  await silent2Beats.play(settings.bpm, false);
+  if (state.userPressedStop) return true;
+  //5 , 6 - 2nd Drum Roll
+  //5 - Strike in Drones
+  drone.start();
+  await snare.Roll(2, true);
+  if (state.userPressedStop) return true;
+  // 7 Start Chanter (intro E) 
+  // 8 Start Tune if it has 1 beat of lead in
+  // 9 Start Tune (if no lead in)
+  const leadInDuration = leadInBarDuration(measures);
+  const pitchEIntro = new SoundedPitch(Pitch.E, 2 - leadInDuration, context, null);
+  await pitchEIntro.play(settings.bpm, false);
+  if (state.userPressedStop) return true;
+  return false;
+}
+/**
+ * play slow march attack before tune starts
+ */
+async function slowAttack(
+  tick: Tick, 
+  state: PlaybackState, 
+  snare: Snare, 
+  drone: Drone, 
+  measures: PlaybackMeasure[], 
+  context: AudioContext):Promise<boolean> {
+  // PM calls 1 2 
+  tick.start();
+  let silent2Beats = new SoundedSilence(2, null);
+  await silent2Beats.play(settings.bpm, true);
+  tick.stop();
+  if (state.userPressedStop) return true;
+  //1 , 2 - Drum Roll
+  //2 - Right hand on bag 
+  await snare.Roll(2, true);
+  if (state.userPressedStop) return true;
+  //3 - Strike in Drones
+  //4 - Start Tune if it has 1 beat of lead in (No E intro)
+  //5 - Start Tune (if no lead in)
+  drone.start();
+  const leadInDuration = leadInBarDuration(measures);
+  await sleep((2-leadInDuration) * 1000 * 60/ settings.bpm);
+  if (state.userPressedStop) return true;
+  return false;
 }
 
 async function playPitches(
