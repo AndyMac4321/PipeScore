@@ -127,8 +127,6 @@ export const FrenchDocumentation: Documentation = {
     "Contrôler la vitesse de lecture (plus c'est à droite, plus c'est rapide).",
   'harmony-volume':
     'Control how loud the harmony plays (further right is louder).',
-  'harmony-volume':
-    'Control how loud the harmony plays (further right is louder).',
   export:
     'Exporter la partition vers un fichier PDF, qui peut ensuite être partagé ou imprimé.',
   'export-bww':
