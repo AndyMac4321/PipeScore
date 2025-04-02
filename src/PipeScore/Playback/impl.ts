@@ -363,29 +363,39 @@ export async function playback(
   document.body.classList.add('loading');
 
   const drone = new Drone(context);
+  const tick = new Tick(context);
   if (start != null) {
     // No attack for playing from selection or loop selection
     drone.start();
   } else {
+    // start metronome until stopped- 
+    tick.start();
     let stopAttack: boolean = false;
     switch (settings.attack) {
       case Attack.QuickMarchAttack: {
-        stopAttack = await quickAttack(state, drone, measures, context);
+        stopAttack = await quickAttack(state, drone, measures, context, tick);
         break;
       }
       case Attack.SlowMarchAttack: {
-        stopAttack = await slowAttack(state, drone, measures, context);
+        stopAttack = await slowAttack(state, drone, measures, context, tick);
         break;
       }
       case Attack.Off: {
         drone.start();
-        let silent2Beats = new SoundedSilence(2, null);
+        const leadInDuration = measures[0].lengthOfMainPart();
+        let silent2Beats = new SoundedSilence(
+          2 - (leadInDuration > 1 ? 0 : leadInDuration),
+          null
+        );
         await silent2Beats.play(settings.bpm, true);
+        // stop metronome after 2 beats if metronome is off during playback
+        if (!settings.metronomeDuringPlayback) tick.stop();
         break;
       }
     }
     if (stopAttack) {
       drone.stop();
+      tick.stop();
       state.playing = false;
       state.userPressedStop = false;
       dispatch(updateView());
@@ -396,6 +406,7 @@ export async function playback(
 
   await playPitches(state, measures, timings, context, start, end, loop);
 
+  tick.stop();
   drone.stop();
 
   state.playing = false;
@@ -408,10 +419,16 @@ async function quickAttack(
   state: PlaybackState,
   drone: Drone,
   measures: PlaybackMeasure[],
-  context: AudioContext
+  context: AudioContext,
+  tick: Tick
 ): Promise<boolean> {
   const snare = new Snare(context);
-  let silent2Beats = new SoundedSilence(2, null);
+  const leadInDuration = measures[0].lengthOfMainPart();
+  const silent2Beats = new SoundedSilence(2, null);
+  //Pipe Major Calls 1,2
+  await silent2Beats.play(settings.bpm, false);
+  // stop metronome after 2 beats if metronome is off during playback
+  if (!settings.metronomeDuringPlayback) tick.stop();
   if (state.userPressedStop) return true;
   //1 ,2 - Drum Roll
   await snare.Roll(2, true);
@@ -427,15 +444,15 @@ async function quickAttack(
   // 7 Start Chanter (intro E)
   // 8 Start Tune if it has 1 beat of lead in
   // 9 Start Tune (if no lead in)
-  const leadInDuration = measures[0].lengthOfMainPart();
   const pitchEIntro = new SoundedPitch(
     Pitch.E,
-    2 - (leadInDuration > 1? 0 : leadInDuration), // assumption here is lead is never more than 1 beat
+    2 - (leadInDuration > 1 ? 0 : leadInDuration), // assumption here is lead in is never more than 1 beat
     context,
     null
   );
   await pitchEIntro.play(settings.bpm, false);
   if (state.userPressedStop) return true;
+
   return false;
 }
 /**
@@ -445,10 +462,16 @@ async function slowAttack(
   state: PlaybackState,
   drone: Drone,
   measures: PlaybackMeasure[],
-  context: AudioContext
+  context: AudioContext,
+  tick: Tick
 ): Promise<boolean> {
   const snare = new Snare(context);
-  let silent2Beats = new SoundedSilence(2, null);
+  const leadInDuration = measures[0].lengthOfMainPart();
+  const silent2Beats = new SoundedSilence(2, null);
+  //Pipe Major Calls 1,2
+  await silent2Beats.play(settings.bpm, false);
+  // stop metronome after 2 beats
+  if (!settings.metronomeDuringPlayback) tick.stop();
   if (state.userPressedStop) return true;
   //1 , 2 - Drum Roll
   //2 - Right hand on bag
@@ -458,9 +481,10 @@ async function slowAttack(
   //4 - Start Tune if it has 1 beat of lead in (No E intro)
   //5 - Start Tune (if no lead in)
   drone.start();
-  const leadInDuration = measures[0].lengthOfMainPart();
   // assumption here is lead is never more than 1 beat
-  await sleep(((2 - (leadInDuration > 1? 0 : leadInDuration)) * 1000 * 60) / settings.bpm);
+  await sleep(
+    ((2 - (leadInDuration > 1 ? 0 : leadInDuration)) * 1000 * 60) / settings.bpm
+  );
   if (state.userPressedStop) return true;
   return false;
 }

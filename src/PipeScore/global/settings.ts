@@ -36,6 +36,7 @@ export class Settings {
   bpm = 80;
   instrument = Instrument.GHB;
   attack = Attack.Off;
+  metronomeDuringPlayback = Boolean(false);
 
   static defaultStaveGap = 65;
   static defaultHarmonyGap = 50;
@@ -52,6 +53,7 @@ export class Settings {
     this.harmonyVolume = o.harmonyVolume || Settings.defaultHarmonyVolume;
     this.instrument = parseInstrument(o.instrument) || Instrument.GHB;
     this.attack = parseAttack(o.attack) || Attack.Off;
+    this.metronomeDuringPlayback = Boolean(o.metronomeDuringPlayback);
   }
   toJSON(): SavedSettings {
     return {
@@ -64,6 +66,7 @@ export class Settings {
       harmonyVolume: this.harmonyVolume,
       instrument: instrumentToString(this.instrument),
       attack: attackToString(this.attack),
+      metronomeDuringPlayback : Boolean(this.metronomeDuringPlayback),
     };
   }
   validate<T extends keyof Settings>(key: T, value: number) {

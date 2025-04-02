@@ -76,16 +76,20 @@ export class Tick {
    * Start the metronome tick, looping forever until .stop() is called.
    */
   async start() {
+    this.stopped = false;
     const beatIndicatorDuration = 200; // duration of beat indicator on UI in ms
     const tickLeadInDuration = 150; // Aligns the centre of the audio tick to the beat indicator in ms
     while (!this.stopped) {
       const duration = (1000 * 60) / settings.bpm;
       this.sample.start(1);
       await sleep(tickLeadInDuration);
+      if (this.stopped) break;
       dispatch(updateBeatIndicator(true));
       await sleep(beatIndicatorDuration);
+      if (this.stopped) break;
       dispatch(updateBeatIndicator(false));
       await sleep(duration - beatIndicatorDuration - tickLeadInDuration);
+      if (this.stopped) break;
     }
   }
 
@@ -124,7 +128,10 @@ export class Snare {
     this.sample.start(0.5);
     await sleep(rollDuration);
     this.sample.stop();
-    if (hasEndTap) await this.sampleTap.start(0.5);
+    if (hasEndTap) {
+      this.sampleTap.start(0.5);
+      await sleep(tapDuration);
+    }
   }
 }
 /**

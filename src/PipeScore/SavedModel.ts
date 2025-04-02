@@ -213,6 +213,7 @@ export type SavedSettings = {
   harmonyVolume: number;
   instrument: string;
   attack: string;
+  metronomeDuringPlayback : Boolean;
 };
 
 export type DeprecatedSavedNoteOrTriplet =

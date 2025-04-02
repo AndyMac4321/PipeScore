@@ -63,6 +63,7 @@ import {
   stopPlayback,
   updateAttack,
   updateInstrument,
+  updateMetronomeDuringPlayback,
 } from '../Events/Playback';
 import { copy, deleteSelection, paste } from '../Events/Selection';
 import {
@@ -1037,21 +1038,40 @@ export default function render(state: UIState): m.Children {
         ),
         help(
           'harmony-volume',
-          m('label#harmony-volume-label', [
-            m('input', {
-              type: 'range',
-              min: '0',
-              max: '175',
-              step: '1',
-              value: settings.harmonyVolume * 100,
-              oninput: (e: InputEvent) =>
-                state.dispatch(
-                  setHarmonyVolume(
-                    Number.parseInt((e.target as HTMLInputElement).value)
-                  )
-                ),
-            }),
-            text('harmonyVolume'),
+          m('div.section-content.vertical', [
+            m('label#harmony-volume-label', [
+              m('input', {
+                type: 'range',
+                min: '0',
+                max: '175',
+                step: '1',
+                value: settings.harmonyVolume * 100,
+                oninput: (e: InputEvent) =>
+                  state.dispatch(
+                    setHarmonyVolume(
+                      Number.parseInt((e.target as HTMLInputElement).value)
+                    )
+                  ),
+              }),
+              text('harmonyVolume'),
+            ]),
+            m(
+              'label',
+              m('input', {
+                type: 'checkbox',
+                name: 'metronomeduringplayback',
+                disabled: state.isPlaying,
+                checked: settings.metronomeDuringPlayback,
+                onchange: (e: InputEvent) =>
+                    state.dispatch(
+                      updateMetronomeDuringPlayback(
+                        Boolean((e.target as HTMLInputElement).checked)
+                      )
+                    ),
+                value: '',
+              }),
+              text('metronomeduringplayback')
+            ),
           ]),
           state.dispatch
         ),

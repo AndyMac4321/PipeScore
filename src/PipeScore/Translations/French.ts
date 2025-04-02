@@ -248,4 +248,5 @@ export const FrenchTextItems: TextItems = {
   attackoff: 'Attaque désactivée',
   attackquick: 'Attaque à marche rapide',
   attackslow: 'Attaque à marche lente',
+  metronomeduringplayback:'Metronome',
 };

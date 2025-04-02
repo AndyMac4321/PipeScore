@@ -201,4 +201,5 @@ export type TextItems = {
   attackoff:string;
   attackquick:string;
   attackslow:string;
+  metronomeduringplayback:string;
 };

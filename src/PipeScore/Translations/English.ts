@@ -240,4 +240,5 @@ export const EnglishTextItems: TextItems = {
   attackoff: 'Attack off',
   attackquick: 'Quick march attack',
   attackslow: 'Slow march attack',
+  metronomeduringplayback:'Metronome',
 };

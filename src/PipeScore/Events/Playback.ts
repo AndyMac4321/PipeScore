@@ -136,3 +136,13 @@ export function updateAttack(attack: Attack): ScoreEvent {
     return Update.NoChange;
   };
 }
+
+export function updateMetronomeDuringPlayback(checked: boolean): ScoreEvent {
+  return async () => {
+    if (checked !== settings.metronomeDuringPlayback) {
+      settings.metronomeDuringPlayback = checked;
+      return Update.ShouldSave;
+    }
+    return Update.NoChange;
+  };
+}
