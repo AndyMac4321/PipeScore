@@ -55,8 +55,8 @@ const ghb: InstrumentResources = {
   higha: new AudioResource('GHB/higha'),
   drones: new AudioResource('GHB/drones'),
   tick: new AudioResource('GHB/tick'),
-  snareRoll:new AudioResource('GHB/snare-roll-start'),
-  snareTap:new AudioResource('GHB/snare-roll-end'),
+  snareRoll: new AudioResource('GHB/snare-roll-start'),
+  snareTap: new AudioResource('GHB/snare-roll-end'),
 };
 
 const chanter: InstrumentResources = {
@@ -71,8 +71,8 @@ const chanter: InstrumentResources = {
   higha: new AudioResource('chanter/higha'),
   drones: null,
   tick: new AudioResource('chanter/tick'),
-  snareRoll:new AudioResource('chanter/snare-roll-start'),
-  snareTap:new AudioResource('chanter/snare-roll-end'),
+  snareRoll: new AudioResource('chanter/snare-roll-start'),
+  snareTap: new AudioResource('chanter/snare-roll-end'),
 };
 
 /**

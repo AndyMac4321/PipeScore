@@ -368,39 +368,19 @@ export async function playback(
     // No attack for playing from selection or loop selection
     drone.start();
   } else {
-    // start metronome until stopped- 
+    // start metronome until stopped-
     tick.start();
-    let stopAttack: boolean = false;
-    switch (settings.attack) {
-      case Attack.QuickMarchAttack: {
-        stopAttack = await quickAttack(state, drone, measures, context, tick);
-        break;
-      }
-      case Attack.SlowMarchAttack: {
-        stopAttack = await slowAttack(state, drone, measures, context, tick);
-        break;
-      }
-      case Attack.Off: {
-        drone.start();
-        const leadInDuration = measures[0].lengthOfMainPart();
-        let silent2Beats = new SoundedSilence(
-          2 - (leadInDuration > 1 ? 0 : leadInDuration),
-          null
-        );
-        await silent2Beats.play(settings.bpm, true);
-        // stop metronome after 2 beats if metronome is off during playback
-        if (!settings.metronomeDuringPlayback) tick.stop();
-        break;
-      }
-    }
-    if (stopAttack) {
-      drone.stop();
-      tick.stop();
-      state.playing = false;
-      state.userPressedStop = false;
-      dispatch(updateView());
+    if (
+      await playAttack(
+        state,
+        drone,
+        measures,
+        context,
+        tick,
+        settings.metronomeDuringPlayback
+      )
+    )
       return;
-    }
   }
   document.body.classList.remove('loading');
 
@@ -412,15 +392,57 @@ export async function playback(
   state.playing = false;
 }
 
+async function playAttack(
+  state: PlaybackState,
+  drone: Drone | undefined,
+  measures: PlaybackMeasure[],
+  context: AudioContext,
+  tick: Tick,
+  metronome: boolean
+): Promise<boolean> {
+  let stopAttack: boolean = false;
+  switch (settings.attack) {
+    case Attack.QuickMarchAttack: {
+      stopAttack = await quickAttack(state, drone, measures, context, tick, metronome);
+      break;
+    }
+    case Attack.SlowMarchAttack: {
+      stopAttack = await slowAttack(state, drone, measures, context, tick,metronome);
+      break;
+    }
+    case Attack.Off: {
+      if (drone != undefined) drone.start();
+      const leadInDuration = measures[0].lengthOfMainPart();
+      let silent2Beats = new SoundedSilence(
+        2 - (leadInDuration > 1 ? 0 : leadInDuration),
+        null
+      );
+      await silent2Beats.play(settings.bpm, true);
+      // stop metronome after 2 beats if metronome is off during playback
+      if (!metronome) tick.stop();
+      break;
+    }
+  }
+  if (stopAttack) {
+    if (drone != undefined) drone.stop();
+    tick.stop();
+    state.playing = false;
+    state.userPressedStop = false;
+    dispatch(updateView());
+  }
+  return stopAttack;
+}
+
 /**
  * play quick march attack before tune starts
  */
 async function quickAttack(
   state: PlaybackState,
-  drone: Drone,
+  drone: Drone | undefined,
   measures: PlaybackMeasure[],
   context: AudioContext,
-  tick: Tick
+  tick: Tick,
+  metronome:boolean,
 ): Promise<boolean> {
   const snare = new Snare(context);
   const leadInDuration = measures[0].lengthOfMainPart();
@@ -428,7 +450,7 @@ async function quickAttack(
   //Pipe Major Calls 1,2
   await silent2Beats.play(settings.bpm, false);
   // stop metronome after 2 beats if metronome is off during playback
-  if (!settings.metronomeDuringPlayback) tick.stop();
+  if (!metronome) tick.stop();
   if (state.userPressedStop) return true;
   //1 ,2 - Drum Roll
   await snare.Roll(2, true);
@@ -438,19 +460,26 @@ async function quickAttack(
   if (state.userPressedStop) return true;
   //5 , 6 - 2nd Drum Roll
   //5 - Strike in Drones
-  drone.start();
+  if (drone != undefined) drone.start();
   await snare.Roll(2, true);
   if (state.userPressedStop) return true;
   // 7 Start Chanter (intro E)
   // 8 Start Tune if it has 1 beat of lead in
   // 9 Start Tune (if no lead in)
-  const pitchEIntro = new SoundedPitch(
-    Pitch.E,
-    2 - (leadInDuration > 1 ? 0 : leadInDuration), // assumption here is lead in is never more than 1 beat
-    context,
-    null
-  );
-  await pitchEIntro.play(settings.bpm, false);
+  if(!metronome){
+    const pitchEIntro = new SoundedPitch(
+      Pitch.E,
+      2 - (leadInDuration > 1 ? 0 : leadInDuration), // assumption here is lead in is never more than 1 beat
+      context,
+      null
+    );
+    await pitchEIntro.play(settings.bpm, false);
+  }else{
+    await sleep(
+      ((2 - (leadInDuration > 1 ? 0 : leadInDuration)) * 1000 * 60) / settings.bpm
+    );
+  }
+
   if (state.userPressedStop) return true;
 
   return false;
@@ -460,10 +489,11 @@ async function quickAttack(
  */
 async function slowAttack(
   state: PlaybackState,
-  drone: Drone,
+  drone: Drone | undefined,
   measures: PlaybackMeasure[],
   context: AudioContext,
-  tick: Tick
+  tick: Tick,
+  metronome:boolean,
 ): Promise<boolean> {
   const snare = new Snare(context);
   const leadInDuration = measures[0].lengthOfMainPart();
@@ -471,7 +501,7 @@ async function slowAttack(
   //Pipe Major Calls 1,2
   await silent2Beats.play(settings.bpm, false);
   // stop metronome after 2 beats
-  if (!settings.metronomeDuringPlayback) tick.stop();
+  if (!metronome) tick.stop();
   if (state.userPressedStop) return true;
   //1 , 2 - Drum Roll
   //2 - Right hand on bag
@@ -480,7 +510,7 @@ async function slowAttack(
   //3 - Strike in Drones
   //4 - Start Tune if it has 1 beat of lead in (No E intro)
   //5 - Start Tune (if no lead in)
-  drone.start();
+  if (drone != undefined) drone.start();
   // assumption here is lead is never more than 1 beat
   await sleep(
     ((2 - (leadInDuration > 1 ? 0 : leadInDuration)) * 1000 * 60) / settings.bpm
@@ -542,7 +572,10 @@ async function playPitches(
   state.userPressedStop = false;
   dispatch(updateView());
 }
-export async function playMetronome(state: PlaybackState) {
+export async function playMetronome(
+  state: PlaybackState,
+  playbackElements: PlaybackMeasure[]
+) {
   if (state.playing || state.loading) return;
 
   const context = new AudioContext();
@@ -550,6 +583,9 @@ export async function playMetronome(state: PlaybackState) {
   state.playingMetronome = true;
 
   tick.start();
+  if (await playAttack(state, undefined, playbackElements, context, tick, true))
+    return;
+
   while (true) {
     // Loop until user presses stop
     await sleep(1000);

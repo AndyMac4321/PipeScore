@@ -113,7 +113,7 @@ export function updateInstrument(instrument: Instrument): ScoreEvent {
 export function startPlayMetronome(): ScoreEvent {
   return async (state: State) => {
     const playbackElements = state.score.play();
-    await playMetronome(state.playback);
+    await playMetronome(state.playback,playbackElements);
     return Update.NoChange;
   };
 }
