@@ -394,7 +394,7 @@ export async function playback(
 
 async function playAttack(
   state: PlaybackState,
-  drone: Drone | undefined,
+  drone: Drone | null,
   measures: PlaybackMeasure[],
   context: AudioContext,
   tick: Tick,
@@ -403,11 +403,25 @@ async function playAttack(
   let stopAttack: boolean = false;
   switch (settings.attack) {
     case Attack.QuickMarchAttack: {
-      stopAttack = await quickAttack(state, drone, measures, context, tick, metronome);
+      stopAttack = await quickAttack(
+        state,
+        drone,
+        measures,
+        context,
+        tick,
+        metronome
+      );
       break;
     }
     case Attack.SlowMarchAttack: {
-      stopAttack = await slowAttack(state, drone, measures, context, tick,metronome);
+      stopAttack = await slowAttack(
+        state,
+        drone,
+        measures,
+        context,
+        tick,
+        metronome
+      );
       break;
     }
     case Attack.Off: {
@@ -427,6 +441,7 @@ async function playAttack(
     if (drone != undefined) drone.stop();
     tick.stop();
     state.playing = false;
+    state.playingMetronome = false;
     state.userPressedStop = false;
     dispatch(updateView());
   }
@@ -438,11 +453,11 @@ async function playAttack(
  */
 async function quickAttack(
   state: PlaybackState,
-  drone: Drone | undefined,
+  drone: Drone | null,
   measures: PlaybackMeasure[],
   context: AudioContext,
   tick: Tick,
-  metronome:boolean,
+  metronome: boolean
 ): Promise<boolean> {
   const snare = new Snare(context);
   const leadInDuration = measures[0].lengthOfMainPart();
@@ -466,7 +481,7 @@ async function quickAttack(
   // 7 Start Chanter (intro E)
   // 8 Start Tune if it has 1 beat of lead in
   // 9 Start Tune (if no lead in)
-  if(!metronome){
+  if (!metronome) {
     const pitchEIntro = new SoundedPitch(
       Pitch.E,
       2 - (leadInDuration > 1 ? 0 : leadInDuration), // assumption here is lead in is never more than 1 beat
@@ -474,9 +489,11 @@ async function quickAttack(
       null
     );
     await pitchEIntro.play(settings.bpm, false);
-  }else{
+  } else {
+    // Metronome has silence
     await sleep(
-      ((2 - (leadInDuration > 1 ? 0 : leadInDuration)) * 1000 * 60) / settings.bpm
+      ((2 - (leadInDuration > 1 ? 0 : leadInDuration)) * 1000 * 60) /
+        settings.bpm
     );
   }
 
@@ -489,11 +506,11 @@ async function quickAttack(
  */
 async function slowAttack(
   state: PlaybackState,
-  drone: Drone | undefined,
+  drone: Drone | null,
   measures: PlaybackMeasure[],
   context: AudioContext,
   tick: Tick,
-  metronome:boolean,
+  metronome: boolean
 ): Promise<boolean> {
   const snare = new Snare(context);
   const leadInDuration = measures[0].lengthOfMainPart();
@@ -583,7 +600,7 @@ export async function playMetronome(
   state.playingMetronome = true;
 
   tick.start();
-  if (await playAttack(state, undefined, playbackElements, context, tick, true))
+  if (await playAttack(state, null, playbackElements, context, tick, true))
     return;
 
   while (true) {

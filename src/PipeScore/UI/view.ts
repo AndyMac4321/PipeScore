@@ -1060,14 +1060,14 @@ export default function render(state: UIState): m.Children {
               m('input', {
                 type: 'checkbox',
                 name: 'metronomeduringplayback',
-                disabled: state.isPlaying,
+                disabled: state.isPlaying || state.isPlayingMetronome,
                 checked: settings.metronomeDuringPlayback,
                 onchange: (e: InputEvent) =>
-                    state.dispatch(
-                      updateMetronomeDuringPlayback(
-                        Boolean((e.target as HTMLInputElement).checked)
-                      )
-                    ),
+                  state.dispatch(
+                    updateMetronomeDuringPlayback(
+                      Boolean((e.target as HTMLInputElement).checked)
+                    )
+                  ),
                 value: '',
               }),
               text('metronomeduringplayback')
@@ -1083,7 +1083,7 @@ export default function render(state: UIState): m.Children {
               m('input', {
                 type: 'radio',
                 name: 'attack',
-                disabled: state.isPlaying,
+                disabled: state.isPlaying || state.isPlayingMetronome,
                 checked: settings.attack === Attack.Off,
                 onchange: () => state.dispatch(updateAttack(Attack.Off)),
                 value: '',
@@ -1095,7 +1095,7 @@ export default function render(state: UIState): m.Children {
               m('input', {
                 type: 'radio',
                 name: 'attack',
-                disabled: state.isPlaying,
+                disabled: state.isPlaying || state.isPlayingMetronome,
                 checked: settings.attack === Attack.QuickMarchAttack,
                 onchange: () =>
                   state.dispatch(updateAttack(Attack.QuickMarchAttack)),
@@ -1108,7 +1108,7 @@ export default function render(state: UIState): m.Children {
               m('input', {
                 type: 'radio',
                 name: 'attack',
-                disabled: state.isPlaying,
+                disabled: state.isPlaying || state.isPlayingMetronome,
                 checked: settings.attack === Attack.SlowMarchAttack,
                 onchange: () =>
                   state.dispatch(updateAttack(Attack.SlowMarchAttack)),
@@ -1130,7 +1130,7 @@ export default function render(state: UIState): m.Children {
           m('input', {
             type: 'radio',
             name: 'instrument',
-            disabled: state.isPlaying,
+            disabled: state.isPlaying || state.isPlayingMetronome,
             checked: settings.instrument === Instrument.GHB,
             onchange: () => state.dispatch(updateInstrument(Instrument.GHB)),
             value: '',
@@ -1142,7 +1142,7 @@ export default function render(state: UIState): m.Children {
           m('input', {
             type: 'radio',
             name: 'instrument',
-            disabled: state.isPlaying,
+            disabled: state.isPlaying || state.isPlayingMetronome,
             checked: settings.instrument === Instrument.Chanter,
             onchange: () =>
               state.dispatch(updateInstrument(Instrument.Chanter)),
