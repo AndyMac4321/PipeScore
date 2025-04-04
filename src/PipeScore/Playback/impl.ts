@@ -368,8 +368,6 @@ export async function playback(
     // No attack for playing from selection or loop selection
     drone.start();
   } else {
-    // start metronome until stopped-
-    tick.start();
     if (
       await playAttack(
         state,
@@ -401,6 +399,8 @@ async function playAttack(
   metronome: boolean
 ): Promise<boolean> {
   let stopAttack: boolean = false;
+  // start metronome until stopped-
+  tick.start();
   switch (settings.attack) {
     case Attack.QuickMarchAttack: {
       stopAttack = await quickAttack(
