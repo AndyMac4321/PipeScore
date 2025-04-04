@@ -985,7 +985,7 @@ export default function render(state: UIState): m.Children {
         help(
           'beatindicator',
           m('button', {
-            disabled: !state.isPlayingMetronome,
+            disabled: !state.isPlayingMetronome && !(state.isPlaying && settings.metronomeDuringPlayback),
             class: state.beatIndicator
               ? 'beat-indicator-on'
               : 'beat-indicator-off',
@@ -1540,7 +1540,7 @@ function mobileView(state: UIState): m.Children {
             help(
               'beatindicator',
               m('button', {
-                disabled: !state.isPlayingMetronome,
+                disabled: !state.isPlayingMetronome && !state.isPlaying && !settings.metronomeDuringPlayback,
                 class: state.beatIndicator
                   ? 'beat-indicator-on'
                   : 'beat-indicator-off',

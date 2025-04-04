@@ -481,7 +481,7 @@ async function quickAttack(
   // 7 Start Chanter (intro E)
   // 8 Start Tune if it has 1 beat of lead in
   // 9 Start Tune (if no lead in)
-  if (!metronome) {
+  if (!metronome && drone!=null) {
     const pitchEIntro = new SoundedPitch(
       Pitch.E,
       2 - (leadInDuration > 1 ? 0 : leadInDuration), // assumption here is lead in is never more than 1 beat
