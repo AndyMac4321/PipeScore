@@ -595,7 +595,6 @@ export async function playMetronome(
   const tick = new Tick(context);
   state.playingMetronome = true;
 
-  tick.start();
   if (await playAttack(state, null, playbackElements, context, tick, true))
     return;
 
