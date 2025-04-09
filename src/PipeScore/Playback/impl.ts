@@ -366,17 +366,7 @@ export async function playback(
 
   const drone = new Drone(context);
   const tick = new Tick(context);
-  if (
-    await playAttack(
-      state,
-      drone,
-      measures,
-      context,
-      tick,
-      settings.metronomeDuringPlayback,
-      start
-    )
-  )
+  if (await playAttack(state, drone, measures, context, tick, false, start))
     return;
   document.body.classList.remove('loading');
 
@@ -399,7 +389,7 @@ async function playAttack(
 ): Promise<boolean> {
   let stopAttack: boolean = false;
   // start metronome until stopped-
-  if (metronome) tick.start();
+  if (metronome || settings.metronomeDuringPlayback) tick.start();
   let attackMode: Attack = settings.attack;
   if (start != null) attackMode = Attack.Off;
   switch (attackMode) {
@@ -430,8 +420,8 @@ async function playAttack(
       let leadInDuration: number = 0;
       let measureIndex = 0;
       if (start != null) {
-        measures.some((m)=> { 
-          if(m.containsID(start)){
+        measures.some((m) => {
+          if (m.containsID(start)) {
             measureIndex = measures.indexOf(m);
           }
         });
@@ -487,7 +477,7 @@ async function quickAttack(
   // 7 Start Chanter (intro E)
   // 8 Start Tune if it has 1 beat of lead in
   // 9 Start Tune (if no lead in)
-  if (!metronome && drone != null) {
+  if (!metronome) {
     const pitchEIntro = new SoundedPitch(
       Pitch.E,
       2 - (leadInDuration > 1 ? 0 : leadInDuration), // assumption here is lead in is never more than 1 beat
