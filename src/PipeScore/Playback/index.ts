@@ -98,8 +98,17 @@ export function itemDuration(item: PlaybackItem) {
  * @param items
  * @returns
  */
-function itemsDuration(items: PlaybackItem[]) {
+export function itemsDuration(items: PlaybackItem[]) {
   return sum(items.map(itemDuration));
+}
+
+/**
+ * Helper function to confirm part contains ID of item.
+ * @param item
+ * @returns
+ */
+export function containsID(part: PlaybackItem[], id: ID): boolean {
+  return part.some((item) => item.type == 'object-start' && item.id == id);
 }
 
 export class PlaybackMeasure {
@@ -150,6 +159,10 @@ export class PlaybackMeasure {
    */
   timeToAfter(partIndex: number, itemIndex: number) {
     return itemsDuration(this.parts[partIndex].slice(0, itemIndex + 1));
+  }
+
+  public containsID(id: ID): boolean {
+    return this.parts.some((part) => containsID(part, id));
   }
 }
 

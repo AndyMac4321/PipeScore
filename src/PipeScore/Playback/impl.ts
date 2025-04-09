@@ -32,6 +32,7 @@ import type { ID } from '../global/id';
 import { Pitch } from '../global/pitch';
 import { settings } from '../global/settings';
 import {
+  foreach,
   isRoughlyZero,
   last,
   nlast,
@@ -40,6 +41,7 @@ import {
   sum,
   unreachable,
 } from '../global/utils';
+import { Measure } from '../Measure/impl';
 import {
   Drone,
   Snare,
@@ -364,24 +366,18 @@ export async function playback(
 
   const drone = new Drone(context);
   const tick = new Tick(context);
-  if (start != null) {
-    // Playback from selection or loop selection doesn't play attack
-    drone.start();
-    // start metronome until stopped-
-    if (settings.metronomeDuringPlayback) tick.start();
-  } else {
-    if (
-      await playAttack(
-        state,
-        drone,
-        measures,
-        context,
-        tick,
-        settings.metronomeDuringPlayback
-      )
+  if (
+    await playAttack(
+      state,
+      drone,
+      measures,
+      context,
+      tick,
+      settings.metronomeDuringPlayback,
+      start
     )
-      return;
-  }
+  )
+    return;
   document.body.classList.remove('loading');
 
   await playPitches(state, measures, timings, context, start, end, loop);
@@ -398,12 +394,15 @@ async function playAttack(
   measures: PlaybackMeasure[],
   context: AudioContext,
   tick: Tick,
-  metronome: boolean
+  metronome: boolean,
+  start: ID | null
 ): Promise<boolean> {
   let stopAttack: boolean = false;
   // start metronome until stopped-
   if (metronome) tick.start();
-  switch (settings.attack) {
+  let attackMode: Attack = settings.attack;
+  if (start != null) attackMode = Attack.Off;
+  switch (attackMode) {
     case Attack.QuickMarchAttack: {
       stopAttack = await quickAttack(
         state,
@@ -428,7 +427,16 @@ async function playAttack(
     }
     case Attack.Off: {
       if (drone != null) drone.start();
-      const leadInDuration = measures[0].lengthOfMainPart();
+      let leadInDuration: number = 0;
+      let measureIndex = 0;
+      if (start != null) {
+        measures.some((m)=> { 
+          if(m.containsID(start)){
+            measureIndex = measures.indexOf(m);
+          }
+        });
+      }
+      leadInDuration = measures[measureIndex].lengthOfMainPart();
       let silent2Beats = new SoundedSilence(
         2 - (leadInDuration > 1 ? 0 : leadInDuration),
         null
@@ -595,7 +603,9 @@ export async function playMetronome(
   const tick = new Tick(context);
   state.playingMetronome = true;
 
-  if (await playAttack(state, null, playbackElements, context, tick, true))
+  if (
+    await playAttack(state, null, playbackElements, context, tick, true, null)
+  )
     return;
 
   while (true) {

@@ -82,7 +82,7 @@ export class Measure extends IMeasure {
     };
   }
 
-  containsID(id: ID): boolean {
+  public containsID(id: ID): boolean {
     return this.bars().some((bar) => bar.hasID(id) || bar.containsNoteWithID(id));
   }
 
