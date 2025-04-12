@@ -36,7 +36,8 @@ export class Settings {
   bpm = 80;
   instrument = Instrument.GHB;
   attack = Attack.Off;
-  metronomeDuringPlayback = Boolean(false);
+  metronomeDuringPlayback = false;
+  suppressGraceNotes = false;
 
   static defaultStaveGap = 65;
   static defaultHarmonyGap = 50;

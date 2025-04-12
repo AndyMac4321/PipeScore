@@ -87,6 +87,7 @@ export type Documentation = {
   stop: string;
   'playback-speed': string;
   'harmony-volume': string;
+  instrument: string;
   export: string;
   'export-bww': string;
   download: string;
@@ -99,7 +100,7 @@ export type Documentation = {
   'move-bar-to-previous-line': string;
   'move-bar-to-next-line': string;
   'nothing-hovered': string;
-  attackoptions :string;
+  attackoptions: string;
   beatindicator: string;
 };
 
@@ -198,8 +199,9 @@ export type TextItems = {
   instrumentPC: string;
   instrumentPipes: string;
   instrument: string;
-  attackoff:string;
-  attackquick:string;
-  attackslow:string;
-  metronomeduringplayback:string;
+  attackoff: string;
+  attackquick: string;
+  attackslow: string;
+  metronomeduringplayback: string;
+  suppressgracenotes: string;
 };

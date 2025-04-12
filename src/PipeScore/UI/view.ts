@@ -64,6 +64,7 @@ import {
   updateAttack,
   updateInstrument,
   updateMetronomeDuringPlayback,
+  updateSuppressGraceNotes,
 } from '../Events/Playback';
 import { copy, deleteSelection, paste } from '../Events/Selection';
 import {
@@ -1010,31 +1011,52 @@ export default function render(state: UIState): m.Children {
       m('div.section-content', [
         help(
           'playback-speed',
-          m('label#playback-speed-label', [
-            m('input', {
-              type: 'range',
-              min: '30',
-              max: '150',
-              step: '1',
-              value: settings.bpm,
-              oninput: (e: InputEvent) =>
-                state.dispatch(
-                  setPlaybackBpm(
-                    Number.parseInt((e.target as HTMLInputElement).value)
-                  )
-                ),
-            }),
-            m('input#playback-bpm', {
-              type: 'number',
-              value: settings.bpm,
-              oninput: (e: InputEvent) =>
-                state.dispatch(
-                  setPlaybackBpm(
-                    Number.parseInt((e.target as HTMLInputElement).value)
-                  )
-                ),
-            }),
-            text('beatsPerMinute'),
+          m('div.section-content.vertical', [
+            m('label#playback-speed-label', [
+              m('input', {
+                type: 'range',
+                min: '30',
+                max: '150',
+                step: '1',
+                value: settings.bpm,
+                oninput: (e: InputEvent) =>
+                  state.dispatch(
+                    setPlaybackBpm(
+                      Number.parseInt((e.target as HTMLInputElement).value)
+                    )
+                  ),
+              }),
+            ]),
+            m('label',
+              m('input#playback-bpm', {
+                type: 'number',
+                value: settings.bpm,
+                oninput: (e: InputEvent) =>
+                  state.dispatch(
+                    setPlaybackBpm(
+                      Number.parseInt((e.target as HTMLInputElement).value)
+                    )
+                  ),
+              }),
+              text('beatsPerMinute')
+            ),
+            m(
+              'label',
+              m('input', {
+                type: 'checkbox',
+                name: 'suppressgracenotes',
+                disabled: state.isPlaying || state.isPlayingMetronome,
+                checked: settings.suppressGraceNotes,
+                onchange: (e: InputEvent) =>
+                  state.dispatch(
+                    updateSuppressGraceNotes(
+                      Boolean((e.target as HTMLInputElement).checked)
+                    )
+                  ),
+                value: '',
+              }),
+              text('suppressgracenotes')
+            ),
           ]),
           state.dispatch
         ),
@@ -1057,8 +1079,7 @@ export default function render(state: UIState): m.Children {
               }),
               text('harmonyVolume'),
             ]),
-            m(
-              'label',
+            m('label',
               m('input', {
                 type: 'checkbox',
                 name: 'metronomeduringplayback',
@@ -1124,35 +1145,38 @@ export default function render(state: UIState): m.Children {
       ]),
     ]),
     m('section', [
-      m('div.section-content.vertical', [
-        m('h2', text('instrument')),
-
-        m(
-          'label',
-          m('input', {
-            type: 'radio',
-            name: 'instrument',
-            disabled: state.isPlaying || state.isPlayingMetronome,
-            checked: settings.instrument === Instrument.GHB,
-            onchange: () => state.dispatch(updateInstrument(Instrument.GHB)),
-            value: '',
-          }),
-          text('instrumentPipes')
-        ),
-        m(
-          'label',
-          m('input', {
-            type: 'radio',
-            name: 'instrument',
-            disabled: state.isPlaying || state.isPlayingMetronome,
-            checked: settings.instrument === Instrument.Chanter,
-            onchange: () =>
-              state.dispatch(updateInstrument(Instrument.Chanter)),
-            value: 'pc',
-          }),
-          text('instrumentPC')
-        ),
-      ]),
+      help(
+        'instrument',
+        m('div.section-content.vertical', [
+          m('h2', text('instrument')),
+          m(
+            'label',
+            m('input', {
+              type: 'radio',
+              name: 'instrument',
+              disabled: state.isPlaying || state.isPlayingMetronome,
+              checked: settings.instrument === Instrument.GHB,
+              onchange: () => state.dispatch(updateInstrument(Instrument.GHB)),
+              value: '',
+            }),
+            text('instrumentPipes')
+          ),
+          m(
+            'label',
+            m('input', {
+              type: 'radio',
+              name: 'instrument',
+              disabled: state.isPlaying || state.isPlayingMetronome,
+              checked: settings.instrument === Instrument.Chanter,
+              onchange: () =>
+                state.dispatch(updateInstrument(Instrument.Chanter)),
+              value: 'pc',
+            }),
+            text('instrumentPC')
+          ),
+        ]),    
+        state.dispatch
+      ),
     ]),
   ];
 

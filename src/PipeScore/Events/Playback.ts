@@ -146,3 +146,13 @@ export function updateMetronomeDuringPlayback(checked: boolean): ScoreEvent {
     return Update.NoChange;
   };
 }
+
+export function updateSuppressGraceNotes(checked: boolean): ScoreEvent {
+  return async () => {
+    if (checked !== settings.suppressGraceNotes) {
+      settings.suppressGraceNotes = checked;
+      // Not saving this setting
+    }
+    return Update.NoChange;
+  };
+}

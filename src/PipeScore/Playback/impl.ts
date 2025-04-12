@@ -313,7 +313,8 @@ function getSoundedPitches(
       for (const e of part) {
         switch (e.type) {
           case 'note': {
-            const duration = e.duration - currentGracenoteDuration;
+            const duration =
+              e.duration - (settings.suppressGraceNotes ? 0 : currentGracenoteDuration);
             soundedPart.push(
               new SoundedPitch(e.pitch, duration, ctx, currentID)
             );
@@ -321,9 +322,11 @@ function getSoundedPitches(
             break;
           }
           case 'gracenote': {
-            soundedPart.push(
-              new SoundedPitch(e.pitch, gracenoteDuration, ctx, currentID)
-            );
+            if (!settings.suppressGraceNotes) {
+              soundedPart.push(
+                new SoundedPitch(e.pitch, gracenoteDuration, ctx, currentID)
+              );
+            }
             currentGracenoteDuration += gracenoteDuration;
             break;
           }

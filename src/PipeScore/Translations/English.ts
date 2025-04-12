@@ -122,6 +122,7 @@ export const EnglishDocumentation: Documentation = {
   'playback-speed': 'Control the playback speed (further right is faster).',
   'harmony-volume':
     'Control how loud the harmony plays (further right is louder).',
+  instrument: 'Select instrument for play back',
   export: 'Export the score to a PDF file, that may then be shared or printed.',
   'export-bww':
     "Export the score to a BWW file, that may be opened in other applications. This is currently very new, and won't work for most scores.",
@@ -240,5 +241,6 @@ export const EnglishTextItems: TextItems = {
   attackoff: 'Attack off',
   attackquick: 'Quick march attack',
   attackslow: 'Slow march attack',
-  metronomeduringplayback:'Metronome',
+  metronomeduringplayback: 'Metronome',
+  suppressgracenotes: 'Suppress grace notes',
 };

@@ -127,6 +127,7 @@ export const FrenchDocumentation: Documentation = {
     "Contrôler la vitesse de lecture (plus c'est à droite, plus c'est rapide).",
   'harmony-volume':
     'Control how loud the harmony plays (further right is louder).',
+  instrument: 'Select instrument for play back',
   export:
     'Exporter la partition vers un fichier PDF, qui peut ensuite être partagé ou imprimé.',
   'export-bww':
@@ -248,5 +249,6 @@ export const FrenchTextItems: TextItems = {
   attackoff: 'Attaque désactivée',
   attackquick: 'Attaque à marche rapide',
   attackslow: 'Attaque à marche lente',
-  metronomeduringplayback:'Metronome',
+  metronomeduringplayback: 'Metronome',
+  suppressgracenotes: 'Suppress grace notes',
 };
