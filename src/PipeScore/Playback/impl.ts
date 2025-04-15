@@ -314,7 +314,8 @@ function getSoundedPitches(
         switch (e.type) {
           case 'note': {
             const duration =
-              e.duration - (settings.suppressGraceNotes ? 0 : currentGracenoteDuration);
+              e.duration -
+              (settings.suppressGraceNotes ? 0 : currentGracenoteDuration);
             soundedPart.push(
               new SoundedPitch(e.pitch, duration, ctx, currentID)
             );
@@ -440,7 +441,7 @@ async function playAttack(
   }
   if (stopAttack) {
     if (drone != undefined) drone.stop();
-    if (metronome) tick.stop();
+    if (metronome || settings.metronomeDuringPlayback) tick.stop();
     state.playing = false;
     state.playingMetronome = false;
     state.userPressedStop = false;
