@@ -13,11 +13,12 @@
 - [x] View-only mode for mobile
 - [ ] Note in docs about keyboard-based
 - [x] Fix harmony playback
-- [ ] Importing tunes into other scores
-- [ ] Count ins / Quick march attack and Slow march attack 
+- [x] Importing tunes into other scores/ Combining multiple scores into a single score/document
+- [x] Count ins / Quick march attack and Slow march attack 
 - [ ] Password change
 - [ ] Chanter playback
 - [x] Metronome while playing
+- [ ] Allow for people other than who entered the tune to play it back. 
 
 ## Bugs to fix
 
