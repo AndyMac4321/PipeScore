@@ -64,6 +64,7 @@ export type SavedTune = {
   composer: SavedStaticTextBox | string;
   staves: SavedStave[];
   tuneGap: number;
+  bpm: number;
 };
 
 export type SavedStave = {
@@ -213,7 +214,7 @@ export type SavedSettings = {
   harmonyVolume: number;
   instrument: string;
   attack: string;
-  metronomeDuringPlayback : Boolean;
+  metronomeDuringPlayback: Boolean;
 };
 
 export type DeprecatedSavedNoteOrTriplet =

@@ -20,7 +20,7 @@
 import { IScore } from '.';
 import type { IBar } from '../Bar';
 import { Update } from '../Events/types';
-import { nextBar, nextNote, previousBar, previousNote } from '../Measure';
+import { IMeasure, nextBar, nextNote, previousBar, previousNote } from '../Measure';
 import type { NoteOrTriplet } from '../Note';
 import type { PlaybackMeasure } from '../Playback';
 import { type SavedScore, scoreHasStavesNotTunes } from '../SavedModel';
@@ -372,7 +372,19 @@ export class Score extends IScore {
 
     return null;
   }
-
+  // Finds the parent bar stave, and tune of the measure passed
+  locateMeasure(search: IMeasure) {
+    for (const tune of this.tunes()) {
+      for (const stave of tune.staves()) {
+        for (const measure of stave.measures()) {
+          if (measure == search){
+            return { tune, stave };
+          }
+        }
+      }
+    }
+    return null;
+  }
   lastBarAndStave() {
     const tune = last(this.tunes());
     const stave = tune && last(tune.staves());
@@ -433,8 +445,8 @@ export class Score extends IScore {
 
   play(): PlaybackMeasure[] {
     return this.measures().map((measure, i, measures) =>
-      measure.play(measures[i - 1] || null)
-    );
+      measure.play(measures[i - 1] || null, this.locateMeasure(measure)?.tune.BPM())
+    ); 
     // TODO : REMOVE
     // return this.bars().map((part) =>
     //   part.flatMap((bar, i) => bar.play(part[i - 1] || null))

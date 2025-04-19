@@ -36,13 +36,15 @@ export class Tune extends ITune {
   private _name: IStaticTextBox;
   private _tuneType: IStaticTextBox;
   private _composer: IStaticTextBox;
+  private _bpm:number;
 
   constructor(
     name: IStaticTextBox,
     composer: IStaticTextBox,
     tuneType: IStaticTextBox,
     staves: IStave[],
-    gap = Settings.defaultTuneGap
+    gap = Settings.defaultTuneGap,
+    bpm = 80,
   ) {
     super();
     this._staves = staves;
@@ -50,6 +52,7 @@ export class Tune extends ITune {
     this._name = name;
     this._composer = composer;
     this._tuneType = tuneType;
+    this._bpm = bpm
   }
 
   static create(
@@ -58,7 +61,8 @@ export class Tune extends ITune {
     repeatParts: boolean,
     name = 'My Tune',
     composer = 'Composer',
-    tuneType = 'March'
+    tuneType = 'March',
+    bpm = 80,
   ): ITune {
     const staves = foreach(2 * numberOfParts, () => Stave.create(timeSignature));
     for (let i = 0; i < staves.length; i++) {
@@ -91,7 +95,8 @@ export class Tune extends ITune {
       StaticTextBox.fromJSON(tune.composer, otherSize),
       StaticTextBox.fromJSON(tune.tuneType, otherSize),
       tune.staves.map(Stave.fromJSON),
-      tune.tuneGap
+      tune.tuneGap,
+      tune.bpm
     );
   }
 
@@ -102,6 +107,7 @@ export class Tune extends ITune {
       composer: this._composer.toJSON(),
       staves: this._staves.map((stave) => stave.toJSON()),
       tuneGap: this._tuneGap,
+      bpm: this._bpm,
     };
   }
 
@@ -123,6 +129,14 @@ export class Tune extends ITune {
 
   setTuneGap(gap: number) {
     this._tuneGap = gap;
+  }
+  
+  BPM() {
+    return this._bpm;
+  }
+
+  setBPM(bpm: number) {
+    this._bpm = bpm;
   }
 
   staves() {

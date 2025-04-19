@@ -115,15 +115,18 @@ export class PlaybackMeasure {
   public parts: PlaybackItem[][];
   public repeatStart: boolean;
   public repeatEnd: boolean;
+  public bpm: number;
 
   constructor(
     items: PlaybackItem[][],
     repeatStart: boolean,
-    repeatEnd: boolean
+    repeatEnd: boolean,
+    bpm: number,
   ) {
     this.parts = items;
     this.repeatStart = repeatStart;
     this.repeatEnd = repeatEnd;
+    this.bpm = bpm;
   }
 
   /**

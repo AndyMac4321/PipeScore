@@ -131,11 +131,12 @@ export class Measure extends IMeasure {
     }
   }
 
-  play(previousMeasure: IMeasure | null): PlaybackMeasure {
+  play(previousMeasure: IMeasure | null,bpm: number|undefined): PlaybackMeasure {
     return new PlaybackMeasure(
       this.bars().map((bar, i) => bar.play(previousMeasure?.bars()[i] || null)),
       this.frontBarline === Barline.repeat,
-      this.backBarline === Barline.repeat
+      this.backBarline === Barline.repeat,
+      (bpm!=null?bpm:80)
     );
   }
 }

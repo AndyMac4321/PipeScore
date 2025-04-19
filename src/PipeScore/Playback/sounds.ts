@@ -66,12 +66,19 @@ export class Drone {
 export class Tick {
   private sample: Sample;
   private stopped = false;
-
+  private bpm: number;
   constructor(context: AudioContext) {
     const tick = getInstrumentResources().tick;
     this.sample = tick && new Sample(tick, context);
+    this.bpm = 0;
   }
-
+  /**
+   * Update the BPM when it changes in Pitch Playback
+   * @param bpm
+   */
+  public bpmChange(bpm: number): void {
+    this.bpm = bpm;
+  }
   /**
    * Start the metronome tick, looping forever until .stop() is called.
    */
@@ -80,7 +87,7 @@ export class Tick {
     const beatIndicatorDuration = 200; // duration of beat indicator on UI in ms
     const tickLeadInDuration = 150; // Aligns the centre of the audio tick to the beat indicator in ms
     while (!this.stopped) {
-      const duration = (1000 * 60) / settings.bpm;
+      const duration = (1000 * 60) / this.bpm;
       this.sample.start(1);
       await sleep(tickLeadInDuration);
       if (this.stopped) break;
@@ -151,33 +158,35 @@ export class SoundedPitch {
   // the note. This is required for playing ties over barlines -
   // see SoundedSilence for details.
   public durationIncludingTies: number;
+  public bpm: number;
 
   constructor(
     pitch: Pitch,
     duration: number,
     ctx: AudioContext,
-    id: ID | null
+    id: ID | null,
+    bpm: number
   ) {
     this.sample = new Sample(pitchToAudioResource(pitch), ctx);
     this.pitch = pitch;
     this.duration = duration;
     this.durationIncludingTies = duration;
     this.id = id;
+    this.bpm = bpm;
   }
-
   /**
    * Play the note.
    * @param bpm beats per minute
    * @param isHarmony true if the pitch is in a harmony part (affects volume and cursor updates)
    */
-  async play(bpm: number, isHarmony: boolean) {
+  async play(isHarmony: boolean) {
     if (!isHarmony) {
       dispatch(updatePlaybackCursor(this.id));
     }
 
-    const duration = (1000 * this.duration * 60) / bpm;
+    const duration = (1000 * this.duration * 60) / this.bpm;
     const tieDuration =
-      (1000 * (this.durationIncludingTies - this.duration) * 60) / bpm;
+      (1000 * (this.durationIncludingTies - this.duration) * 60) / this.bpm;
     const gain = isHarmony ? settings.harmonyVolume : 1;
     this.sample.start(gain);
     await sleep(duration);
@@ -204,18 +213,20 @@ export class SoundedPitch {
 export class SoundedSilence {
   private duration: number;
   private id: ID | null;
+  public bpm: number;
 
-  constructor(duration: number, id: ID | null) {
+  constructor(duration: number, id: ID | null, bpm: number) {
     this.duration = duration;
     this.id = id;
+    this.bpm = bpm;
   }
 
-  async play(bpm: number, isHarmony: boolean) {
+  async play(isHarmony: boolean) {
     if (!isHarmony) {
       dispatch(updatePlaybackCursor(this.id));
     }
 
-    const duration = (1000 * this.duration * 60) / bpm;
+    const duration = (1000 * this.duration * 60) / this.bpm;
     await sleep(duration);
   }
 }

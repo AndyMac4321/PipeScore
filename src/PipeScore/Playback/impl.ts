@@ -178,7 +178,7 @@ function expandRepeats(
     const measure = measures[measureIndex];
 
     // Add measure to output
-    output.push(new PlaybackMeasure([], false, false));
+    output.push(new PlaybackMeasure([], false, false, measure.bpm));
 
     for (let partIndex = 0; partIndex < measure.parts.length; partIndex++) {
       const part = measure.parts[partIndex];
@@ -278,7 +278,9 @@ function collapsePitches(measures: SoundedMeasure[]): SoundedMeasure[] {
         if (pitch instanceof SoundedPitch) {
           if (lastPitches[i] && pitch.pitch === lastPitches[i].pitch) {
             lastPitches[i].durationIncludingTies += pitch.duration;
-            newPart.push(new SoundedSilence(pitch.duration, pitch.id));
+            newPart.push(
+              new SoundedSilence(pitch.duration, pitch.id, pitch.bpm)
+            );
           } else {
             newPart.push(pitch);
             lastPitches[i] = pitch;
@@ -317,7 +319,7 @@ function getSoundedPitches(
               e.duration -
               (settings.suppressGraceNotes ? 0 : currentGracenoteDuration);
             soundedPart.push(
-              new SoundedPitch(e.pitch, duration, ctx, currentID)
+              new SoundedPitch(e.pitch, duration, ctx, currentID, measure.bpm)
             );
             currentGracenoteDuration = 0;
             break;
@@ -325,7 +327,13 @@ function getSoundedPitches(
           case 'gracenote': {
             if (!settings.suppressGraceNotes) {
               soundedPart.push(
-                new SoundedPitch(e.pitch, gracenoteDuration, ctx, currentID)
+                new SoundedPitch(
+                  e.pitch,
+                  gracenoteDuration,
+                  ctx,
+                  currentID,
+                  measure.bpm
+                )
               );
             }
             currentGracenoteDuration += gracenoteDuration;
@@ -374,7 +382,16 @@ export async function playback(
     return;
   document.body.classList.remove('loading');
 
-  await playPitches(state, measures, timings, context, start, end, loop);
+  await playPitches(
+    state,
+    measures,
+    timings,
+    context,
+    start,
+    end,
+    loop,
+    tick.bpmChange
+  );
 
   tick.stop();
   drone.stop();
@@ -433,9 +450,10 @@ async function playAttack(
       leadInDuration = measures[measureIndex].lengthOfMainPart();
       let silent2Beats = new SoundedSilence(
         2 - (leadInDuration > 1 ? 0 : leadInDuration),
-        null
+        null,
+        measures[0].bpm
       );
-      await silent2Beats.play(settings.bpm, true);
+      await silent2Beats.play(true);
       break;
     }
   }
@@ -463,15 +481,15 @@ async function quickAttack(
 ): Promise<boolean> {
   const snare = new Snare(context);
   const leadInDuration = measures[0].lengthOfMainPart();
-  const silent2Beats = new SoundedSilence(2, null);
+  const silent2Beats = new SoundedSilence(2, null, measures[0].bpm);
   //Pipe Major Calls 1,2
-  await silent2Beats.play(settings.bpm, false);
+  await silent2Beats.play(false);
   if (state.userPressedStop) return true;
   //1 ,2 - Drum Roll
   await snare.Roll(2, true);
   if (state.userPressedStop) return true;
   //3, 4 - Right hand on bag
-  await silent2Beats.play(settings.bpm, false);
+  await silent2Beats.play(false);
   if (state.userPressedStop) return true;
   //5 , 6 - 2nd Drum Roll
   //5 - Strike in Drones
@@ -486,14 +504,15 @@ async function quickAttack(
       Pitch.E,
       2 - (leadInDuration > 1 ? 0 : leadInDuration), // assumption here is lead in is never more than 1 beat
       context,
-      null
+      null,
+      measures[0].bpm
     );
-    await pitchEIntro.play(settings.bpm, false);
+    await pitchEIntro.play(false);
   } else {
     // Metronome has silence
     await sleep(
       ((2 - (leadInDuration > 1 ? 0 : leadInDuration)) * 1000 * 60) /
-        settings.bpm
+        measures[0].bpm
     );
   }
 
@@ -514,9 +533,9 @@ async function slowAttack(
 ): Promise<boolean> {
   const snare = new Snare(context);
   const leadInDuration = measures[0].lengthOfMainPart();
-  const silent2Beats = new SoundedSilence(2, null);
+  const silent2Beats = new SoundedSilence(2, null, measures[0].bpm);
   //Pipe Major Calls 1,2
-  await silent2Beats.play(settings.bpm, false);
+  await silent2Beats.play(false);
   if (state.userPressedStop) return true;
   //1 , 2 - Drum Roll
   //2 - Right hand on bag
@@ -528,7 +547,8 @@ async function slowAttack(
   if (drone != undefined) drone.start();
   // assumption here is lead is never more than 1 beat
   await sleep(
-    ((2 - (leadInDuration > 1 ? 0 : leadInDuration)) * 1000 * 60) / settings.bpm
+    ((2 - (leadInDuration > 1 ? 0 : leadInDuration)) * 1000 * 60) /
+      measures[0].bpm
   );
   if (state.userPressedStop) return true;
   return false;
@@ -541,7 +561,8 @@ async function playPitches(
   context: AudioContext,
   start: ID | null,
   end: ID | null,
-  loop: boolean
+  loop: boolean,
+  onBPMChange: (bpm: number) => void
 ) {
   const measuresToPlay = getSoundedPitches(
     measures,
@@ -562,18 +583,22 @@ async function playPitches(
   }
 
   let stopped = false;
-
+  let currentBPM = 0;
   playing: do {
     for (const measure of measuresToPlay) {
       await Promise.all(
         measure.parts.map(async (pitchlist, i) => {
           for (const pitch of pitchlist) {
+            if (currentBPM != pitch.bpm) {
+              currentBPM = pitch.bpm;
+              if (onBPMChange) onBPMChange(currentBPM);
+            }
             if (state.userPressedStop || stopped) {
               stopped = true;
               return;
             }
 
-            await pitch.play(settings.bpm, i !== 0);
+            await pitch.play(i !== 0);
           }
         })
       );

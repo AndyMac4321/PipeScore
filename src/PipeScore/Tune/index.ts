@@ -33,4 +33,6 @@ export abstract class ITune {
   abstract deleteStave(stave: IStave): void;
   abstract nextStave(stave: IStave): IStave | null;
   abstract previousStave(stave: IStave): IStave | null;
+  abstract setBPM(bpm: number): void;
+  abstract BPM(): number | null;
 }

@@ -40,7 +40,10 @@ export abstract class IMeasure {
   abstract timeSignature(): ITimeSignature;
   abstract setTimeSignature(ts: ITimeSignature): void;
   abstract adjustWidth(ratio: number): void;
-  abstract play(previousMeasure: IMeasure | null): PlaybackMeasure;
+  abstract play(
+    previousMeasure: IMeasure | null,
+    bpm: number | null | undefined
+  ): PlaybackMeasure;
 }
 
 // Replaces timeSignature with newTimeSignature.
