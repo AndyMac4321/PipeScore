@@ -591,7 +591,7 @@ async function playPitches(
           for (const pitch of pitchlist) {
             if (currentBPM != pitch.bpm) {
               currentBPM = pitch.bpm;
-              if (onBPMChange) onBPMChange(currentBPM);
+              //if (onBPMChange) onBPMChange(currentBPM);
             }
             if (state.userPressedStop || stopped) {
               stopped = true;
