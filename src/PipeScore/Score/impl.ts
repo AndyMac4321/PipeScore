@@ -223,7 +223,7 @@ export class Score extends IScore {
       this._tunes.push(newTune);
     }
   }
-
+  
   deleteTune(tune: ITune) {
     const index = this._tunes.indexOf(tune);
     if (index !== -1) {
