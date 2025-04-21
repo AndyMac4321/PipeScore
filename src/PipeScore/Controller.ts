@@ -49,6 +49,7 @@ const state: State = {
     beatIndicator: false,
     loading: true,
     cursor: null,
+    currentBPM: 80,
   },
   menu: 'note',
   doc: { show: true, current: null },
@@ -175,6 +176,10 @@ function redraw() {
             ? state.selection.tune(state.score)
             : null,
         firstTune: state.score.tunes()[0] || null,
+        currentTune:
+            state.selection instanceof ScoreSelection
+              ? state.selection.tune(state.score)
+              : state.score.tunes()[0]|| null,
         docs: state.doc.show
           ? helpText(state.doc.current || 'nothing-hovered')
           : null,

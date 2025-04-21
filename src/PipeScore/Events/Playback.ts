@@ -17,6 +17,7 @@
 import { playback, playMetronome } from '../Playback/impl';
 import { ScoreSelection } from '../Selection/score';
 import type { State } from '../State';
+import { ITune } from '../Tune';
 import { Attack } from '../global/attack';
 import type { ID } from '../global/id';
 import type { Instrument } from '../global/instrument';
@@ -78,9 +79,18 @@ export function stopPlayback(): ScoreEvent {
 }
 
 export function setPlaybackBpm(bpm: number): ScoreEvent {
-  return async () => {
-    settings.bpm = bpm;
-    return Update.ShouldSave;
+  return async (state: State ) => {
+    let tune:ITune|undefined = undefined;
+    if (state.selection instanceof ScoreSelection) 
+      tune = state.score.location(state.selection.start())?.tune;
+    else
+      tune = state.score.tunes()[0];
+    if(tune?.BPM()!=bpm)
+    {
+      tune?.setBPM(bpm);
+      return Update.ViewChanged;
+    }
+    return Update.NoChange;
   };
 }
 

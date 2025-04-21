@@ -24,4 +24,5 @@ export type PlaybackState = {
   loading: boolean;
   // Location of playback cursor
   cursor: ID | null;
+  currentBPM: number;
 };

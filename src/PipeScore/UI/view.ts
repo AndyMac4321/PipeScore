@@ -133,6 +133,7 @@ export interface UIState {
   selectedText: IMovableTextBox | null;
   selectedTiming: ITiming | null;
   firstTune: ITune | null;
+  currentTune: ITune | null;
   showingPageNumbers: boolean;
   preview: IPreview | null;
   isLandscape: boolean;
@@ -1018,7 +1019,7 @@ export default function render(state: UIState): m.Children {
                 min: '30',
                 max: '150',
                 step: '1',
-                value: settings.bpm,
+                value: state.currentTune?.BPM,
                 oninput: (e: InputEvent) =>
                   state.dispatch(
                     setPlaybackBpm(
@@ -1030,7 +1031,7 @@ export default function render(state: UIState): m.Children {
             m('label',
               m('input#playback-bpm', {
                 type: 'number',
-                value: settings.bpm,
+                value: state.currentTune?.BPM,
                 oninput: (e: InputEvent) =>
                   state.dispatch(
                     setPlaybackBpm(

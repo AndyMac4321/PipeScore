@@ -24,6 +24,7 @@ import { settings } from '../global/settings';
 import { sleep } from '../global/utils';
 import { Sample } from './audio';
 import { getInstrumentResources, pitchToAudioResource } from './resources';
+import { PlaybackState } from './state';
 
 /**
  * Drone playback.
@@ -66,18 +67,11 @@ export class Drone {
 export class Tick {
   private sample: Sample;
   private stopped = false;
-  private bpm: number;
-  constructor(context: AudioContext) {
+  private playbackState:PlaybackState;
+  constructor(context: AudioContext, state: PlaybackState) {
     const tick = getInstrumentResources().tick;
     this.sample = tick && new Sample(tick, context);
-    this.bpm = 0;
-  }
-  /**
-   * Update the BPM when it changes in Pitch Playback
-   * @param bpm
-   */
-  public bpmChange(bpm: number): void {
-    this.bpm = bpm;
+    this.playbackState = state;
   }
   /**
    * Start the metronome tick, looping forever until .stop() is called.
@@ -87,7 +81,7 @@ export class Tick {
     const beatIndicatorDuration = 200; // duration of beat indicator on UI in ms
     const tickLeadInDuration = 150; // Aligns the centre of the audio tick to the beat indicator in ms
     while (!this.stopped) {
-      const duration = (1000 * 60) / this.bpm;
+      const duration = (1000 * 60) / this.playbackState.currentBPM;
       this.sample.start(1);
       await sleep(tickLeadInDuration);
       if (this.stopped) break;

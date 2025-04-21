@@ -377,7 +377,7 @@ export async function playback(
   document.body.classList.add('loading');
 
   const drone = new Drone(context);
-  const tick = new Tick(context);
+  const tick = new Tick(context,state);
   if (await playAttack(state, drone, measures, context, tick, false, start))
     return;
   document.body.classList.remove('loading');
@@ -390,7 +390,6 @@ export async function playback(
     start,
     end,
     loop,
-    tick.bpmChange
   );
 
   tick.stop();
@@ -562,7 +561,6 @@ async function playPitches(
   start: ID | null,
   end: ID | null,
   loop: boolean,
-  onBPMChange: (bpm: number) => void
 ) {
   const measuresToPlay = getSoundedPitches(
     measures,
@@ -589,9 +587,8 @@ async function playPitches(
       await Promise.all(
         measure.parts.map(async (pitchlist, i) => {
           for (const pitch of pitchlist) {
-            if (currentBPM != pitch.bpm) {
-              currentBPM = pitch.bpm;
-              //if (onBPMChange) onBPMChange(currentBPM);
+            if (state.currentBPM != pitch.bpm) {
+              state.currentBPM = pitch.bpm;
             }
             if (state.userPressedStop || stopped) {
               stopped = true;
@@ -619,7 +616,7 @@ export async function playMetronome(
   if (state.playing || state.loading) return;
 
   const context = new AudioContext();
-  const tick = new Tick(context);
+  const tick = new Tick(context,state);
   state.playingMetronome = true;
 
   if (
