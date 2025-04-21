@@ -122,10 +122,10 @@ export class Snare {
   /**
    * Play the snare roll and tap for duration in ms.
    */
-  async Roll(count: number, hasEndTap: boolean) {
+  async Roll(count: number, hasEndTap: boolean, bpm :number) {
     const tapDuration: number = 285;
     const rollDuration: number =
-      (count * 1000 * 60) / settings.bpm - (hasEndTap ? tapDuration : 0);
+      (count * 1000 * 60) / bpm - (hasEndTap ? tapDuration : 0);
     this.sample.start(0.5);
     await sleep(rollDuration);
     this.sample.stop();

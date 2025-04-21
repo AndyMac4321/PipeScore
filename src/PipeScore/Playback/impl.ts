@@ -377,20 +377,12 @@ export async function playback(
   document.body.classList.add('loading');
 
   const drone = new Drone(context);
-  const tick = new Tick(context,state);
+  const tick = new Tick(context, state);
   if (await playAttack(state, drone, measures, context, tick, false, start))
     return;
   document.body.classList.remove('loading');
 
-  await playPitches(
-    state,
-    measures,
-    timings,
-    context,
-    start,
-    end,
-    loop,
-  );
+  await playPitches(state, measures, timings, context, start, end, loop);
 
   tick.stop();
   drone.stop();
@@ -480,12 +472,13 @@ async function quickAttack(
 ): Promise<boolean> {
   const snare = new Snare(context);
   const leadInDuration = measures[0].lengthOfMainPart();
-  const silent2Beats = new SoundedSilence(2, null, measures[0].bpm);
+  const bpm: number = measures[0].bpm;
+  const silent2Beats = new SoundedSilence(2, null, bpm);
   //Pipe Major Calls 1,2
   await silent2Beats.play(false);
   if (state.userPressedStop) return true;
   //1 ,2 - Drum Roll
-  await snare.Roll(2, true);
+  await snare.Roll(2, true, bpm);
   if (state.userPressedStop) return true;
   //3, 4 - Right hand on bag
   await silent2Beats.play(false);
@@ -493,7 +486,7 @@ async function quickAttack(
   //5 , 6 - 2nd Drum Roll
   //5 - Strike in Drones
   if (drone != undefined) drone.start();
-  await snare.Roll(2, true);
+  await snare.Roll(2, true, bpm);
   if (state.userPressedStop) return true;
   // 7 Start Chanter (intro E)
   // 8 Start Tune if it has 1 beat of lead in
@@ -504,7 +497,7 @@ async function quickAttack(
       2 - (leadInDuration > 1 ? 0 : leadInDuration), // assumption here is lead in is never more than 1 beat
       context,
       null,
-      measures[0].bpm
+      bpm
     );
     await pitchEIntro.play(false);
   } else {
@@ -532,13 +525,14 @@ async function slowAttack(
 ): Promise<boolean> {
   const snare = new Snare(context);
   const leadInDuration = measures[0].lengthOfMainPart();
-  const silent2Beats = new SoundedSilence(2, null, measures[0].bpm);
+  const bpm: number = measures[0].bpm;
+  const silent2Beats = new SoundedSilence(2, null, bpm);
   //Pipe Major Calls 1,2
   await silent2Beats.play(false);
   if (state.userPressedStop) return true;
   //1 , 2 - Drum Roll
   //2 - Right hand on bag
-  await snare.Roll(2, true);
+  await snare.Roll(2, true, bpm);
   if (state.userPressedStop) return true;
   //3 - Strike in Drones
   //4 - Start Tune if it has 1 beat of lead in (No E intro)
@@ -546,8 +540,7 @@ async function slowAttack(
   if (drone != undefined) drone.start();
   // assumption here is lead is never more than 1 beat
   await sleep(
-    ((2 - (leadInDuration > 1 ? 0 : leadInDuration)) * 1000 * 60) /
-      measures[0].bpm
+    ((2 - (leadInDuration > 1 ? 0 : leadInDuration)) * 1000 * 60) / bpm
   );
   if (state.userPressedStop) return true;
   return false;
@@ -560,7 +553,7 @@ async function playPitches(
   context: AudioContext,
   start: ID | null,
   end: ID | null,
-  loop: boolean,
+  loop: boolean
 ) {
   const measuresToPlay = getSoundedPitches(
     measures,
@@ -616,7 +609,7 @@ export async function playMetronome(
   if (state.playing || state.loading) return;
 
   const context = new AudioContext();
-  const tick = new Tick(context,state);
+  const tick = new Tick(context, state);
   state.playingMetronome = true;
 
   if (

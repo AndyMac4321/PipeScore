@@ -205,7 +205,7 @@ export type SavedTiming =
     };
 
 export type SavedSettings = {
-  bpm: number;
+  // bpm: number; // Deprecated BPM is now in Tune.
   staveGap: number;
   lineGap: number;
   harmonyGap: number;

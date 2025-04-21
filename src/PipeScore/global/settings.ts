@@ -33,7 +33,7 @@ export class Settings {
   pageLongSideLength = a4LongSide * 5;
   pageShortSideLength = a4ShortSide * 5;
   gapAfterGracenote = 7;
-  bpm = 80;
+  //bpm = 80; // Deprecated BPM is now in Tune.
   instrument = Instrument.GHB;
   attack = Attack.Off;
   metronomeDuringPlayback = false;
@@ -49,7 +49,7 @@ export class Settings {
     this.lineGap = o.lineGap;
     this.margin = o.margin;
     this.harmonyGap = o.harmonyGap || Settings.defaultHarmonyGap;
-    this.bpm = o.bpm || 80;
+    //this.bpm = o.bpm || 80; // Deprecated BPM is now in Tune.
     this.gapAfterGracenote = o.gapAfterGracenote || 7;
     this.harmonyVolume = o.harmonyVolume || Settings.defaultHarmonyVolume;
     this.instrument = parseInstrument(o.instrument) || Instrument.GHB;
@@ -62,7 +62,7 @@ export class Settings {
       lineGap: this.lineGap,
       harmonyGap: this.harmonyGap,
       margin: this.margin,
-      bpm: this.bpm,
+      //bpm: this.bpm, // Deprecated BPM is now in Tune.
       gapAfterGracenote: this.gapAfterGracenote,
       harmonyVolume: this.harmonyVolume,
       instrument: instrumentToString(this.instrument),

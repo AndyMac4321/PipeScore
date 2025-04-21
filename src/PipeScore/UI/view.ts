@@ -1019,7 +1019,7 @@ export default function render(state: UIState): m.Children {
                 min: '30',
                 max: '150',
                 step: '1',
-                value: state.currentTune?.BPM,
+                value: state.currentTune?.BPM(),
                 oninput: (e: InputEvent) =>
                   state.dispatch(
                     setPlaybackBpm(
@@ -1031,7 +1031,7 @@ export default function render(state: UIState): m.Children {
             m('label',
               m('input#playback-bpm', {
                 type: 'number',
-                value: state.currentTune?.BPM,
+                value: state.currentTune?.BPM(),
                 oninput: (e: InputEvent) =>
                   state.dispatch(
                     setPlaybackBpm(
@@ -1584,10 +1584,10 @@ function mobileView(state: UIState): m.Children {
             min: '30',
             max: '150',
             step: '1',
-            value: settings.bpm,
+            value: state.currentTune?.BPM(),
             oninput: (e: InputEvent) =>
               state.dispatch(
-                setHarmonyVolume(
+                setPlaybackBpm(
                   Number.parseInt((e.target as HTMLInputElement).value)
                 )
               ),
@@ -1597,10 +1597,10 @@ function mobileView(state: UIState): m.Children {
             m('label#playback-speed-label', [
               m('input#playback-bpm', {
                 type: 'number',
-                value: settings.bpm,
+                value: state.currentTune?.BPM(),
                 oninput: (e: InputEvent) =>
                   state.dispatch(
-                    setHarmonyVolume(
+                    setPlaybackBpm(
                       Number.parseInt((e.target as HTMLInputElement).value)
                     )
                   ),
