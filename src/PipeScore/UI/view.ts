@@ -1593,7 +1593,7 @@ function mobileView(state: UIState): m.Children {
               value: settings.bpm,
               oninput: (e: InputEvent) =>
                 state.dispatch(
-                  setHarmonyVolume(
+                  setPlaybackBpm(
                     Number.parseInt((e.target as HTMLInputElement).value)
                   )
                 ),
