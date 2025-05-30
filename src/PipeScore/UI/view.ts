@@ -1508,7 +1508,9 @@ function mobileView(state: UIState): m.Children {
         m('section', [
           m(
             'div.section-content',
-            { class: state.isPlaying ? 'stop-button' : 'play-button' },
+            { 
+              // class: state.isPlaying ? 'stop-button' : 'play-button' 
+            },
             [
               help(
                 state.isPlaying ? 'stop' : 'play',
@@ -1522,23 +1524,24 @@ function mobileView(state: UIState): m.Children {
                         ? startPlayback()
                         : startPlaybackAtSelection()
                     ),
-                  class: state.isPlaying ? 'stop-button' : 'play-button',
+                    class: state.isPlaying ? 'stop-button' : 'play-button',
                 }),
                 state.dispatch
               ),
             ]
           ),
         ]),
+        m('section', [
         m(
           'div.section-content',
           {
-            class: state.isPlayingMetronome
-              ? 'stop-metronome'
-              : 'play-metronome',
+            // class: state.isPlayingMetronome
+            //   ? 'stop-metronome'
+            //   : 'play-metronome',
           },
           [
             help(
-              state.isPlaying ? 'stop-metronome' : 'play-metronome',
+              state.isPlayingMetronome ? 'stop-metronome' : 'play-metronome',
               m('button', {
                 disabled: state.isPlaying,
                 onclick: () =>
@@ -1555,12 +1558,14 @@ function mobileView(state: UIState): m.Children {
             ),
           ]
         ),
+        ]),
+        m('section', [
         m(
           'div.section-content',
           {
-            class: state.beatIndicator
-              ? 'beat-indicator-on'
-              : 'beat-indicator-off',
+            // class: state.beatIndicator
+            //   ? 'beat-indicator-on'
+            //   : 'beat-indicator-off',
           },
           [
             help(
@@ -1577,37 +1582,56 @@ function mobileView(state: UIState): m.Children {
             ),
           ]
         ),
-        m('div.section-content', [
-          m('input', {
-            type: 'range',
-            min: '30',
-            max: '150',
-            step: '1',
-            value: settings.bpm,
-            oninput: (e: InputEvent) =>
-              state.dispatch(
-                setHarmonyVolume(
-                  Number.parseInt((e.target as HTMLInputElement).value)
-                )
-              ),
-          }),
-          help(
-            'playback-speed',
-            m('label#playback-speed-label', [
-              m('input#playback-bpm', {
-                type: 'number',
-                value: settings.bpm,
-                oninput: (e: InputEvent) =>
+        ]),
+        m('section', [
+          m('div.section-content.vertical', [
+            m('input', {
+              type: 'range',
+              min: '30',
+              max: '150',
+              step: '1',
+              value: settings.bpm,
+              oninput: (e: InputEvent) =>
+                state.dispatch(
+                  setHarmonyVolume(
+                    Number.parseInt((e.target as HTMLInputElement).value)
+                  )
+                ),
+            }),
+            help(
+              'playback-speed',
+              m('label#playback-speed-label', [
+                m('input#playback-bpm', {
+                  type: 'number',
+                  value: settings.bpm,
+                  oninput: (e: InputEvent) =>
+                    state.dispatch(
+                      setPlaybackBpm(
+                        Number.parseInt((e.target as HTMLInputElement).value)
+                      )
+                    ),
+                }),
+                'beats per minute',
+              ]),
+              state.dispatch
+            ),
+            m('label',
+              m('input', {
+                type: 'checkbox',
+                name: 'metronomeduringplayback',
+                disabled: state.isPlaying || state.isPlayingMetronome,
+                checked: settings.metronomeDuringPlayback,
+                onchange: (e: InputEvent) =>
                   state.dispatch(
-                    setHarmonyVolume(
-                      Number.parseInt((e.target as HTMLInputElement).value)
+                    updateMetronomeDuringPlayback(
+                      Boolean((e.target as HTMLInputElement).checked)
                     )
                   ),
+                value: '',
               }),
-              'beats per minute',
-            ]),
-            state.dispatch
-          ),
+              text('metronomeduringplayback')
+            ),
+          ]),
         ]),
         m('div.section-content', [
           m('div.section-content.vertical', [
@@ -1641,6 +1665,49 @@ function mobileView(state: UIState): m.Children {
             ),
           ]),
         ]),
+        m('section', [
+          m('div.section-content.vertical', [
+            m(
+              'label',
+              m('input', {
+                type: 'radio',
+                name: 'attack',
+                disabled: state.isPlaying || state.isPlayingMetronome,
+                checked: settings.attack === Attack.Off,
+                onchange: () => state.dispatch(updateAttack(Attack.Off)),
+                value: '',
+              }),
+              text('attackoff')
+            ),
+            m(
+              'label',
+              m('input', {
+                type: 'radio',
+                name: 'attack',
+                disabled: state.isPlaying || state.isPlayingMetronome,
+                checked: settings.attack === Attack.QuickMarchAttack,
+                onchange: () =>
+                  state.dispatch(updateAttack(Attack.QuickMarchAttack)),
+                value: '',
+              }),
+              text('attackquick')
+            ),
+            m(
+              'label',
+              m('input', {
+                type: 'radio',
+                name: 'attack',
+                disabled: state.isPlaying || state.isPlayingMetronome,
+                checked: settings.attack === Attack.SlowMarchAttack,
+                onchange: () =>
+                  state.dispatch(updateAttack(Attack.SlowMarchAttack)),
+                value: 'pc',
+              }),
+              text('attackslow')
+            ),
+          ]),
+        ]),
+
         m('div.section-content', [
           help(
             'export',
