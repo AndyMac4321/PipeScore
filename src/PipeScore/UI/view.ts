@@ -1301,7 +1301,11 @@ export default function render(state: UIState): m.Children {
     ]),
     m('section', [
       m('h2', text('playbackSettings')),
-      m('div.section-content', [setting('dotCutTimingAdjustment', text('dotCutTimingAdjustment'))]),
+            help(
+        'dot-cut-timing-adjustment-help',
+        m('div.section-content', [setting('dotCutTimingAdjustment', text('dotCutTimingAdjustment'))]),
+        state.dispatch
+      ),
     ]),
   ];
 
