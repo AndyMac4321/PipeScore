@@ -149,6 +149,7 @@ export const FrenchDocumentation: Documentation = {
     "Survolez les différentes icônes pour afficher l'aide ici.",
   attackoptions:
     'Sélectionnez la méthode d’attaque pour le début d’un morceau.',
+  'dot-cut-timing-adjustment-help':'Adjust timing of Dot Cut notes as a percentage 0% is normal duration of the cut notes. 100% means the cut note will not play at all',
 };
 
 export const FrenchTextItems: TextItems = {
@@ -251,4 +252,6 @@ export const FrenchTextItems: TextItems = {
   attackslow: 'Attaque à marche lente',
   metronomeduringplayback: 'Metronome',
   suppressgracenotes: 'Suppress grace notes',
+  playbackSettings:'Playback',
+  dotCutTimingAdjustment:"Dot Cut Timing",
 };

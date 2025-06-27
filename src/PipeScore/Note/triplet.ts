@@ -111,7 +111,7 @@ export class Triplet extends ITriplet {
           .gracenote()
           .play(n.pitch(), i === 0 ? previous : this._notes[i - 1].pitch()),
         ...playbackObject(n.id, [
-          playbackNote(n.pitch(), (2 / 3) * n.length().inBeats(), n.isTied()),
+          playbackNote(n.pitch(), (2 / 3) * n.length().inBeats(null,null), n.isTied()),
         ]),
       ])
     );

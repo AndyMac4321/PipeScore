@@ -15,7 +15,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { IBar } from '.';
-import type { IMeasure } from '../Measure';
+import { nextNote, type IMeasure } from '../Measure';
 import {
   type INote,
   ITriplet,
@@ -194,7 +194,11 @@ export class Bar extends IBar {
           .play(
             i === 0
               ? previous?.lastPitch() || null
-              : lastNote(this.notesAndTriplets()[i - 1]).pitch()
+              : lastNote(this.notesAndTriplets()[i - 1]).pitch(),
+            i === 0
+              ? null
+              : lastNote(this.notesAndTriplets()[i - 1]),
+            lastNote(this.notesAndTriplets()[i + 1])
           )
           .map((p) =>
             p.type === 'note'

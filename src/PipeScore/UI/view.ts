@@ -1299,6 +1299,10 @@ export default function render(state: UIState): m.Children {
         ]),
       ]),
     ]),
+    m('section', [
+      m('h2', text('playbackSettings')),
+      m('div.section-content', [setting('dotCutTimingAdjustment', text('dotCutTimingAdjustment'))]),
+    ]),
   ];
 
   const menuMap: Record<Menu, m.Children[]> = {

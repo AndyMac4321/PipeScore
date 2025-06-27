@@ -214,6 +214,7 @@ export type SavedSettings = {
   instrument: string;
   attack: string;
   metronomeDuringPlayback : Boolean;
+  DotCutTimingAdjustment : number;
 };
 
 export type DeprecatedSavedNoteOrTriplet =

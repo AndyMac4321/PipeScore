@@ -14,6 +14,9 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { INote } from ".";
+import { settings, Settings } from "../global/settings";
+
 export enum Duration {
   Semibreve = 'sb',
   DottedMinim = 'dm',
@@ -84,7 +87,7 @@ export class NoteLength {
     }
   }
 
-  inBeats() {
+  inBeats(noteBefore :INote|null,noteAfter :INote|null ) {
     switch (this._duration) {
       case Duration.Semibreve:
         return 4;
@@ -97,17 +100,37 @@ export class NoteLength {
       case Duration.Crotchet:
         return 1;
       case Duration.DottedQuaver:
-        return 0.75;
+        var dotDuration :number =0;
+        if(noteAfter?.length()._duration=='sq')
+          dotDuration = .25 * (settings.dotCutTimingAdjustment/100);
+        if(noteBefore?.length()._duration=='sq')
+          dotDuration = .25 * (settings.dotCutTimingAdjustment/100);
+        return 0.75 + dotDuration;
       case Duration.Quaver:
         return 0.5;
       case Duration.DottedSemiQuaver:
-        return 0.375;
+        var semiDotDuration :number =0;
+        if(noteAfter?.length()._duration=='ssq')
+          semiDotDuration = .125 * (settings.dotCutTimingAdjustment/100);
+        if(noteBefore?.length()._duration=='ssq')
+          semiDotDuration = .125 * (settings.dotCutTimingAdjustment/100);
+        return 0.375 + semiDotDuration;
       case Duration.SemiQuaver:
-        return 0.25;
+        var cutDuration :number =0;
+        if(noteAfter?.length()._duration=='dq')
+          cutDuration = .25 * (settings.dotCutTimingAdjustment/100);
+        if(noteBefore?.length()._duration=='dq')
+          cutDuration = .25 * (settings.dotCutTimingAdjustment/100);
+        return 0.25 - cutDuration;
       case Duration.DottedDemiSemiQuaver:
         return 0.1875;
       case Duration.DemiSemiQuaver:
-        return 0.125;
+        var demiSemiCutDuration :number =0;
+        if(noteAfter?.length()._duration=='dsq')
+          demiSemiCutDuration = .125 * (settings.dotCutTimingAdjustment/100);
+        if(noteBefore?.length()._duration=='dsq')
+          demiSemiCutDuration = .125 * (settings.dotCutTimingAdjustment/100);
+        return 0.125 - demiSemiCutDuration;
       case Duration.DottedHemiDemiSemiQuaver:
         return 0.9375;
       case Duration.HemiDemiSemiQuaver:
@@ -139,11 +162,11 @@ export class NoteLength {
   }
 
   hasBeam() {
-    return this.inBeats() < 1;
+    return this.inBeats(null,null) < 1;
   }
 
   isFilled() {
-    return this.inBeats() < 2;
+    return this.inBeats(null,null) < 2;
   }
 
   hasStem() {

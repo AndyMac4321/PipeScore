@@ -38,11 +38,13 @@ export class Settings {
   attack = Attack.Off;
   metronomeDuringPlayback = false;
   suppressGraceNotes = false;
+  dotCutTimingAdjustment = Settings.defaultDotCutTimingAdjustment;
 
   static defaultStaveGap = 65;
   static defaultHarmonyGap = 50;
   static defaultTuneGap = 100;
   static defaultHarmonyVolume = 0.5;
+  static defaultDotCutTimingAdjustment = 40;
 
   fromJSON(o: SavedSettings) {
     this.staveGap = o.staveGap;
@@ -55,6 +57,7 @@ export class Settings {
     this.instrument = parseInstrument(o.instrument) || Instrument.GHB;
     this.attack = parseAttack(o.attack) || Attack.Off;
     this.metronomeDuringPlayback = Boolean(o.metronomeDuringPlayback);
+    this.dotCutTimingAdjustment;
   }
   toJSON(): SavedSettings {
     return {
@@ -68,6 +71,7 @@ export class Settings {
       instrument: instrumentToString(this.instrument),
       attack: attackToString(this.attack),
       metronomeDuringPlayback : Boolean(this.metronomeDuringPlayback),
+      DotCutTimingAdjustment :this.dotCutTimingAdjustment,
     };
   }
   validate<T extends keyof Settings>(key: T, value: number) {
@@ -80,6 +84,8 @@ export class Settings {
         return Math.max(value, this.lineHeightOf(5));
       case 'margin':
         return clamp(value, 0, 300);
+      case 'dotCutTimingAdjustment':
+        return clamp(value, 0, 100);
       default:
         return false;
     }

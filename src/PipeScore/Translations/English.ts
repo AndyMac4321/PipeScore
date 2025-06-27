@@ -141,6 +141,7 @@ export const EnglishDocumentation: Documentation = {
     'Move the currently selected bar to the start of the next stave. This only applies if you are currently selecting the last bar of a stave.',
   'nothing-hovered': 'Hover over different icons to view Help here.',
   attackoptions: 'Select the method of attack for the beginning of a tune.',
+  'dot-cut-timing-adjustment-help':'Adjust timing of Dot Cut notes as a percentage 0% is normal duration of the cut notes. 100% means the cut note will not play at all',
 };
 
 export const EnglishTextItems: TextItems = {
@@ -243,4 +244,6 @@ export const EnglishTextItems: TextItems = {
   attackslow: 'Slow march attack',
   metronomeduringplayback: 'Metronome',
   suppressgracenotes: 'Suppress grace notes',
+  playbackSettings:'Playback',
+  dotCutTimingAdjustment:"Dot Cut Timing",
 };

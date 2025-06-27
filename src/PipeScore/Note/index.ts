@@ -55,7 +55,7 @@ export abstract class INote
   abstract setGracenote(gracenote: IGracenote): void;
   abstract addSingleGracenote(grace: Pitch, previous: INote | null): void;
   abstract replaceGracenote(g: IGracenote, n: IGracenote | null): void;
-  abstract play(pitchBefore: Pitch | null): PlaybackItem[];
+  abstract play(pitchBefore: Pitch | null,noteBefore :INote|null,noteAfter :INote|null ): PlaybackItem[];
 }
 
 // TODO : must we extend Item here?
@@ -128,7 +128,7 @@ export function groupNotes(
       currentGroup.push(note);
       endGroup();
     }
-    remainingLength -= note.length().inBeats();
+    remainingLength -= note.length().inBeats(null,null);
   }
 
   for (const note of notes) {
@@ -137,7 +137,7 @@ export function groupNotes(
       groupedNotes.push(note);
       remainingLength = findLengthOfGroup(++i);
     } else {
-      if (remainingLength >= note.length().inBeats()) {
+      if (remainingLength >= note.length().inBeats(null,null)) {
         pushNote(note);
       } else {
         endGroup();

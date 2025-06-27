@@ -102,6 +102,7 @@ export type Documentation = {
   'nothing-hovered': string;
   attackoptions: string;
   beatindicator: string;
+  'dot-cut-timing-adjustment-help': string;
 };
 
 export type TextItems = {
@@ -204,4 +205,5 @@ export type TextItems = {
   attackslow: string;
   metronomeduringplayback: string;
   suppressgracenotes: string;
+  playbackSettings:string;
 };

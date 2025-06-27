@@ -221,10 +221,10 @@ export class Note extends INote {
     if (this._gracenote === g) this._gracenote = n || new NoGracenote();
   }
 
-  play(pitchBefore: Pitch | null): PlaybackItem[] {
+  play(pitchBefore: Pitch | null,noteBefore :INote|null,noteAfter :INote|null ): PlaybackItem[] {
     return playbackObject(this.id, [
       ...this.gracenote().play(this._pitch, pitchBefore),
-      playbackNote(this._pitch, this._length.inBeats(), this.tied),
+      playbackNote(this._pitch, this._length.inBeats(noteBefore,noteAfter), this.tied),
     ]);
   }
 }
