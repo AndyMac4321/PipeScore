@@ -254,4 +254,5 @@ export const FrenchTextItems: TextItems = {
   suppressgracenotes: 'Suppress grace notes',
   playbackSettings:'Playback',
   dotCutTimingAdjustment:"Dot Cut Timing",
+  metronomeplaybackdoubletime:'Double time',
 };

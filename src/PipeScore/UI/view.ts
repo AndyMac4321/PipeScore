@@ -65,6 +65,7 @@ import {
   updateInstrument,
   updateMetronomeDuringPlayback,
   updateSuppressGraceNotes,
+  updateMetronomePlaybackDoubleTime,
 } from '../Events/Playback';
 import { copy, deleteSelection, paste } from '../Events/Selection';
 import {
@@ -1095,6 +1096,23 @@ export default function render(state: UIState): m.Children {
               }),
               text('metronomeduringplayback')
             ),
+            m(
+              'label',
+              m('input', {
+                type: 'checkbox',
+                name: 'metronomeplaybackdoubletime',
+                disabled: state.isPlaying || state.isPlayingMetronome,
+                checked: settings.metronomePlaybackDoubleTime,
+                onchange: (e: InputEvent) =>
+                  state.dispatch(
+                    updateMetronomePlaybackDoubleTime(
+                      Boolean((e.target as HTMLInputElement).checked)
+                    )
+                  ),
+                value: '',
+              }),
+              text('metronomeplaybackdoubletime')
+            ),
           ]),
           state.dispatch
         ),
@@ -1638,6 +1656,23 @@ function mobileView(state: UIState): m.Children {
                 value: '',
               }),
               text('metronomeduringplayback')
+            ),
+            m(
+              'label',
+              m('input', {
+                type: 'checkbox',
+                name: 'metronomeplaybackdoubletime',
+                disabled: state.isPlaying || state.isPlayingMetronome,
+                checked: settings.metronomePlaybackDoubleTime,
+                onchange: (e: InputEvent) =>
+                  state.dispatch(
+                    updateMetronomePlaybackDoubleTime(
+                      Boolean((e.target as HTMLInputElement).checked)
+                    )
+                  ),
+                value: '',
+              }),
+              text('metronomeplaybackdoubletime')
             ),
           ]),
         ]),

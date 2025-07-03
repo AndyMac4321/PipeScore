@@ -80,7 +80,8 @@ export class Tick {
     const beatIndicatorDuration = 200; // duration of beat indicator on UI in ms
     const tickLeadInDuration = 150; // Aligns the centre of the audio tick to the beat indicator in ms
     while (!this.stopped) {
-      const duration = (1000 * 60) / settings.bpm;
+      const bpm = settings.metronomePlaybackDoubleTime? settings.bpm*2 : settings.bpm;
+      const duration = (1000 * 60) / bpm;
       this.sample.start(1);
       await sleep(tickLeadInDuration);
       if (this.stopped) break;

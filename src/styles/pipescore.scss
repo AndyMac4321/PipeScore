@@ -127,8 +127,8 @@ input[type='range'] {
     display: flex;
     justify-content: space-between;
     background: lightskyblue;
-    padding: 1rem;
-    width: calc(100vw - 2rem);
+    padding: .0rem;
+    width: calc(100vw - .8rem);
     font-size: 0.8rem;
 
     #topbar-main {
@@ -137,8 +137,8 @@ input[type='range'] {
     #topbar-main {
       display: flex;
       align-items: stretch;
-      height: 5rem;
-      gap: 1rem;
+      height: 7rem;
+      gap: .125rem;
       padding: 0.4rem 0rem;
     }
 

@@ -156,3 +156,13 @@ export function updateSuppressGraceNotes(checked: boolean): ScoreEvent {
     return Update.NoChange;
   };
 }
+
+export function updateMetronomePlaybackDoubleTime(checked: boolean): ScoreEvent {
+  return async () => {
+    if (checked !== settings.metronomePlaybackDoubleTime) {
+      settings.metronomePlaybackDoubleTime = checked;
+      // Not saving this setting
+    }
+    return Update.NoChange;
+  };
+}

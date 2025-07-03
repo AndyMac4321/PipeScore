@@ -206,4 +206,6 @@ export type TextItems = {
   metronomeduringplayback: string;
   suppressgracenotes: string;
   playbackSettings:string;
+  dotCutTimingAdjustment:string;
+  metronomeplaybackdoubletime:string;
 };

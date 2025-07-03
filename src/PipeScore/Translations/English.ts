@@ -246,4 +246,5 @@ export const EnglishTextItems: TextItems = {
   suppressgracenotes: 'Suppress grace notes',
   playbackSettings:'Playback',
   dotCutTimingAdjustment:"Dot Cut Timing",
+  metronomeplaybackdoubletime:'Double time',
 };
