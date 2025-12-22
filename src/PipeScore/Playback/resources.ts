@@ -123,9 +123,13 @@ export function getInstrumentResources(): InstrumentResources {
  * @returns a promise which resolves when all resources are loaded
  */
 export async function loadAudioResources() {
+  await delay(5000);
   const context = new AudioContext();
   loadInstrumentResources(ghb, context);
   loadInstrumentResources(chanter, context);
+}
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**

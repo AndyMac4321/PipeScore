@@ -7,10 +7,12 @@
       name="description"
       content="PipeScore is a web-based bagpipe notation app."
     />
-    <title>$title$</title>
+    <title>Scores - PipeScore</title>
     <link rel="icon" href="/images/favicon.ico" />
     <link type="text/css" rel="stylesheet" href="styles/base.css" />
     <script src="dist/Base/base.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/scores.css" />
+    <script src="dist/Scores/scores.js"></script>
   </head>
   <body>
     <header>
@@ -29,6 +31,31 @@
         <li><a href="/COMHPB">City of Melbourne Highland Pipeband Music Library</a></li>  
       </ul>
     </header>
-    <main>$body$</main>
+    <main>
+<h1>Your Scores</h1>
+<div>
+  <p>
+    Please
+    <a href="/contact">report bugs that you find</a> and I will do my best to
+    fix them.
+  </p>
+  <p>If you run into issues, try the <a href="/help">help page</a>.</p>
+  <p>
+    PipeScore requires money to run! Consider <a href="/support">donating</a>.
+  </p>
+  <p>
+    Know another language? <a href="/translate">Help translate PipeScore</a>!
+  </p>
+</div>
+<div id="buttons">
+  <div id="horizontal-buttons">
+    <button id="new-score">New Score</button>
+    <button id="import-bww">Import BWW File</button>
+    <button id="upload">Import PipeScore File</button>
+    <button id="sign-out">Sign Out</button>
+  </div>
+</div>
+<section id="scores"></section>
+</main>
   </body>
 </html>

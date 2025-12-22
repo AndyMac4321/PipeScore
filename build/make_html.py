@@ -50,35 +50,40 @@ def parse_file(filename):
     return title, body, css, js
 
 
-def output_file(filename, text):
+def output_file(filename, shortfilename, text ):
     "Output text to file"
 
     with open(f"public/{filename}.html", "w+") as f:
         f.write(text)
+    with open(f"public/{shortfilename}.htm", "w+") as f:
+        f.write(text)
 
 
-def build(filename):
+def build(filename,shortfilename):
     "Parse, template, and output file to new location"
 
-    output_file(filename, reify_template(*parse_file(filename)))
+    output_file(filename, shortfilename, reify_template(*parse_file(filename)))
 
 
-def cp_file(filename):
+def cp_file(filename,shortfilename):
     "Copy a file straight from src/static to the public directory"
     if os.name == 'nt':  # Windows
         os.system(f'"copy src\\static\\{filename}.html public\\{filename}.html"')
+        os.system(f'"copy src\\static\\{filename}.html public\\{shortfilename}.htm"')
     else:  # Unix/Linux
         subprocess.run(["cp", f"src/static/{filename}.html", f"public/{filename}.html"])
+        subprocess.run(["cp", f"src/static/{filename}.html", f"public/{shortfilename}.htm"])
 
 
-build("index")
-build("login")
-build("scores")
-build("translate")
-build("importbww")
-build("support")
-build("404")
-build("contact")
-build("forgotpassword")
-cp_file("pipescore")
-cp_file("help")
+build("index","index")
+build("login","login")
+build("scores","scores")
+build("translate","translat")
+build("importbww","impbww")
+build("support","support")
+build("404","404")
+build("contact","contact")
+build("forgotpassword","forgtpwd")
+cp_file("pipescore","pipescre")
+cp_file("help","help")
+cp_file("comhpb","comhpb")
