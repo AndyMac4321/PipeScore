@@ -55,10 +55,13 @@ import {
 } from '../Events/Note';
 import {
   playbackLoopingSelection,
+  playbackSelectionStart,
+  playbackSelectionEnd,
   setHarmonyVolume,
   setPlaybackBpm,
   startPlayback,
   startPlaybackAtSelection,
+  
   startPlayMetronome,
   stopPlayback,
   updateAttack,
@@ -130,6 +133,7 @@ export interface UIState {
   selectedStaves: IStave[];
   selectedMeasures: IMeasure[];
   selectedNotes: INote[];
+  selectedNotesStart: INote[];
   selectedTune: ITune | null;
   selectedText: IMovableTextBox | null;
   selectedTiming: ITiming | null;
@@ -966,7 +970,7 @@ export default function render(state: UIState): m.Children {
         help(
           'play-looping-selection',
           m('button', {
-            disabled:
+            disabled: 
               state.isPlaying ||
               state.selectedNotes.length === 0 ||
               state.isPlayingMetronome,
@@ -1532,12 +1536,7 @@ function mobileView(state: UIState): m.Children {
       'div#ui',
       m('div#topbar', [
         m('section', [
-          m(
-            'div.section-content',
-            { 
-              // class: state.isPlaying ? 'stop-button' : 'play-button' 
-            },
-            [
+          m('div.section-content.vertical', [
               help(
                 state.isPlaying ? 'stop' : 'play',
                 m('button', {
@@ -1554,18 +1553,23 @@ function mobileView(state: UIState): m.Children {
                 }),
                 state.dispatch
               ),
+              help(
+                'play-start-of-selection',
+                m('button', {
+                  disabled: 
+                    state.isPlaying ||
+                    state.selectedNotesStart.length !== 0 ||
+                    state.isPlayingMetronome,
+                  onclick: () => state.dispatch(playbackSelectionStart()),
+                  class: 'play-startofselection',
+                }),
+                state.dispatch
+              ),
             ]
           ),
         ]),
         m('section', [
-        m(
-          'div.section-content',
-          {
-            // class: state.isPlayingMetronome
-            //   ? 'stop-metronome'
-            //   : 'play-metronome',
-          },
-          [
+          m('div.section-content.vertical', [
             help(
               state.isPlayingMetronome ? 'stop-metronome' : 'play-metronome',
               m('button', {
@@ -1582,18 +1586,23 @@ function mobileView(state: UIState): m.Children {
               }),
               state.dispatch
             ),
+            help(
+              'play-end-of-selection',
+              m('button', {
+                disabled: 
+                  state.isPlaying ||
+                  state.selectedNotesStart.length === 0 ||
+                  state.isPlayingMetronome,
+                onclick: () => state.dispatch(playbackSelectionEnd()),
+                class: 'play-endofselection',
+              }),
+              state.dispatch
+            ),
           ]
         ),
         ]),
         m('section', [
-        m(
-          'div.section-content',
-          {
-            // class: state.beatIndicator
-            //   ? 'beat-indicator-on'
-            //   : 'beat-indicator-off',
-          },
-          [
+          m('div.section-content.vertical', [
             help(
               'beatindicator',
               m('button', {
@@ -1603,6 +1612,18 @@ function mobileView(state: UIState): m.Children {
                 class: state.beatIndicator
                   ? 'beat-indicator-on'
                   : 'beat-indicator-off',
+              }),
+              state.dispatch
+            ),
+            help(
+              'play-looping-selection',
+              m('button', {
+                disabled: 
+                  state.isPlaying ||
+                  state.selectedNotes.length === 0 ||
+                  state.isPlayingMetronome,
+                onclick: () => state.dispatch(playbackLoopingSelection()),
+                class: 'play-loopedselection',
               }),
               state.dispatch
             ),

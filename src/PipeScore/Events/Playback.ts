@@ -66,6 +66,28 @@ export function playbackLoopingSelection(): ScoreEvent {
     return Update.NoChange;
   };
 }
+export function playbackSelectionStart(): ScoreEvent {
+  return async (state: State) => {
+    state.playback.selectedNotesStart= state.selection instanceof ScoreSelection
+                ? state.selection.notes(state.score)
+                : [];
+    return Update.NoChange;
+  }
+}
+export function playbackSelectionEnd(): ScoreEvent {
+  return async (state: State) => {
+    var end = state.selection instanceof ScoreSelection
+                ? state.selection.notes(state.score)
+                : [];
+    if(end.length!==0)
+    {
+      state.selection=ScoreSelection.from(state.playback.selectedNotesStart[0].id,end[0].id,false);
+      state.playback.selectedNotesStart=[];
+      return Update.ViewChanged;
+    }
+    return Update.NoChange;
+  };
+}
 
 export function stopPlayback(): ScoreEvent {
   return async (state: State) => {

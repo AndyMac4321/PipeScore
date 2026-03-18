@@ -39,7 +39,8 @@ export class Settings {
   metronomeDuringPlayback = false;
   suppressGraceNotes = false;
   dotCutTimingAdjustment = Settings.defaultDotCutTimingAdjustment;
-
+  metronomePlaybackDoubleTime =  false;
+  
   static defaultStaveGap = 65;
   static defaultHarmonyGap = 50;
   static defaultTuneGap = 100;

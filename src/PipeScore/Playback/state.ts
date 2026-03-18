@@ -15,6 +15,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import type { ID } from '../global/id';
+import { INote } from '../Note';
 
 export type PlaybackState = {
   userPressedStop: boolean;
@@ -24,4 +25,6 @@ export type PlaybackState = {
   loading: boolean;
   // Location of playback cursor
   cursor: ID | null;
+  selectedNotesStart: INote[];
+  
 };

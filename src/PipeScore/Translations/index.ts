@@ -82,6 +82,8 @@ export type Documentation = {
   play: string;
   'play-from-selection': string;
   'play-looping-selection': string;
+  'play-start-of-selection': string;
+  'play-end-of-selection': string;
   'play-metronome': string;
   'stop-metronome': string;
   stop: string;

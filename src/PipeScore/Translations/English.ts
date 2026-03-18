@@ -115,6 +115,8 @@ export const EnglishDocumentation: Documentation = {
     'Play a preview of the score, starting at the currently selected note/bar. This will only work once the samples are downloaded (if the samples need to download, you will see a notice).',
   'play-looping-selection':
     'Play the currently selected part of the score, repeating forever.',
+  'play-start-of-selection': 'Select starting note of looped selection and press this button',
+  'play-end-of-selection': 'Select ending note of looped selection and press this button',
   'play-metronome': 'Start the metronome',
   'stop-metronome': 'Stop the metronome',
   beatindicator: 'Displays the beat of the metronome',

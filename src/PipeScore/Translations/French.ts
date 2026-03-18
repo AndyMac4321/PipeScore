@@ -119,6 +119,9 @@ export const FrenchDocumentation: Documentation = {
     "Jouer un aperçu de la partition à partir de la note/mesure sélectionnée. Cela ne fonctionnera qu'une fois les échantillons téléchargés (si les échantillons doivent être téléchargés, vous verrez un avis).",
   'play-looping-selection':
     'Jouer la partie de la partition actuellement sélectionnée, en jouant en boucle.',
+  'play-start-of-selection': 'Select starting note of looped selection and press this button',
+  'play-end-of-selection': 'Select ending note of looped selection and press this button',
+
   'play-metronome': 'Démarrer le métronome',
   'stop-metronome': 'Arrêter le métronome',
   beatindicator: 'Affiche le battement du métronome',
