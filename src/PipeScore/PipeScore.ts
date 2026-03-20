@@ -24,7 +24,7 @@ import { Firestore } from './Firestore';
 import { keyHandler } from './KeyHandler';
 import { dipIfOnMobile } from './global/browser';
 
-const apiKey = 'AIzaSyDQXDp-MUDHHnjNg3LX-furdTZ2GSRcV2k';
+const apiKey = 'AIzaSyBa_TicvHYIJFphscfeBDGADo1Kwkq702w';
 
 function parsePath() {
   const path = window.location.pathname.split('/').slice(2);
@@ -38,7 +38,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('keydown', keyHandler);
 
   const auth = new Auth({ apiKey });
-  const db = new Database({ projectId: 'pipe-score', auth });
+  const db = new Database({ projectId: 'pipe-score-andy', auth });
   let alreadyStarted = false;
 
   onUserChange(auth, async (user) => {

@@ -20,7 +20,7 @@ import Auth from 'firebase-auth-lite';
 import { onUserChange } from '../auth-helper';
 
 // This can be safely public
-const apiToken = 'AIzaSyDQXDp-MUDHHnjNg3LX-furdTZ2GSRcV2k';
+const apiToken = 'AIzaSyBa_TicvHYIJFphscfeBDGADo1Kwkq702w';
 const auth = new Auth({ apiKey: apiToken });
 
 onUserChange(auth, (user) => {

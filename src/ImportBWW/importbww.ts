@@ -7,11 +7,11 @@ import { readFile } from '../common/file';
 import { parse } from './Parser';
 
 // This can be safely public
-const apiToken = 'AIzaSyDQXDp-MUDHHnjNg3LX-furdTZ2GSRcV2k';
+const apiToken = 'AIzaSyBa_TicvHYIJFphscfeBDGADo1Kwkq702w';
 
 const auth = new Auth({ apiKey: apiToken });
 
-const db = new Database({ projectId: 'pipe-score', auth });
+const db = new Database({ projectId: 'pipe-score-andy', auth });
 
 let user: string | null = null;
 onUserChange(auth, (newUser) => {
