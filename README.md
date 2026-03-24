@@ -93,6 +93,23 @@ Windows using VSCode try these alternate script commands in the Terminal Window
 $ npm run buildvscode # build JS, static pages and icons
 $ npm run watchvscode # rebuild JS on changes
 
+## Firestore
+
+Using spark plan configure a default database with single document named scores. Pipescore will populate the document structures automatically. 
+
+In Rules tab add the following rule to allow public READ access (for public sharing scores ) and WRITE access with associated userId.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /scores/{userId}/{document=**} {
+      //allow read, write: if request.time < timestamp.date(2026, 4, 20);
+      allow read: if true
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+
+
 ## Contributors
 
 Thank you to any and all who have contributed code to PipeScore!
