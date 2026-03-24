@@ -10,5 +10,8 @@ COPY ./public /app
 # Install the application dependencies
 RUN pip install -r requirements.txt 
 
+EXPOSE 8000/tcp
+
 # Define the entry point for the container
-CMD ["flask", "run", "--host=0.0.0.0:8000"]
+# CMD ["flask", "run", "--host=0.0.0.0:8000"]
+CMD ["python", "app.py", "runserver", "0.0.0.0:8000"]
