@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the project files
 COPY . .
-
+RUN ls /app/
 # Expose the server port
 EXPOSE 8080
 
