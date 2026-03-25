@@ -14,7 +14,7 @@
 import os.path
 import logging
 import re
-from flask import Flask, Response, send_from_directory
+from flask import Flask, Response, send_from_directory,render_template
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -28,6 +28,12 @@ def root_dir():  # pragma: no cover
 @app.route('/test')
 def hello():
     return "Hello Back4apper!"
+
+@app.route('/list')
+def index():
+    # List files and pass them to the template
+    files = os.listdir('')
+    return render_template('index.html', files=files)
 
 @app.route('/', defaults={'path': 'index.html'})
 
