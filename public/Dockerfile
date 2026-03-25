@@ -13,5 +13,5 @@ RUN pip install -r requirements.txt
 EXPOSE 5000/tcp
 
 # Define the entry point for the container
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["flask", "run", "--host=0.0.0.0 --debug", "app:app"]
 # CMD ["python", "app.py", "runserver", "0.0.0.0:8000"]
