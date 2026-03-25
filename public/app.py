@@ -28,4 +28,4 @@ def serve_page(path):
 
 
 if __name__ == '__main__':  # pragma: no cover
-    app.run(port=80)
+    app.run(port=5000)
