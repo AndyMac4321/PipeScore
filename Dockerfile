@@ -18,6 +18,10 @@ COPY . /app
 RUN chown -R myuser:myuser /app
 USER myuser
 
+RUN ls /root/app
+
+RUN ls /app
+
 # Give read/write access
 RUN chmod -R 755 /app
 # OR if specific directories need write access (e.g. storage)
