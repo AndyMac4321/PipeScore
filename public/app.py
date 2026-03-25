@@ -32,7 +32,7 @@ def hello():
 @app.route('/list')
 def index():
     # List files and pass them to the template
-    files = os.listdir('')
+    files = os.listdir('.')
     return render_template('index.html', files=files)
 
 @app.route('/', defaults={'path': 'index.html'})
