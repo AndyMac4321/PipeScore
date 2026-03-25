@@ -18,8 +18,6 @@ COPY . /app
 RUN chown -R myuser:myuser /app
 USER myuser
 
-RUN ls /root/app/
-
 RUN ls /app/
 
 # Give read/write access
