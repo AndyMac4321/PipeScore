@@ -6,11 +6,11 @@ WORKDIR /app
 
 
 # Copy requirements and install dependencies
-COPY public/requirements.txt requirements.txt
+COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 # Copy other project files
-COPY ./public .
+COPY . .
 
 # Create a non-root user (recommended for security)
 RUN useradd -m myuser
