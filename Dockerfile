@@ -4,6 +4,14 @@ FROM python:3.11
 # Work directory
 WORKDIR /app
 
+
+# Copy requirements and install dependencies
+COPY public/requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+# Copy other project files
+COPY ./public .
+
 # Create a non-root user (recommended for security)
 RUN useradd -m myuser
 COPY . /app
@@ -14,13 +22,6 @@ USER myuser
 RUN chmod -R 755 /app
 # OR if specific directories need write access (e.g. storage)
 RUN chmod -R 755 /app/audio
-
-# Copy requirements and install dependencies
-COPY public/requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-
-# Copy other project files
-COPY ./public .
 
 # Expose a port to Containers 
 EXPOSE 8080
