@@ -38,7 +38,7 @@ def serve_page(path):
         path = "pipescore.html"
     elif "." not in re.search("(.*?)$", path).group(0):
         path += ".html"
-    return send_from_directory('', path)
+    return send_from_directory('app', path)
 
 
 if __name__ == '__main__':  # pragma: no cover
