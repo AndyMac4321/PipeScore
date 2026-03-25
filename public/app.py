@@ -38,15 +38,15 @@ def index():
     return "Hello List"
     # return render_template('index.html', files=files)
 
-@app.route('/', defaults={'path': 'index.html'})
+@app.route('/', defaults={'path': 'index.htm'})
 
 @app.route('/<path:path>')
 def serve_page(path):
     logging.debug(path)
-    if path.startswith("pipescore"):
-        path = "pipescore.html"
+    if path.startswith("pipescre"):
+        path = "pipescre.htm"
     elif "." not in re.search("(.*?)$", path).group(0):
-        path += ".html"
+        path += ".htm"
     return send_from_directory(app.root_path, path)
 
 
