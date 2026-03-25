@@ -10,13 +10,7 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 # Copy other project files
-COPY . .
-
-# Create a non-root user (recommended for security)
-RUN useradd -m myuser
-COPY . /app
-RUN chown -R myuser:myuser /app
-USER myuser
+COPY . ./app
 
 RUN ls /app/
 
