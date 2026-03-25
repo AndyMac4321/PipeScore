@@ -33,7 +33,7 @@ def hello():
 
 @app.route('/<path:path>')
 def serve_page(path):
-    #logging.debug(path)
+    logging.debug(path)
     if path.startswith("pipescore"):
         path = "pipescore.html"
     elif "." not in re.search("(.*?)$", path).group(0):
