@@ -7,10 +7,6 @@ firebase-debug.log
 firestore-debug.log
 .firebase
 
-public/*.html
-public/*.htm
-public/styles
-
 dist
 icons
 

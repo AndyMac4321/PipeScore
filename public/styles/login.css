@@ -1,0 +1,43 @@
+label {
+  display: block;
+  margin: 0.5rem 0rem;
+  font-size: 0.9rem;
+}
+
+input {
+  display: block;
+}
+
+button,
+input[type=submit] {
+  font-size: 0.9rem;
+}
+
+input[type=email],
+input[type=password] {
+  border-radius: 0.5rem;
+  border: 1px solid darkgrey;
+  padding: 0.3rem;
+  margin-top: 0.3rem;
+}
+
+form {
+  margin: 2rem 1rem 1rem;
+}
+
+.forgot-password {
+  font-size: 0.9rem;
+}
+
+.padding {
+  margin-bottom: 2rem;
+}
+
+.error {
+  background: pink;
+  border: 1px solid red;
+  padding: 1rem;
+  display: none;
+}
+
+/*# sourceMappingURL=login.css.map */

@@ -1,0 +1,475 @@
+#dialogue-parent {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+#dialogue-box {
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, max(-60%, -50vh));
+  padding: 2rem;
+  background: white;
+  width: 75vw;
+}
+#dialogue-box h1 {
+  font-size: 2rem;
+}
+#dialogue-box .sections {
+  margin: 1rem 0;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+}
+#dialogue-box .sections section {
+  display: inline;
+  flex-grow: 1;
+  background: lightgrey;
+  padding: 1.5rem;
+}
+#dialogue-box .sections section input:not([type=checkbox]),
+#dialogue-box .sections section select {
+  display: block;
+}
+#dialogue-box .sections section label {
+  display: block;
+  margin: 1rem 0;
+}
+#dialogue-box .sections section summary {
+  margin-bottom: 1rem;
+}
+#dialogue-box .ts-type input {
+  display: inline !important;
+}
+#dialogue-box * {
+  font-size: 1.1rem;
+}
+#dialogue-box input {
+  display: block;
+}
+#dialogue-box input.cancel {
+  margin-right: 1rem;
+  display: inline;
+}
+#dialogue-box input.continue {
+  display: inline;
+}
+#dialogue-box input[type=checkbox] {
+  display: inline;
+  margin-right: 1rem;
+}
+
+html {
+  background: lightgrey;
+}
+
+* {
+  font-family: sans-serif;
+}
+
+/* There are quite a few images on buttons that need to be disabled
+ * so just doing this is easier than trying to make the buttons greyscale
+ * to match the text
+ */
+*:disabled {
+  opacity: 0.5;
+  color: black;
+}
+
+noscript {
+  position: static;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#score {
+  margin-top: 12rem;
+  margin-bottom: 10rem;
+}
+
+label {
+  font-size: 0.8rem;
+  margin: 0.2rem;
+  display: inline;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  background-color: white;
+}
+button:active {
+  outline: 1px solid grey;
+}
+
+input[type=range] {
+  display: block;
+}
+
+#copy-target {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* top bar */
+#ui {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  max-width: 100vw;
+  overflow: hidden;
+  /* menu contents */
+}
+#ui #login-warning {
+  background: orange;
+  padding: 0.5rem;
+}
+#ui #headings {
+  display: flex;
+  background: white;
+  height: 2rem;
+  padding: 0;
+}
+#ui #headings > * + * {
+  border-left: 1px solid white;
+}
+#ui #headings button {
+  height: 2rem;
+  margin: 0 0 0 0.1rem;
+  padding: 0 0.6rem;
+  border-radius: 0.3rem 0.3rem 0 0;
+  background: #eee;
+}
+#ui #headings button:active {
+  outline: none;
+}
+#ui #headings button.selected {
+  background: lightskyblue;
+}
+#ui #headings span.save-text {
+  font-size: 0.8rem;
+  margin: 0 1rem;
+  margin-left: auto;
+  align-self: center;
+  justify-self: flex-end;
+}
+#ui #headings span.save-text.unsaved {
+  color: red;
+}
+#ui #headings span.save-text.saved {
+  color: green;
+}
+#ui #headings button.save {
+  background: lightskyblue;
+  margin-top: 0.1rem;
+  margin-right: 1rem;
+  border-radius: 0.3rem;
+  width: 4rem;
+  height: 1.8rem;
+}
+#ui #topbar {
+  display: flex;
+  justify-content: space-between;
+  background: lightskyblue;
+  padding: 0rem;
+  width: calc(100vw - 0.8rem);
+  font-size: 0.8rem;
+}
+#ui #topbar #topbar-main {
+  flex: 1;
+}
+#ui #topbar #topbar-main {
+  display: flex;
+  align-items: stretch;
+  height: 7rem;
+  gap: 0.125rem;
+  padding: 0.4rem 0rem;
+}
+#ui #topbar .text,
+#ui #topbar .twice-width {
+  width: 6.4rem !important; /* 2 x normal width (3) + gap between them (0.4) */
+  text-align: center;
+  word-break: keep-all;
+}
+#ui #topbar .text.add {
+  padding-left: 3.4rem; /* 1 * normal width (3) + gap (0.4) */
+}
+#ui #topbar .highlighted {
+  background-color: yellow !important;
+}
+#ui #topbar .textual {
+  height: 1.4rem;
+  margin-top: 0;
+}
+#ui #topbar .textual:not(:first-child, .top),
+#ui #topbar .textual.bottom {
+  margin-top: 0.2rem;
+}
+#ui #topbar button:not(.textual) {
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-clip: padding-box;
+  vertical-align: middle;
+  width: 3rem;
+  height: 3rem;
+}
+#ui #topbar .full-width {
+  height: 3rem;
+  width: auto;
+}
+#ui #topbar h2 {
+  font-size: 1.1rem;
+  user-select: none;
+  margin: 0;
+}
+#ui #topbar section {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+#ui #topbar section p.align-top {
+  margin-block-end: auto;
+}
+#ui #topbar section .section-content {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+#ui #topbar section .section-content.vertical {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  justify-content: space-between;
+}
+#ui #topbar section .horizontal {
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: 0.3rem;
+}
+
+body.loading * {
+  cursor: progress;
+}
+
+svg {
+  margin: 2vw;
+}
+
+text {
+  user-select: none;
+}
+
+#browser-size-warning {
+  display: none;
+}
+
+input[type=number] {
+  width: 3rem !important;
+}
+
+#doc {
+  background: white;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 15rem;
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  padding: 1rem;
+  min-height: 6rem;
+  white-space: pre-line;
+}
+#doc.partial {
+  min-height: 3rem;
+}
+#doc input[type=range] {
+  margin: 1rem 0;
+  width: 100%;
+}
+#doc button {
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-clip: padding-box;
+  vertical-align: middle;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid black;
+}
+
+.time-signature-editor select,
+.time-signature-editor input {
+  margin: 0;
+  width: 3.5rem;
+}
+
+#playback-speed-label {
+  margin: 0;
+}
+
+input#playback-bpm {
+  margin-right: 0.2rem;
+}
+
+label.text-coord {
+  margin: 0;
+}
+label.text-coord input {
+  width: 4rem !important;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* BACKGROUND IMAGES */
+#note-sb {
+  background-image: url("../images/icons/semibreve.svg");
+}
+
+#note-m {
+  background-image: url("../images/icons/minim.svg");
+}
+
+#note-c {
+  background-image: url("../images/icons/crotchet.svg");
+}
+
+#note-q {
+  background-image: url("../images/icons/quaver.svg");
+}
+
+#note-sq {
+  background-image: url("../images/icons/semiquaver.svg");
+}
+
+#note-ssq {
+  background-image: url("../images/icons/demisemiquaver.svg");
+}
+
+#note-hdsq {
+  background-image: url("../images/icons/hemidemisemiquaver.svg");
+}
+
+#undo {
+  background-image: url("../images/icons/undo.svg");
+}
+
+#redo {
+  background-image: url("../images/icons/undo.svg");
+  transform: scaleX(-1);
+}
+
+#copy,
+#paste {
+  background-position: 0.75rem 0.75rem !important;
+  background-size: 1.5rem 1.5rem !important;
+}
+
+#copy {
+  background-image: url("../images/copy.png");
+}
+
+#paste {
+  background-image: url("../images/paste.svg");
+}
+
+#centre-text {
+  width: 6.4rem !important; /* 6.4 = 2 x normal width + gap between them */
+}
+
+#natural {
+  background-image: url("../images/icons/natural.svg");
+}
+
+#tie {
+  background-image: url("../images/tie.png");
+}
+
+#triplet {
+  background-image: url("../images/triplet.png");
+}
+
+.delete {
+  background-image: url("../images/bin.png");
+  background-position: 0.75rem 0.75rem !important;
+  background-size: 1.5rem 1.5rem !important;
+}
+
+.add {
+  background-image: url("../images/icons/plus.svg");
+  background-position: 0.8rem 0.6rem !important;
+  background-size: 1.7rem 1.7rem !important;
+}
+
+.remove {
+  background-image: url("../images/icons/minus.svg");
+  background-position: 0.8rem 0.6rem !important;
+  background-size: 1.7rem 1.7rem !important;
+}
+
+.playback-cursor rect {
+  transition: x 0.1s, y 0.1s;
+  transition-timing-function: ease-out;
+}
+
+.play-button {
+  background-image: url("../images/play.svg");
+}
+
+.stop-button {
+  background-image: url("../images/stop.svg");
+}
+
+.play-metronome {
+  background-image: url("../images/play-metronome.svg");
+}
+
+.stop-metronome {
+  background-image: url("../images/stop-metronome.svg");
+}
+
+.play-fromselection {
+  background-image: url("../images/play-fromselection.svg");
+}
+
+.play-loopedselection {
+  background-image: url("../images/play-loopedselection.svg");
+}
+
+.beat-indicator-on {
+  background-image: url("../images/beat-indicator-on.svg");
+}
+
+.beat-indicator-off {
+  background-image: url("../images/beat-indicator-off.svg");
+}
+
+.play-startofselection {
+  background-image: url("../images/play-startofselection.svg");
+}
+
+.play-endofselection {
+  background-image: url("../images/play-endofselection.svg");
+}
+
+/*# sourceMappingURL=pipescore.css.map */

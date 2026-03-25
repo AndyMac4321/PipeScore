@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="PipeScore is a web-based bagpipe notation app."
+    />
+    <title>Scores - PipeScore</title>
+    <link rel="icon" href="/images/favicon.ico" />
+    <link type="text/css" rel="stylesheet" href="styles/base.css" />
+    <script src="dist/Base/base.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/scores.css" />
+    <script src="dist/Scores/scores.js"></script>
+  </head>
+  <body>
+    <header>
+      <ul>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/help">Help</a></li>
+        <li><a href="/contact">Contact</a></li>
+        <li><a href="/support">Donate</a></li>
+        <li><a href="https://github.com/macarc/PipeScore">Source</a></li>
+        <li>
+          <select>
+            <option name="lang" value="ENG" selected>🇬🇧</option>
+            <option name="lang" value="FRA">🇫🇷</option>
+          </select>
+        </li>
+        <li><a href="/COMHPB">City of Melbourne Highland Pipeband Music Library</a></li>  
+      </ul>
+    </header>
+    <main>
+<h1>Your Scores</h1>
+<div>
+  <p>
+    Please
+    <a href="/contact">report bugs that you find</a> and I will do my best to
+    fix them.
+  </p>
+  <p>If you run into issues, try the <a href="/help">help page</a>.</p>
+  <p>
+    PipeScore requires money to run! Consider <a href="/support">donating</a>.
+  </p>
+  <p>
+    Know another language? <a href="/translate">Help translate PipeScore</a>!
+  </p>
+</div>
+<div id="buttons">
+  <div id="horizontal-buttons">
+    <button id="new-score">New Score</button>
+    <button id="import-bww">Import BWW File</button>
+    <button id="upload">Import PipeScore File</button>
+    <button id="sign-out">Sign Out</button>
+  </div>
+</div>
+<section id="scores"></section>
+</main>
+  </body>
+</html>
