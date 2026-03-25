@@ -14,7 +14,7 @@
 import os.path
 import logging
 import re
-from flask import Flask, Response, send_from_directory,render_template, current_app
+from flask import Flask, Response, send_from_directory,render_template
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -32,7 +32,7 @@ def hello():
 @app.route('/list')
 def index():
     # List files and pass them to the template
-    files = os.listdir(current_app.root_path)
+    files = os.listdir(app.root_path)
     return render_template('index.html', files=files)
 
 @app.route('/', defaults={'path': 'index.html'})
@@ -44,7 +44,7 @@ def serve_page(path):
         path = "pipescore.html"
     elif "." not in re.search("(.*?)$", path).group(0):
         path += ".html"
-    return send_from_directory(current_app.root_path, path)
+    return send_from_directory(app.root_path, path)
 
 
 if __name__ == '__main__':  # pragma: no cover
