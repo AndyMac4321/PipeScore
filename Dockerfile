@@ -22,7 +22,7 @@ COPY --from=nodejs_builder /app/public/dist ./public/dist
 #COPY --from=nodejs_builder /app/public/styles ./public/styles
 RUN ls ./public
 RUN ls ./public/dist
-RUN ls ./public/styles
+# RUN ls ./public/styles
 
 WORKDIR /app/public/
 # Expose the server port
