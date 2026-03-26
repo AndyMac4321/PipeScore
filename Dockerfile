@@ -10,7 +10,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the project files
 COPY . .
-RUN ls /app/
+RUN npm install -g
+RUN npm run build
+RUN ls /app/public
+RUN cd public
 # Expose the server port
 EXPOSE 8080
 
