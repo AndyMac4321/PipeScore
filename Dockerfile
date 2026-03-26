@@ -13,8 +13,8 @@ FROM python:3.9-slim
 # Copy requirements file and install dependencies
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-RUN  python build
-RUN  sass src/styles/:public/styles
+CMD ["python", "build"]
+RUN sass src/styles/:public/styles
 
 # Copy the rest of the project files
 RUN ls ./public
