@@ -1,6 +1,8 @@
 # Base image
 FROM python:3.9-slim
 
+RUN apk add npm
+
 # Working directory
 WORKDIR /app
 
