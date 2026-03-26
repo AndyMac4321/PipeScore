@@ -18,8 +18,8 @@ CMD ["python", "build/__main__.py"]
 
 # Copy the rest of the project files
 COPY . .
-COPY --from=nodejs_builder /public/dist /public/dist
-COPY --from=nodejs_builder /public/styles /public/styles
+COPY --from=nodejs_builder /app/public/dist ./public/dist
+#COPY --from=nodejs_builder /app/public/styles ./public/styles
 RUN ls ./public
 RUN ls ./public/dist
 RUN ls ./public/styles
