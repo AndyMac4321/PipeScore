@@ -1,21 +1,22 @@
+FROM node:18-alpine AS nodejs_builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+
 # Base image
 FROM python:3.9-slim
-
-RUN apk add npm
-
 # Working directory
-WORKDIR /app
-
+WORKDIR /app/public
 # Copy requirements file and install dependencies
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the project files
-COPY . .
-RUN npm install -g
 RUN npm run build
-RUN ls /app/public
-RUN cd public
+
+COPY . .
+RUN ls .
+
 # Expose the server port
 EXPOSE 8080
 
