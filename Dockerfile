@@ -2,8 +2,11 @@ FROM node:18-alpine AS nodejs_builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
+RUN ls .
+COPY . .
+RUN ls .
 RUN npm run build
-RUN ls /app/public/
+RUN ls .
 
 # Base image
 FROM python:3.9-slim
