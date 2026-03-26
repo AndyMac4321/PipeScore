@@ -4,7 +4,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run buildcontainer
-RUN sass src/styles/:public/styles
+# RUN sass src/styles/:public/styles
 RUN ls .
 
 # Base image
