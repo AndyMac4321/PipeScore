@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the project files
 
-COPY . .
+COPY ./public .
 RUN ls .
 
 # Expose the server port
