@@ -2,25 +2,28 @@ FROM node:18-alpine AS nodejs_builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
-RUN npm install -g sass
 COPY . .
 RUN npm run buildcontainer
+RUN sass src/styles/:public/styles
 RUN ls .
 
 # Base image
 FROM python:3.9-slim
 # Working directory
-# WORKDIR /app
+WORKDIR /app
 # Copy requirements file and install dependencies
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 CMD ["python", "build/__main__.py"]
-RUN ls ./public
-RUN ls ./public/dist
-RUN sass src/styles/:public/styles
 
 # Copy the rest of the project files
+COPY . .
+COPY --from=nodejs_builder /public/dist /public/dist
+COPY --from=nodejs_builder /public/styles /public/styles
 RUN ls ./public
+RUN ls ./public/dist
+RUN ls ./public/styles
+
 WORKDIR /app/public/
 # Expose the server port
 EXPOSE 8080
