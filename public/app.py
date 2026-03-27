@@ -1,16 +1,3 @@
-# from flask import Flask
-
-# app = Flask(__name__)
-
-# @app.route('/')
-# def hello():
-#     return "Hello Back4apper!"
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=8080)
-
-# Flask App for Azure Linux Python
-# az webapp deploy --resource-group andy.macdonald_rg_7860 --name PipeScore1-AndyMac --src-path "D:\My Virtual Machines\Temporary\public.zip"
 import os.path
 import logging
 import re
@@ -25,19 +12,6 @@ app.config.from_object(__name__)
 def root_dir():  # pragma: no cover
     return os.path.abspath(os.path.dirname(__file__))
 
-@app.route('/test')
-def hello():
-    return "Hello Back4apper!"
-
-@app.route('/list')
-def index():
-    # List files and pass them to the template
-    logging.debug(app.root_path)
-    # files = os.listdir(app.root_path)
-    logging.debug('render')
-    return "Hello List"
-    # return render_template('index.html', files=files)
-
 @app.route('/', defaults={'path': 'index.htm'})
 
 @app.route('/<path:path>')
@@ -48,7 +22,6 @@ def serve_page(path):
     elif "." not in re.search("(.*?)$", path).group(0):
         path += ".htm"
     return send_from_directory(app.root_path, path)
-
 
 if __name__ == '__main__':  # pragma: no cover
     app.run(port=8080)

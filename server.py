@@ -17,11 +17,11 @@ class RequestHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         if self.path.startswith("/pipescre"):
-            self.path = "/pipescre.html"
+            self.path = "/pipescre.htm"
         elif self.path == "/":
-            self.path = "/index.html"
+            self.path = "/index.htm"
         elif "." not in re.search("(/.*?)$", self.path).group(0):
-            self.path += ".html"
+            self.path += ".htm"
 
         return super().do_GET()
 

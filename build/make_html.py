@@ -11,7 +11,7 @@ import re
 import subprocess
 import os
 
-with open(f"src/static/template.html") as f:
+with open(f"src/static/template.htm") as f:
     template = f.read()
 
 
@@ -37,7 +37,7 @@ def reify_template(title, body, css=None, js=None):
 def parse_file(filename):
     "Open file, parse and find title, body, css, js"
 
-    with open(f"src/static/{filename}.html") as f:
+    with open(f"src/static/{filename}.htm") as f:
         text = f.read()
 
     title = re.search(r"\{(.*)\}", text)[1]
@@ -50,40 +50,37 @@ def parse_file(filename):
     return title, body, css, js
 
 
-def output_file(filename, shortfilename, text ):
+def output_file(filename, text ):
     "Output text to file"
 
-    with open(f"public/{filename}.html", "w+") as f:
+    with open(f"public/{filename}.htm", "w+") as f:
         f.write(text)
-    with open(f"public/{shortfilename}.htm", "w+") as f:
-        f.write(text)
+    
 
 
-def build(filename,shortfilename):
+def build(filename):
     "Parse, template, and output file to new location"
 
-    output_file(filename, shortfilename, reify_template(*parse_file(filename)))
+    output_file(filename, reify_template(*parse_file(filename)))
 
 
-def cp_file(filename,shortfilename):
+def cp_file(filename):
     "Copy a file straight from src/static to the public directory"
     if os.name == 'nt':  # Windows
-        os.system(f'"copy src\\static\\{filename}.html public\\{filename}.html"')
-        os.system(f'"copy src\\static\\{filename}.html public\\{shortfilename}.htm"')
+        os.system(f'"copy src\\static\\{filename}.htm public\\{filename}.htm"')
     else:  # Unix/Linux
-        subprocess.run(["cp", f"src/static/{filename}.html", f"public/{filename}.html"])
-        subprocess.run(["cp", f"src/static/{filename}.html", f"public/{shortfilename}.htm"])
+        subprocess.run(["cp", f"src/static/{filename}.htm", f"public/{filename}.htm"])
 
 
-build("index","index")
-build("login","login")
-build("scores","scores")
-build("translate","translat")
-build("importbww","impbww")
-build("support","support")
-build("404","404")
-build("contact","contact")
-build("forgotpassword","forgtpwd")
-cp_file("pipescore","pipescre")
-cp_file("help","help")
-cp_file("comhpb","comhpb")
+build("index")
+build("login")
+build("scores")
+build("translat")
+build("impbww")
+build("support")
+build("404")
+build("contact")
+build("forgtpwd")
+cp_file("pipescre")
+cp_file("help")
+cp_file("comhpb")

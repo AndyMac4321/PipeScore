@@ -1,3 +1,4 @@
+# install nodejs and build pipescore
 FROM node:18-alpine AS nodejs_builder
 WORKDIR /app
 COPY package*.json ./
@@ -5,7 +6,6 @@ RUN npm install
 COPY . .
 RUN npm run buildcontainer
 RUN npx sass src/styles/:public/styles
-RUN ls .
 
 # Base image
 FROM python:3.9-slim
@@ -15,15 +15,15 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the project files
+# Copy the project files
 COPY . .
+# Copy code build by nodejs
 COPY --from=nodejs_builder /app/public/dist ./public/dist
 COPY --from=nodejs_builder /app/public/styles ./public/styles
+# run python build script
 RUN python build
-RUN ls ./public
-RUN ls ./public/dist
-RUN ls ./public/styles
 
+# change to public folder
 WORKDIR /app/public/
 # Expose the server port
 EXPOSE 8080
