@@ -16,7 +16,7 @@ def root_dir():  # pragma: no cover
 
 @app.route('/<path:path>')
 def serve_page(path):
-    logging.debug(path)
+    # logging.debug(path)
     if path.startswith("pipescre"):
         path = "pipescre.htm"
     elif "." not in re.search("(.*?)$", path).group(0):
