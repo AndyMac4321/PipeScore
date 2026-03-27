@@ -1,10 +1,10 @@
 FROM node:18-alpine AS nodejs_builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+# RUN npm install
 COPY . .
-RUN npm run buildcontainer
-RUN npx sass src/styles/:public/styles
+# RUN npm run buildcontainer
+# RUN npx sass src/styles/:public/styles
 RUN ls .
 
 # Base image
@@ -14,7 +14,7 @@ WORKDIR /app
 # Copy requirements file and install dependencies
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-CMD ["python", "build/__main__.py"]
+RUN python build
 
 # Copy the rest of the project files
 COPY . .
