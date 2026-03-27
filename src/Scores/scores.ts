@@ -106,7 +106,7 @@ class ScoresList {
 
             // If only one file was selected, open it up in PipeScore
             if (score && f.files.length === 1) {
-              window.location.assign(`/pipescore/${userId}/${score.id}`);
+              window.location.assign(`/pipescre/${userId}/${score.id}`);
             }
           }
         }
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ?.addEventListener('click', () => auth.signOut());
   document
     .getElementById('import-bww')
-    ?.addEventListener('click', () => window.location.replace('/importbww'));
+    ?.addEventListener('click', () => window.location.replace('/impbww'));
   document.getElementById('new-score')?.addEventListener('click', async () => {
     if (userId) {
       const collection = db.ref(`scores/${userId}/scores`);
@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
         justCreated: true,
       });
       if (newScore) {
-        window.location.assign(`/pipescore/${userId}/${newScore.id}`);
+        window.location.assign(`/pipescre/${userId}/${newScore.id}`);
       }
     }
   });

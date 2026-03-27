@@ -16,8 +16,8 @@ class RequestHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_GET(self):
-        if self.path.startswith("/pipescore"):
-            self.path = "/pipescore.html"
+        if self.path.startswith("/pipescre"):
+            self.path = "/pipescre.html"
         elif self.path == "/":
             self.path = "/index.html"
         elif "." not in re.search("(/.*?)$", self.path).group(0):

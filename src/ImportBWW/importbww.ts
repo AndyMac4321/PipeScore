@@ -88,7 +88,7 @@ async function importfile(e: SubmitEvent) {
       score.tunes[0].tuneType = tuneType;
 
       await updatefile(dbEntry, score);
-      window.location.replace(`/pipescore/${user}/${dbEntry.id}`);
+      window.location.replace(`/pipescre/${user}/${dbEntry.id}`);
     };
 
     render(
