@@ -108,7 +108,20 @@ service cloud.firestore {
     }
   }
 }
+From Firebase console go to your project and General->Settings
+Scroll down to SDK setup and configuration and select npm
+Should then see code example with apiToken and projectId. 
 
+Update apiToken in following files
+  src\ImportBWW\importbww.ts
+  src\Login\login.ts
+  src\PipeScore\PipeScore.ts
+  src\Scores\scores.ts
+
+update projectId in following files
+  src\ImportBWW\importbww.ts
+  src\PipeScore\PipeScore.ts
+  src\Scores\scores.ts
 
 ## Contributors
 
