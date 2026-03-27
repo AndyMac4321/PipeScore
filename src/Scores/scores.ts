@@ -210,7 +210,7 @@ class ScoresList {
     if (this.loading) return [m('div.loading', m('div.spinner'))];
 
     const path = (score: ScoreRef) =>
-      `/pipescore${score.path.replace('/scores/', '/')}`;
+      `/pipescre${score.path.replace('/scores/', '/')}`;
 
     return [
       m('p', 'Selected Scores:'),
