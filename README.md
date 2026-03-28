@@ -123,6 +123,16 @@ update projectId in following files
   src\PipeScore\PipeScore.ts
   src\Scores\scores.ts
 
+## Docker
+Deploy PipeScore to your own hosting service.
+
+Instructions may vary by service. Dockerfile has been tested on Back4App and Railway
+1/ Create a project
+2/ Link to Github branch of Pipescore code e.g. The-works(only branch with Dockerfile)
+3/ Deploy -  takes about 3 minutes, check the deploy logs. You can ignore the errors and warnings in npm install.
+4/ Expose project as domain
+5/ Open link in browser.
+
 ## Contributors
 
 Thank you to any and all who have contributed code to PipeScore!
