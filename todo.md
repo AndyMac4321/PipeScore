@@ -21,7 +21,7 @@
 - [x] Double time Metronome during playback. Useful for 2/2 and 6/8 scores
 - [x] Allow for people other than who entered the tune to play it back. This is possible by direct URL access.  
 - [ ] Add copy link to Score list so you can share a score.
-- [x] Playback of Dot-Cut notes to sustain the Dot note longer for better expression. New document setting Dot cut duration as percentage setting is stored in the score. Default 40%.
+- [x] Playback of Dot-Cut notes to sustain the Dot note longer for better expression. New Settings tab option Dot cut timing (duration as percentage) is stored in the score. Default 40%. Also works for cut-dot notes. 
 - [x] Added Playback Option suppress gracenotes.
 - [ ] Combined score playback tempo change at each score.
 

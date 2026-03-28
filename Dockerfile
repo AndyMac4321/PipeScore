@@ -6,7 +6,7 @@ RUN npm install
 COPY . .
 RUN npm run buildcontainer
 RUN npx sass src/styles/:public/styles
-RUN ls -R /app/public
+RUN find "$PWD"/public -type f 
 
 # Base image
 FROM python:3.9-slim
@@ -24,7 +24,7 @@ COPY --from=nodejs_builder /app/public/styles ./public/styles
 
 # run python build script
 RUN python build
-RUN ls -R /app/public
+RUN find "$PWD"/public -type f 
 
 # change to public folder
 WORKDIR /app/public/
