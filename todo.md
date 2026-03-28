@@ -18,11 +18,12 @@
 - [ ] Password change
 - [x] Chanter playback
 - [x] Metronome while playing
-- [x] Double time Metronome while playing. Useful for 2/2 and 6/8 scores
+- [x] Double time Metronome during playback. Useful for 2/2 and 6/8 scores
 - [x] Allow for people other than who entered the tune to play it back. This is possible by direct URL access.  
-- [x] Add copy link to Score list so you can share a score.
-- [x] Playback of Dot-Cut notes to sustain the Dot note longer for better expression. New document seting Dot cut duration as percentage setting is stored in the score. Default 40%.
+- [ ] Add copy link to Score list so you can share a score.
+- [x] Playback of Dot-Cut notes to sustain the Dot note longer for better expression. New document setting Dot cut duration as percentage setting is stored in the score. Default 40%.
 - [x] Added Playback Option suppress gracenotes.
+- [ ] Combined score playback tempo change at each score.
 
 ## Bugs to fix
 
@@ -42,6 +43,7 @@
 - [x] Enable loop notes selection by selecting start and end note by pressing button (Note better way is to enable drag selection)
 - [x] Added Attack Options
 - [x] Added Metronome
+- [ ] +5 +1  -1 -5 buttons to change Tempo in place of slider 
 
 ## Small features
 
