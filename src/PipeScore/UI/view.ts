@@ -1452,7 +1452,7 @@ export default function render(state: UIState): m.Children {
     : [
         help(
           'home',
-          m('button', m('a[href=/scores]', text('homeMenu'))),
+          m('button', m('a[href="' + document.referrer + '"]', text('homeMenu'))),
           state.dispatch
         ),
         menuHead('playback', text('playbackMenu')),
