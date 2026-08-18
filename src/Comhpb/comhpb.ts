@@ -139,6 +139,7 @@ class ScoresList {
   tuneTypes: string[] = [];
   checkedTuneTypeLabel = '';
   checkedTimeSignatureLabel = '';
+  filterByName = '';
   oninit() {
     userId = 'JRcCHSNJSogzDWUeKcbYuPV1Mxm2';
     this.refreshScores();
@@ -180,10 +181,17 @@ class ScoresList {
 
     const path = (score: ScoreRef) =>
       `/pipescre${score.path.replace('/scores/', '/')}`;
+    var filterdScores: ScoreRef[] = [];
+    for (var i = 0; i < this.scores.length; i++) {
+      if (this.checkedTimeSignatureLabel != '' && this.checkedTimeSignatureLabel != this.scores[i].timeSignature) continue;
+      if (this.checkedTuneTypeLabel != '' && this.checkedTuneTypeLabel != this.scores[i].tuneType) continue;
+      if (this.filterByName != '' && !this.scores[i].name.toLowerCase().includes(this.filterByName.toLowerCase())) continue;
+      filterdScores.push(this.scores[i]);
+    };
     var index = 0;
     return [
-      m('p', 'Time Signatures:'),
-      m('div.btn-group', [
+      m('div.btn-group input-group-sm mb-3', [
+        m('span.input-group-text', 'Time Signature'),
         ...this.timeSignatures.map((timeSignature) => {
           const checked = this.checkedTimeSignatureLabel === timeSignature;
 
@@ -199,8 +207,8 @@ class ScoresList {
           ]
         })
       ]),
-      m('p', 'Tune Types:'),
-      m('div.btn-group', [
+      m('div.btn-group input-group-sm mb-3', [
+        m('span.input-group-text', 'Tune Type'),
         ...this.tuneTypes.map((tuneType) => {
           const checked = this.checkedTuneTypeLabel === tuneType;
           return [
@@ -215,12 +223,29 @@ class ScoresList {
           ]
         })
       ]),
+      m('div.input-group input-group-sm mb-3', [
+        m('span.input-group-text', 'Filter by name'),
+        m('input.form-control', {
+          placeholder: "Enter name of tune",
+          value: this.filterByName,
+          oninput: (e: any) => {
+            const newValue = e.target.value.trim();
+            this.filterByName = newValue;
+          },
+        }),
+        //<button type="button" class="btn btn-primary">Primary</button>
+        m('button.btn btn-primary', {
+          onclick: () => {
+            this.filterByName = '';
+            this.checkedTimeSignatureLabel = '';
+            this.checkedTuneTypeLabel = '';
+          },
+        }, 'Reset'),
+      ]),
       m('p', 'Scores:'),
-      this.scores.length === 0 ? m('p', 'You have no scores.') : null,
+      filterdScores.length === 0 ? m('p', 'You have no scores.') : null,
       m('table', [
-        ...this.scores.map((score) => {
-          if(this.checkedTimeSignatureLabel!='' && this.checkedTimeSignatureLabel!=score.timeSignature ) return null;
-          if(this.checkedTuneTypeLabel!='' && this.checkedTuneTypeLabel!=score.tuneType ) return null;
+        ...filterdScores.map((score) => {
           return (m('tr', [
             m('td.td-name', m('a', { href: path(score) }, getName(score))),
             m('td.td-timesig', m('a', score.timeSignature)),
