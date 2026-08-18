@@ -43,7 +43,8 @@ export class Barline {
   private constructor(type: BarlineType) {
     this.type = type;
   }
-
+  static barNumber:number=0;
+  
   static fromJSON(o: SavedBarline): Barline {
     switch (o.type) {
       case 'normal':

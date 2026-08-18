@@ -20,6 +20,7 @@ import type { Dispatch } from '../Dispatch';
 import { drawStaticTextBox } from '../TextBox/view';
 import { timingHeight } from '../Timing/view';
 import { settings } from '../global/settings';
+import { Barline } from '../Barline';
 
 export type TuneProps = {
   y: number;
@@ -33,7 +34,7 @@ export function drawTuneHeading(tune: ITune, props: TuneProps) {
   const titleY = props.y + Math.max(heightToWorkWith / 2, tune.name().fontSize());
   const composerY = props.y + heightToWorkWith - tune.composer().fontSize() / 2;
   const tuneTypeY = props.y + heightToWorkWith - tune.tuneType().fontSize() / 2;
-
+  Barline.barNumber=0;
   return m('g.tune', [
     drawStaticTextBox(tune.name(), {
       x: props.pageWidth / 2,

@@ -47,7 +47,15 @@ function height(isHarmony: boolean) {
 
 function drawNormal({ x, y, isHarmony, drag, dispatch }: BarlineProps) {
   const top = yStart(y, isHarmony);
+  Barline.barNumber++;
   return m('g', [
+    m('text', {
+      x: x - 20,
+      y: y - 10,
+    },
+      Barline.barNumber.toString()
+    ),
+
     m('line', {
       x1: x,
       x2: x,
@@ -93,7 +101,14 @@ function drawPart({ x, y, atStart, isHarmony, drag, dispatch }: BarlineProps) {
   const thickX = x - thickLineWidth / 2;
   const thinX = atStart ? x + lineOffset : x - lineOffset;
   const top = yStart(y, isHarmony);
+  if (!atStart) Barline.barNumber++;
   return m('g[class=barline-end]', [
+    !atStart ? m('text', {
+      x: x - 20,
+      y: y - 10,
+    },
+      Barline.barNumber.toString()
+    ) : null,
     m('rect', {
       x: thickX,
       y: top,
