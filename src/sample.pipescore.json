@@ -1,6 +1,7 @@
 {
     "landscape": true,
     "showNumberOfPages": true,
+    "showBarNumbers": true,
     "tunes": [
         {
             "name": {

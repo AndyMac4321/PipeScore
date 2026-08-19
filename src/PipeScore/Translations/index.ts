@@ -105,6 +105,7 @@ export type Documentation = {
   attackoptions: string;
   beatindicator: string;
   'dot-cut-timing-adjustment-help': string;
+  'bar-numbers':string;
 };
 
 export type TextItems = {
@@ -210,4 +211,6 @@ export type TextItems = {
   playbackSettings:string;
   dotCutTimingAdjustment:string;
   metronomeplaybackdoubletime:string;
+  barNumbers:string;
+  showBarNumbers:string;
 };

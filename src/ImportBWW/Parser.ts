@@ -194,6 +194,7 @@ class PartialScore {
       landscape: true,
       textBoxes: [{ texts: [] }],
       showNumberOfPages: true,
+      showBarNumbers:true,
       secondTimings: this.timings,
       settings: new Settings().toJSON(),
     };

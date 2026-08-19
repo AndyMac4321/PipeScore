@@ -153,6 +153,7 @@ export const FrenchDocumentation: Documentation = {
   attackoptions:
     'Sélectionnez la méthode d’attaque pour le début d’un morceau.',
   'dot-cut-timing-adjustment-help':'Adjust timing of Dot Cut notes as a percentage 0% is normal duration of the cut notes. 100% means the cut note will not play at all',
+  'bar-numbers':'Display bar sequence number at end of each bar',
 };
 
 export const FrenchTextItems: TextItems = {
@@ -258,4 +259,6 @@ export const FrenchTextItems: TextItems = {
   playbackSettings:'Playback',
   dotCutTimingAdjustment:"Dot Cut Timing",
   metronomeplaybackdoubletime:'Double time',
+  barNumbers:"Show bar numbers",
+  showBarNumbers:"Show bar numbers:",
 };

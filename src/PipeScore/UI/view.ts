@@ -41,6 +41,7 @@ import {
   portrait,
   redo,
   save,
+  setBarNumberVisibility,
   setMenu,
   setPageNumberVisibility,
   undo,
@@ -139,6 +140,7 @@ export interface UIState {
   selectedTiming: ITiming | null;
   firstTune: ITune | null;
   showingPageNumbers: boolean;
+  showingBarNumbers: boolean;
   preview: IPreview | null;
   isLandscape: boolean;
   currentMenu: Menu;
@@ -1249,6 +1251,23 @@ export default function render(state: UIState): m.Children {
               onclick: (e: MouseEvent) =>
                 state.dispatch(
                   setPageNumberVisibility(e.target as HTMLInputElement)
+                ),
+            }),
+          ]),
+          state.dispatch
+        ),
+      ]),
+      m('div.section-content', [
+        help(
+          'bar-numbers',
+          m('label', [
+            `${text('showBarNumbers')}: `,
+            m('input', {
+              type: 'checkbox',
+              checked: state.showingBarNumbers,
+              onclick: (e: MouseEvent) =>
+                state.dispatch(
+                  setBarNumberVisibility(e.target as HTMLInputElement)
                 ),
             }),
           ]),

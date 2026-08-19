@@ -52,6 +52,7 @@ export class Score extends IScore {
   private _timings: ITiming[];
 
   showNumberOfPages: boolean;
+  showBarNumbers: boolean;
 
   zoom: number;
 
@@ -66,6 +67,7 @@ export class Score extends IScore {
     super();
     this.landscape = true;
     this.showNumberOfPages = true;
+    this.showBarNumbers = true;
     this._tunes = [
       Tune.create(
         timeSignature,
@@ -94,6 +96,7 @@ export class Score extends IScore {
     s._textBoxes = o.textBoxes.map((p) => p.texts.map(MovableTextBox.fromJSON));
     s._timings = o.secondTimings.map(Timing.fromJSON);
     s.showNumberOfPages = o.showNumberOfPages;
+    s.showBarNumbers=o.showBarNumbers??true;
 
     if (scoreHasStavesNotTunes(o)) {
       const name = s._textBoxes[0]?.[0]?.text() || 'My Tune';
@@ -119,6 +122,7 @@ export class Score extends IScore {
     return {
       landscape: this.landscape,
       showNumberOfPages: this.showNumberOfPages,
+      showBarNumbers:this.showBarNumbers,
       tunes: this._tunes.map((tune) => tune.toJSON()),
       textBoxes: this._textBoxes.map((p) => ({
         texts: p.map((txt) => txt.toJSON()),

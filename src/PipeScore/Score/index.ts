@@ -35,6 +35,7 @@ type Location = { tune: ITune; stave: IStave; measure: IMeasure; bar: IBar };
 export abstract class IScore {
   abstract landscape: boolean;
   abstract showNumberOfPages: boolean;
+  abstract showBarNumbers:boolean;
   abstract zoom: number;
   abstract name(): string;
   abstract toJSON(): SavedScore;

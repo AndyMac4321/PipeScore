@@ -35,6 +35,13 @@ export function setPageNumberVisibility(element: HTMLInputElement): ScoreEvent {
     return Update.ShouldSave;
   };
 }
+export function setBarNumberVisibility(element: HTMLInputElement): ScoreEvent {
+  return async (state: State) => {
+    const visibility = element.checked;
+    state.score.showBarNumbers = Boolean(visibility);
+    return Update.ShouldSave;
+  };
+}
 
 export function changeSetting<T extends keyof Settings>(
   setting: T,

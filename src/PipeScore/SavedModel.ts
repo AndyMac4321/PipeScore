@@ -43,6 +43,7 @@ export type SavedScore = {
   textBoxes: SavedTextBoxPage[];
   secondTimings: SavedTiming[];
   showNumberOfPages: boolean;
+  showBarNumbers:boolean;
   settings: SavedSettings;
 };
 

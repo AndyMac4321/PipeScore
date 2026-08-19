@@ -145,6 +145,7 @@ function redraw() {
         zoomLevel: state.score.zoom,
         preview: state.preview,
         showingPageNumbers: state.score.showNumberOfPages,
+        showingBarNumbers: state.score.showBarNumbers,
         selectedNotes:
           state.selection instanceof ScoreSelection
             ? state.selection.notes(state.score)

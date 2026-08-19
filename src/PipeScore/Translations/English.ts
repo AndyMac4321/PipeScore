@@ -144,6 +144,7 @@ export const EnglishDocumentation: Documentation = {
   'nothing-hovered': 'Hover over different icons to view Help here.',
   attackoptions: 'Select the method of attack for the beginning of a tune.',
   'dot-cut-timing-adjustment-help':'Adjust timing of Dot Cut notes as a percentage 0% is normal duration of the cut notes. 100% means the cut note will not play at all',
+  'bar-numbers':'Display bar sequence number at end of each bar',
 };
 
 export const EnglishTextItems: TextItems = {
@@ -249,4 +250,6 @@ export const EnglishTextItems: TextItems = {
   playbackSettings:'Playback',
   dotCutTimingAdjustment:"Dot Cut Timing",
   metronomeplaybackdoubletime:'Double time',
+  barNumbers:"Show bar numbers",
+  showBarNumbers:"Show bar numbers",
 };
