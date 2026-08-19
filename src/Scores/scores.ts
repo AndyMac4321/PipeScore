@@ -36,7 +36,7 @@ const auth = new Auth({ apiKey: apiToken });
 
 const db = new Database({ projectId: 'pipe-score-andy', auth });
 
-type ScoreRef = { name: string; path: string };
+type ScoreRef = { name: string; path: string; timeSignature: string; composer: string; tuneType: string, bpm: string };
 
 type FileInput = HTMLInputElement & { files: FileList };
 
@@ -57,6 +57,74 @@ function getName(
 
   return name.text || defaultName;
 }
+function getComposer(
+  score: Document | ScoreRef | SavedScore | DeprecatedSavedScore
+) {
+  const defaultName = 'No Composer';
+  if ((score as DeprecatedSavedScore).name) {
+    return defaultName;
+  }
+
+  const sscore = score as SavedScore;
+  const composer = sscore.tunes?.[0]?.composer;
+
+  if (typeof composer === 'string') {
+    return composer || defaultName;
+  }
+
+  return composer.text || defaultName;
+}
+function getBPM(
+  score: Document | ScoreRef | SavedScore | DeprecatedSavedScore
+) {
+  const defaultName = '? BPM';
+  if ((score as DeprecatedSavedScore).name) {
+    return defaultName;
+  }
+
+  const sscore = score as SavedScore;
+  const bpm = sscore.settings.bpm;
+
+  if (typeof bpm !== 'number') {
+    return defaultName;
+  }
+
+  return `${bpm} BPM`;
+}
+
+function getTuneType(
+  score: Document | ScoreRef | SavedScore | DeprecatedSavedScore
+) {
+  const defaultName = 'No Tune Type';
+  if ((score as DeprecatedSavedScore).name) {
+    return defaultName;
+  }
+
+  const sscore = score as SavedScore;
+  const tuneType = sscore.tunes?.[0]?.tuneType;
+
+  if (typeof tuneType === 'string') {
+    return tuneType || defaultName;
+  }
+  if (tuneType.text != tuneType.text.trim()) console.log(sscore.tunes?.[0]?.name);
+  return tuneType.text.trim() || defaultName;
+}
+
+function getTimeSignature(
+  score: Document | ScoreRef | SavedScore | DeprecatedSavedScore
+) {
+  const sscore = score as SavedScore;
+  const ts1 = sscore.tunes?.[0]?.staves[0].bars[0].timeSignature.ts[0];
+  const ts2 = sscore.tunes?.[0]?.staves[0].bars[0].timeSignature.ts[1];
+  if (typeof ts1 === 'string') {
+    if (ts1 == 'c' || ts1 == 'C') return 'Com';
+    if (ts1 == 'c_' || ts1 == 'C_') return 'Cut';
+  }
+  if (typeof ts1 === 'number') {
+    return `${ts1}/${ts2}`;
+  }
+  return 'Not Set'
+}
 
 function setName(
   score: Document | ScoreRef | SavedScore | DeprecatedSavedScore,
@@ -69,10 +137,19 @@ function setName(
     s.tunes[0].name = name;
   }
 }
+function getPropertyList<T, K extends keyof T>(items: T[], key: K): T[K][] {
+  return items.map(item => item[key]);
+}
+
 class ScoresList {
   loading = true;
   scores: ScoreRef[] = [];
   selected: ScoreRef[] = [];
+  timeSignatures: string[] = [];
+  tuneTypes: string[] = [];
+  checkedTuneTypeLabel = '';
+  checkedTimeSignatureLabel = '';
+  filterByName = '';
 
   oninit() {
     onUserChange(auth, (user) => {
@@ -189,6 +266,7 @@ class ScoresList {
     this.refreshScores();
   }
   async refreshScores() {
+    console.log("refreshScores");
     // Use query() rather than list() to avoid limits
     const collection: Document[] = await db
       .ref(`scores/${userId}/scores`)
@@ -198,10 +276,22 @@ class ScoresList {
       .map((doc) => ({
         name: getName(doc),
         path: doc.__meta__.path.replace('/scores', ''),
+        timeSignature: getTimeSignature(doc),
+        composer: getComposer(doc),
+        tuneType: getTuneType(doc),
+        bpm: getBPM(doc)
       }))
       .sort(({ name: name1 }, { name: name2 }) =>
         name1 === name2 ? 0 : name1.toLowerCase() < name2.toLowerCase() ? -1 : 1
       );
+    // get unique list of Time signatures and Tune types
+    const timeSignatureList: string[] = getPropertyList(this.scores, "timeSignature") as string[];
+    this.timeSignatures = Array.from(new Set(timeSignatureList))
+      .sort((one: String, two: String) => (one < two ? -1 : 1));
+    const tuneTypesList: string[] = getPropertyList(this.scores, "tuneType") as string[];
+    this.tuneTypes = Array.from(new Set(tuneTypesList))
+      .sort((one: String, two: String) => (one < two ? -1 : 1));
+
     this.loading = false;
     m.redraw();
   }
@@ -211,8 +301,67 @@ class ScoresList {
 
     const path = (score: ScoreRef) =>
       `/pipescre${score.path.replace('/scores/', '/')}`;
-
+    var filterdScores: ScoreRef[] = [];
+    for (var i = 0; i < this.scores.length; i++) {
+      if (this.checkedTimeSignatureLabel != '' && this.checkedTimeSignatureLabel != this.scores[i].timeSignature) continue;
+      if (this.checkedTuneTypeLabel != '' && this.checkedTuneTypeLabel != this.scores[i].tuneType) continue;
+      if (this.filterByName != '' && !this.scores[i].name.toLowerCase().includes(this.filterByName.toLowerCase())) continue;
+      filterdScores.push(this.scores[i]);
+    };
+    var index = 0;
     return [
+      m('div.btn-group mb-3', [
+        m('span.input-group-text', 'Time Signature'),
+        ...this.timeSignatures.map((timeSignature) => {
+          const checked = this.checkedTimeSignatureLabel === timeSignature;
+
+          return [
+            m('input.btn-check', {
+              autocomplete: "off",
+              type: "checkbox",
+              id: `checkBtn${index}`,
+              checked,
+              onchange: () => this.checkedTimeSignatureLabel = checked ? '' : timeSignature,
+            }),
+            m('label.btn btn-outline-primary', { for: `checkBtn${index++}` }, timeSignature)
+          ]
+        })
+      ]),
+      m('div.btn-group mb-3', [
+        m('span.input-group-text', 'Tune Type'),
+        ...this.tuneTypes.map((tuneType) => {
+          const checked = this.checkedTuneTypeLabel === tuneType;
+          return [
+            m('input.btn-check', {
+              autocomplete: "off",
+              type: "checkbox",
+              id: `checkBtn${index}`,
+              checked,
+              onchange: () => this.checkedTuneTypeLabel = checked ? '' : tuneType,
+            }),
+            m('label.btn btn-outline-primary', { for: `checkBtn${index++}` }, tuneType),
+          ]
+        })
+      ]),
+      m('div.input-group mb-3', [
+        m('span.input-group-text', 'Filter by name'),
+        m('input.form-control', {
+          placeholder: "Enter name of tune",
+          value: this.filterByName,
+          oninput: (e: any) => {
+            const newValue = e.target.value.trim();
+            this.filterByName = newValue;
+          },
+        }),
+        //<button type="button" class="btn btn-primary">Primary</button>
+        m('button.btn btn-primary', {
+          onclick: () => {
+            this.filterByName = '';
+            this.checkedTimeSignatureLabel = '';
+            this.checkedTuneTypeLabel = '';
+          },
+        }, 'Reset'),
+      ]),
       m('p', 'Selected Scores:'),
       m('table', [
         ...this.selected.map((score) =>
@@ -224,7 +373,7 @@ class ScoresList {
           m(
             'td',
             m(
-              'button.combine',
+              'button.btn btn-primary',
               {
                 onclick: () => this.combineScores(),
                 disabled: this.selected.length < 2,
@@ -235,40 +384,36 @@ class ScoresList {
         ]),
       ]),
       m('p', 'Scores:'),
-      this.scores.length === 0 ? m('p', 'You have no scores.') : null,
+      filterdScores.length === 0 ? m('p', 'You have no scores.') : null,
       m('table', [
-        ...this.scores.map((score) =>
-          m('tr', [
+        ...filterdScores.map((score) => {
+          return m('tr', [
             m('td.td-name', m('a', { href: path(score) }, getName(score))),
+            m('td.td-timesig', m('a', score.timeSignature)),
+            m('td.td-tunetype', m('a', score.tuneType)),
+            m('td.td-composer', m('a', score.composer)),
+            m('td.td-bpm', m('a', score.bpm)),
             m(
               'td',
               m(
-                'button.edit',
-                { onclick: () => window.location.assign(path(score)) },
-                'Edit'
-              )
-            ),
-            m(
-              'td',
-              m(
-                'button.rename',
-                { onclick: () => this.rename(score) },
+                'button.btn btn-primary',
+                { onclick: () => this.rename(score), type: 'button' },
                 'Rename'
               )
             ),
             m(
               'td',
               m(
-                'button.duplicate',
-                { onclick: () => this.duplicate(score) },
+                'button.btn btn-primary',
+                { onclick: () => this.duplicate(score), type: 'button' },
                 'Duplicate'
               )
             ),
             m(
               'td',
               m(
-                'button.delete',
-                { onclick: () => this.delete(score) },
+                'button.button.btn btn-primary',
+                { onclick: () => this.delete(score), type: 'button' },
                 'Delete'
               )
             ),
@@ -285,11 +430,113 @@ class ScoresList {
               })
             ),
           ])
-        ),
+        })
       ]),
     ];
   }
 }
+// async refreshScores() {
+//   // Use query() rather than list() to avoid limits
+//   const collection: Document[] = await db
+//     .ref(`scores/${userId}/scores`)
+//     .query()
+//     .run();
+//   this.scores = collection
+//     .map((doc) => ({
+//       name: getName(doc),
+//       path: doc.__meta__.path.replace('/scores', ''),
+//     }))
+//     .sort(({ name: name1 }, { name: name2 }) =>
+//       name1 === name2 ? 0 : name1.toLowerCase() < name2.toLowerCase() ? -1 : 1
+//     );
+//   this.loading = false;
+//   m.redraw();
+// }
+
+// view() {
+//   if (this.loading) return [m('div.loading', m('div.spinner'))];
+
+//   const path = (score: ScoreRef) =>
+//     `/pipescre${score.path.replace('/scores/', '/')}`;
+
+//   return [
+//     m('p', 'Selected Scores:'),
+//     m('table', [
+//       ...this.selected.map((score) =>
+//         m('tr', [
+//           m('td.td-name', m('a', { href: path(score) }, getName(score))),
+//         ])
+//       ),
+//       m('tr', [
+//         m(
+//           'td',
+//           m(
+//             'button.combine',
+//             {
+//               onclick: () => this.combineScores(),
+//               disabled: this.selected.length < 2,
+//             },
+//             'Combine Scores'
+//           )
+//         ),
+//       ]),
+//     ]),
+//     m('p', 'Scores:'),
+//     this.scores.length === 0 ? m('p', 'You have no scores.') : null,
+//     m('table', [
+//       ...this.scores.map((score) =>
+//         m('tr', [
+//           m('td.td-name', m('a', { href: path(score) }, getName(score))),
+//           m(
+//             'td',
+//             m(
+//               'button.edit',
+//               { onclick: () => window.location.assign(path(score)) },
+//               'Edit'
+//             )
+//           ),
+//           m(
+//             'td',
+//             m(
+//               'button.rename',
+//               { onclick: () => this.rename(score) },
+//               'Rename'
+//             )
+//           ),
+//           m(
+//             'td',
+//             m(
+//               'button.duplicate',
+//               { onclick: () => this.duplicate(score) },
+//               'Duplicate'
+//             )
+//           ),
+//           m(
+//             'td',
+//             m(
+//               'button.delete',
+//               { onclick: () => this.delete(score) },
+//               'Delete'
+//             )
+//           ),
+//           m(
+//             'td',
+//             m('input', {
+//               type: 'checkbox',
+//               checked: this.selected.indexOf(score) != -1,
+//               onchange: (e: InputEvent) =>
+//                 this.updateSelection(
+//                   score,
+//                   Boolean((e.target as HTMLInputElement).checked)
+//                 ),
+//             })
+//           ),
+//         ])
+//       ),
+//     ]),
+//   ];
+// }
+// }
 
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('scores');
