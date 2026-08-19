@@ -21,6 +21,7 @@ export function emptyState(score: IScore = Score.blank()): State {
       cursor: null,
       playingMetronome: false,
       beatIndicator: false,
+      selectedNotesStart:[],
     },
     score,
   };

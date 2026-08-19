@@ -188,6 +188,7 @@ export function exportPDF(): ScoreEvent {
         cursor: null,
         playingMetronome: false,
         beatIndicator: false,
+        selectedNotesStart:[],
       },
       dispatch: async () => void 0,
     };
