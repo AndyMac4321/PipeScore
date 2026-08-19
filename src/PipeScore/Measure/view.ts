@@ -30,6 +30,7 @@ import { drawTimeSignature } from '../TimeSignature/view';
 import { settings } from '../global/settings';
 import width from '../global/width';
 import { setXY } from '../global/xy';
+import { BarlineState } from '../Barline/state';
 
 interface MeasureProps {
   x: number;
@@ -43,6 +44,7 @@ interface MeasureProps {
   canResize: (newWidth: number) => boolean;
   resize: (widthChange: number) => void;
   noteState: NoteState;
+  barlineState: BarlineState;
   gracenoteState: GracenoteState;
   dispatch: Dispatch;
 }
@@ -120,6 +122,7 @@ export function drawMeasure(measure: IMeasure, props: MeasureProps): m.Children 
           noteState: props.noteState,
           gracenoteState: props.gracenoteState,
           dispatch: props.dispatch,
+          barlineState: props.barlineState,
         }),
 
         measure.startBarline().mustDraw() ||
@@ -131,6 +134,7 @@ export function drawMeasure(measure: IMeasure, props: MeasureProps): m.Children 
               isHarmony,
               drag: () => null,
               dispatch: props.dispatch,
+              barlineState: props.barlineState,
             })
           : null,
         measure.endBarline().mustDraw() || props.shouldRenderLastBarline
@@ -151,7 +155,8 @@ export function drawMeasure(measure: IMeasure, props: MeasureProps): m.Children 
                 }
               },
               dispatch: props.dispatch,
-            })
+              barlineState: props.barlineState,
+        })
           : null,
         hasTimeSignature
           ? drawTimeSignature(measure.timeSignature(), {

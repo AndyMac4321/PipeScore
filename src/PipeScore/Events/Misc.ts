@@ -27,6 +27,7 @@ import { type Settings, settings } from '../global/settings';
 import { last } from '../global/utils';
 import { stopInputMode } from './common';
 import { type ScoreEvent, Update } from './types';
+import { BarlineState } from '../Barline/state';
 
 export function setPageNumberVisibility(element: HTMLInputElement): ScoreEvent {
   return async (state: State) => {
@@ -175,6 +176,10 @@ export function exportPDF(): ScoreEvent {
         inputtingNotes: false,
         selectedTripletLine: null,
       },
+      barlineState: {
+        barNumber: 0,
+        showBarNumbers: state.score.showBarNumbers,
+      },
       gracenoteState: {
         dragged: null,
         selected: null,
@@ -188,7 +193,7 @@ export function exportPDF(): ScoreEvent {
         cursor: null,
         playingMetronome: false,
         beatIndicator: false,
-        selectedNotesStart:[],
+        selectedNotesStart: [],
       },
       dispatch: async () => void 0,
     };

@@ -35,12 +35,14 @@ import { drawTuneHeading } from '../Tune/view';
 import { settings } from '../global/settings';
 import { foreach } from '../global/utils';
 import { setXYPage } from '../global/xy';
+import { BarlineState } from '../Barline/state';
 
 interface ScoreProps {
   selection: ISelection | null;
   justAddedNote: boolean;
   preview: IPreview | null;
   noteState: NoteState;
+  barlineState: BarlineState;
   gracenoteState: GracenoteState;
   playbackState: PlaybackState;
   dispatch: Dispatch;
@@ -60,6 +62,7 @@ export function drawScore(score: IScore, props: ScoreProps): m.Children {
     previousStave: score.previousStaveSameTune(stave),
     previousStaveY: score.staveY(stave, 0),
     noteState: props.noteState,
+    barlineState: props.barlineState,
     gracenoteState: props.gracenoteState,
     dispatch: props.dispatch,
   });
@@ -112,11 +115,13 @@ export function drawScore(score: IScore, props: ScoreProps): m.Children {
             onmousedown: () => props.dispatch(clickBackground()),
             onmouseover: () => props.dispatch(mouseOffPitch()),
           }),
-          ...pages[page].map((staveOrTune) =>
-            staveOrTune instanceof ITune
+          ...pages[page].map((staveOrTune) => {
+            // reset the barNumber for each tune
+            if (staveOrTune instanceof ITune) props.barlineState.barNumber = 0;
+            return staveOrTune instanceof ITune
               ? drawTuneHeading(staveOrTune, tuneProps(staveOrTune))
               : drawStave(staveOrTune, staveProps(staveOrTune))
-          ),
+          }),
           ...texts(page).map((textBox) =>
             drawMovableTextBox(textBox, {
               scoreWidth: width,
@@ -126,19 +131,19 @@ export function drawScore(score: IScore, props: ScoreProps): m.Children {
           ),
           ...score.timings().map((timing) => drawTiming(timing, timingProps(page))),
           props.selection instanceof ScoreSelection &&
-            props.selection.render(selectionProps(page)),
+          props.selection.render(selectionProps(page)),
 
           playbackCursor(props.playbackState, page),
 
           score.showNumberOfPages && pages.length > 1
             ? m(
-                'text',
-                {
-                  x: score.width() / 2,
-                  y: score.height() - settings.margin + settings.lineHeightOf(5),
-                },
-                (page + 1).toString()
-              )
+              'text',
+              {
+                x: score.width() / 2,
+                y: score.height() - settings.margin + settings.lineHeightOf(5),
+              },
+              (page + 1).toString()
+            )
             : null,
         ]
       );

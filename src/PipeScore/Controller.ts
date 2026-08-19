@@ -116,6 +116,10 @@ function redraw() {
             null,
           inputtingNotes: state.preview !== null,
         },
+        barlineState:{
+          barNumber:0,
+          showBarNumbers:state.score.showBarNumbers,
+        },
         gracenoteState:
           state.selection instanceof GracenoteSelection
             ? state.selection.state()

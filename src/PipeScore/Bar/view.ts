@@ -31,6 +31,7 @@ import {
 import type { Pitch } from '../global/pitch';
 import { nlast } from '../global/utils';
 import width, { type Width } from '../global/width';
+import { BarlineState } from '../Barline/state';
 
 interface BarProps {
   x: number;
@@ -42,6 +43,7 @@ interface BarProps {
   noteState: NoteState;
   gracenoteState: GracenoteState;
   dispatch: Dispatch;
+  barlineState:BarlineState;
 }
 
 // Returns an array where the nth item is the offset of the nth note
