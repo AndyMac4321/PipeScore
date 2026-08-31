@@ -75,6 +75,22 @@ const chanter: InstrumentResources = {
   snareTap: new AudioResource('chanter/snare-roll-end'),
 };
 
+const chanter_old: InstrumentResources = {
+  lowg: new AudioResource('pc-old/lowg'),
+  lowa: new AudioResource('pc-old/lowa'),
+  b: new AudioResource('pc-old/b'),
+  c: new AudioResource('pc-old/c'),
+  d: new AudioResource('pc-old/d'),
+  e: new AudioResource('pc-old/e'),
+  f: new AudioResource('pc-old/f'),
+  highg: new AudioResource('pc-old/highg'),
+  higha: new AudioResource('pc-old/higha'),
+  drones: null,
+  tick: new AudioResource('pc-old/tick'),
+  snareRoll: new AudioResource('pc-old/snare-roll-start'),
+  snareTap: new AudioResource('pc-old/snare-roll-end'),
+};
+
 /**
  * Load all audio resources for the given instrument.
  * @param resources samples to load
@@ -109,6 +125,8 @@ function loadInstrumentResources(
 export function getInstrumentResources(): InstrumentResources {
   return settings.instrument === Instrument.Chanter
     ? chanter
+    : settings.instrument === Instrument.Chanter_old
+    ? chanter_old
     : settings.instrument === Instrument.GHB
     ? ghb
     : unreachable(settings.instrument);
@@ -127,6 +145,7 @@ export async function loadAudioResources() {
   const context = new AudioContext();
   loadInstrumentResources(ghb, context);
   loadInstrumentResources(chanter, context);
+  loadInstrumentResources(chanter_old, context);
 }
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));

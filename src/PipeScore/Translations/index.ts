@@ -201,6 +201,7 @@ export type TextItems = {
   allChangesSaved: string;
   unsavedChanges: string;
   instrumentPC: string;
+  instrumentPCold: string;
   instrumentPipes: string;
   instrument: string;
   attackoff: string;

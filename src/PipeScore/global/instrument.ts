@@ -19,6 +19,7 @@ import { unreachable } from './utils';
 export enum Instrument {
   GHB = 0,
   Chanter = 1,
+  Chanter_old = 2,
 }
 
 export function instrumentToString(instrument: Instrument): string {
@@ -27,6 +28,8 @@ export function instrumentToString(instrument: Instrument): string {
       return 'GHB';
     case Instrument.Chanter:
       return 'chanter';
+    case Instrument.Chanter_old:
+      return 'chanter-old';
     default:
       unreachable(instrument);
   }
@@ -36,6 +39,8 @@ export function parseInstrument(instrument: string): Instrument | null {
   switch (instrument) {
     case 'chanter':
       return Instrument.Chanter;
+    case 'chanter-old':
+      return Instrument.Chanter_old;
     case 'GHB':
       return Instrument.GHB;
     default:

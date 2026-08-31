@@ -240,6 +240,7 @@ export const EnglishTextItems: TextItems = {
   allChangesSaved: 'All changes saved!',
   unsavedChanges: 'Unsaved changes',
   instrumentPC: 'Practice Chanter',
+  instrumentPCold: 'Practice Chanter old',
   instrumentPipes: 'Bagpipe',
   instrument: 'Instrument',
   attackoff: 'Attack off',

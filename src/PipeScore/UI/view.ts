@@ -62,7 +62,7 @@ import {
   setPlaybackBpm,
   startPlayback,
   startPlaybackAtSelection,
-  
+
   startPlayMetronome,
   stopPlayback,
   updateAttack,
@@ -191,7 +191,7 @@ export default function render(state: UIState): m.Children {
       m('button', {
         class:
           isCurrentNoteInput(length) ||
-          allNotes((note) => note.length().sameNoteLengthName(length))
+            allNotes((note) => note.length().sameNoteLengthName(length))
             ? 'highlighted'
             : 'not-highlighted',
         id: `note-${length}`,
@@ -270,7 +270,7 @@ export default function render(state: UIState): m.Children {
               class:
                 (state.preview instanceof NotePreview &&
                   state.preview.length().hasDot()) ||
-                allNotes((note) => note.length().hasDot())
+                  allNotes((note) => note.length().hasDot())
                   ? 'highlighted'
                   : 'not-highlighted',
               onclick: () => state.dispatch(toggleDot()),
@@ -321,8 +321,8 @@ export default function render(state: UIState): m.Children {
           m('button', {
             class:
               state.preview instanceof SingleGracenotePreview ||
-              (state.selectedGracenote?.notes().length === 1 &&
-                state.selectedGracenote.reactiveName() === null)
+                (state.selectedGracenote?.notes().length === 1 &&
+                  state.selectedGracenote.reactiveName() === null)
                 ? 'highlighted'
                 : 'not-highlighted',
             style: 'background-image: url("/images/icons/single.svg")',
@@ -972,7 +972,7 @@ export default function render(state: UIState): m.Children {
         help(
           'play-looping-selection',
           m('button', {
-            disabled: 
+            disabled:
               state.isPlaying ||
               state.selectedNotes.length === 0 ||
               state.isPlayingMetronome,
@@ -1198,7 +1198,22 @@ export default function render(state: UIState): m.Children {
             }),
             text('instrumentPC')
           ),
-        ]),    
+          m('div.section-content.vertical', [
+            m(
+              'label',
+              m('input', {
+                type: 'radio',
+                name: 'instrument',
+                disabled: state.isPlaying,
+                checked: settings.instrument === Instrument.Chanter_old,
+                onchange: () =>
+                  state.dispatch(updateInstrument(Instrument.Chanter_old)),
+                value: 'pcold',
+              }),
+              text('instrumentPCold')
+            ),
+          ]),
+        ]),
         state.dispatch
       ),
     ]),
@@ -1213,9 +1228,8 @@ export default function render(state: UIState): m.Children {
           m(
             'button',
             {
-              class: `text double-width ${
-                state.isLandscape ? ' highlighted' : ''
-              }`,
+              class: `text double-width ${state.isLandscape ? ' highlighted' : ''
+                }`,
               onclick: () => state.dispatch(landscape()),
             },
             text('landscape')
@@ -1227,9 +1241,8 @@ export default function render(state: UIState): m.Children {
           m(
             'button',
             {
-              class: `text double-width ${
-                state.isLandscape ? '' : ' highlighted'
-              }`,
+              class: `text double-width ${state.isLandscape ? '' : ' highlighted'
+                }`,
               onclick: () => state.dispatch(portrait()),
             },
             text('portrait')
@@ -1342,7 +1355,7 @@ export default function render(state: UIState): m.Children {
     ]),
     m('section', [
       m('h2', text('playbackSettings')),
-            help(
+      help(
         'dot-cut-timing-adjustment-help',
         m('div.section-content', [setting('dotCutTimingAdjustment', text('dotCutTimingAdjustment'))]),
         state.dispatch
@@ -1403,85 +1416,85 @@ export default function render(state: UIState): m.Children {
 
   const headings = state.canEdit
     ? [
-        help(
-          'home',
-          m('button', m('a[href=/scores]', text('homeMenu'))),
-          state.dispatch
-        ),
-        menuHead('note', text('noteMenu')),
-        menuHead('gracenote', text('gracenoteMenu')),
-        menuHead('bar', text('barMenu')),
-        menuHead('second_timing', text('secondTimingMenu')),
-        menuHead('stave', text('staveMenu')),
-        menuHead('tune', text('tuneMenu')),
-        menuHead('text', text('textMenu')),
-        menuHead('playback', text('playbackMenu')),
-        menuHead('document', text('documentMenu')),
-        menuHead('settings', text('settingsMenu')),
-        help(
-          'help',
-          m(
-            'button',
-            m('a[href=/help]', { target: '_blank' }, text('helpMenu'))
-          ),
-          state.dispatch
-        ),
+      help(
+        'home',
+        m('button', m('a[href=/scores]', text('homeMenu'))),
+        state.dispatch
+      ),
+      menuHead('note', text('noteMenu')),
+      menuHead('gracenote', text('gracenoteMenu')),
+      menuHead('bar', text('barMenu')),
+      menuHead('second_timing', text('secondTimingMenu')),
+      menuHead('stave', text('staveMenu')),
+      menuHead('tune', text('tuneMenu')),
+      menuHead('text', text('textMenu')),
+      menuHead('playback', text('playbackMenu')),
+      menuHead('document', text('documentMenu')),
+      menuHead('settings', text('settingsMenu')),
+      help(
+        'help',
         m(
-          'select',
-          {
-            style: 'padding-left: 1rem',
-            onchange: (e: Event) => state.dispatch(updateLanguage(e)),
-          },
-          [
-            m(
-              'option',
-              { name: 'lang', value: 'ENG', selected: language === 'ENG' },
-              '🇬🇧'
-            ),
-            m(
-              'option',
-              { name: 'lang', value: 'FRA', selected: language === 'FRA' },
-              '🇫🇷'
-            ),
-          ]
+          'button',
+          m('a[href=/help]', { target: '_blank' }, text('helpMenu'))
         ),
+        state.dispatch
+      ),
+      m(
+        'select',
+        {
+          style: 'padding-left: 1rem',
+          onchange: (e: Event) => state.dispatch(updateLanguage(e)),
+        },
+        [
+          m(
+            'option',
+            { name: 'lang', value: 'ENG', selected: language === 'ENG' },
+            '🇬🇧'
+          ),
+          m(
+            'option',
+            { name: 'lang', value: 'FRA', selected: language === 'FRA' },
+            '🇫🇷'
+          ),
+        ]
+      ),
 
-        ...(state.canSave
-          ? [
-              m(
-                'span.save-text',
-                { class: state.saved ? 'saved' : 'unsaved' },
-                state.saved ? text('allChangesSaved') : text('unsavedChanges')
-              ),
-              help(
-                'save',
-                m(
-                  'button.save',
-                  {
-                    disabled: state.saved,
-                    onclick: () => state.dispatch(save()),
-                  },
-                  text('save')
-                ),
-                state.dispatch
-              ),
-            ]
-          : []),
-      ]
+      ...(state.canSave
+        ? [
+          m(
+            'span.save-text',
+            { class: state.saved ? 'saved' : 'unsaved' },
+            state.saved ? text('allChangesSaved') : text('unsavedChanges')
+          ),
+          help(
+            'save',
+            m(
+              'button.save',
+              {
+                disabled: state.saved,
+                onclick: () => state.dispatch(save()),
+              },
+              text('save')
+            ),
+            state.dispatch
+          ),
+        ]
+        : []),
+    ]
     : [
-        help(
-          'home',
-          m('button', m('a[href="' + document.referrer + '"]', text('homeMenu'))),
-          state.dispatch
-        ),
-        menuHead('playback', text('playbackMenu')),
-        menuHead('document', text('documentMenu')),
-        help(
-          'help',
-          m('button', m('a[href=/help]', { target: '_blank' }, 'Help')),
-          state.dispatch
-        ),
-      ];
+      help(
+        'home',
+        m('button', m('a[href="' + document.referrer + '"]', text('homeMenu'))),
+        state.dispatch
+      ),
+      menuHead('playback', text('playbackMenu')),
+      menuHead('document', text('documentMenu')),
+      help(
+        'help',
+        m('button', m('a[href=/help]', { target: '_blank' }, 'Help')),
+        state.dispatch
+      ),
+    ];
 
   return m('div', [
     m('div#ui', [
@@ -1556,35 +1569,35 @@ function mobileView(state: UIState): m.Children {
       m('div#topbar', [
         m('section', [
           m('div.section-content.vertical', [
-              help(
-                state.isPlaying ? 'stop' : 'play',
-                m('button', {
-                  disabled: state.isPlayingMetronome,
-                  onclick: () =>
-                    state.dispatch(
-                      state.isPlaying
-                        ? stopPlayback()
-                        : state.selectedTune === null
+            help(
+              state.isPlaying ? 'stop' : 'play',
+              m('button', {
+                disabled: state.isPlayingMetronome,
+                onclick: () =>
+                  state.dispatch(
+                    state.isPlaying
+                      ? stopPlayback()
+                      : state.selectedTune === null
                         ? startPlayback()
                         : startPlaybackAtSelection()
-                    ),
-                    class: state.isPlaying ? 'stop-button' : 'play-button',
-                }),
-                state.dispatch
-              ),
-              help(
-                'play-start-of-selection',
-                m('button', {
-                  disabled: 
-                    state.isPlaying ||
-                    state.selectedNotesStart.length !== 0 ||
-                    state.isPlayingMetronome,
-                  onclick: () => state.dispatch(playbackSelectionStart()),
-                  class: 'play-startofselection',
-                }),
-                state.dispatch
-              ),
-            ]
+                  ),
+                class: state.isPlaying ? 'stop-button' : 'play-button',
+              }),
+              state.dispatch
+            ),
+            help(
+              'play-start-of-selection',
+              m('button', {
+                disabled:
+                  state.isPlaying ||
+                  state.selectedNotesStart.length !== 0 ||
+                  state.isPlayingMetronome,
+                onclick: () => state.dispatch(playbackSelectionStart()),
+                class: 'play-startofselection',
+              }),
+              state.dispatch
+            ),
+          ]
           ),
         ]),
         m('section', [
@@ -1608,7 +1621,7 @@ function mobileView(state: UIState): m.Children {
             help(
               'play-end-of-selection',
               m('button', {
-                disabled: 
+                disabled:
                   state.isPlaying ||
                   state.selectedNotesStart.length === 0 ||
                   state.isPlayingMetronome,
@@ -1618,7 +1631,7 @@ function mobileView(state: UIState): m.Children {
               state.dispatch
             ),
           ]
-        ),
+          ),
         ]),
         m('section', [
           m('div.section-content.vertical', [
@@ -1637,7 +1650,7 @@ function mobileView(state: UIState): m.Children {
             help(
               'play-looping-selection',
               m('button', {
-                disabled: 
+                disabled:
                   state.isPlaying ||
                   state.selectedNotes.length === 0 ||
                   state.isPlayingMetronome,
@@ -1647,7 +1660,7 @@ function mobileView(state: UIState): m.Children {
               state.dispatch
             ),
           ]
-        ),
+          ),
         ]),
         m('section', [
           m('div.section-content.vertical', [
@@ -1745,6 +1758,21 @@ function mobileView(state: UIState): m.Children {
                 value: 'pc',
               }),
               text('instrumentPC')
+            ),
+          ]),
+          m('div.section-content.vertical', [
+            m(
+              'label',
+              m('input', {
+                type: 'radio',
+                name: 'instrument',
+                disabled: state.isPlaying,
+                checked: settings.instrument === Instrument.Chanter_old,
+                onchange: () =>
+                  state.dispatch(updateInstrument(Instrument.Chanter_old)),
+                value: 'pcold',
+              }),
+              text('instrumentPCold')
             ),
           ]),
         ]),
