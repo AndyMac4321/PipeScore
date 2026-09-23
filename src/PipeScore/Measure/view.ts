@@ -98,6 +98,7 @@ export function drawMeasure(measure: IMeasure, props: MeasureProps): m.Children 
       const staveY = props.y + p * settings.harmonyStaveHeight();
       const isHarmony = p > 0;
       setXY(bar.id, props.x, props.x + props.width, staveY, bar.harmonyIndex());
+      props.barlineState.previousBarlineX = xAfterTimeSignature;
 
       return [
         pitchBoxes(
@@ -124,46 +125,47 @@ export function drawMeasure(measure: IMeasure, props: MeasureProps): m.Children 
           dispatch: props.dispatch,
           barlineState: props.barlineState,
         }),
-
         measure.startBarline().mustDraw() ||
-        (hasTimeSignature && !props.mustNotRenderFirstBarline)
+          (hasTimeSignature && !props.mustNotRenderFirstBarline)
           ? drawBarline(measure.startBarline(), {
-              x: xAfterTimeSignature,
-              y: staveY,
-              atStart: true,
-              isHarmony,
-              drag: () => null,
-              dispatch: props.dispatch,
-              barlineState: props.barlineState,
-            })
+            x: xAfterTimeSignature,
+            y: staveY,
+            atStart: true,
+            isHarmony,
+            drag: () => null,
+            dispatch: props.dispatch,
+            barlineState: props.barlineState,
+            isAnacrusis: measure.isAnacrusis(),
+          })
           : null,
         measure.endBarline().mustDraw() || props.shouldRenderLastBarline
           ? drawBarline(measure.endBarline(), {
-              x: props.x + props.width,
-              y: staveY,
-              atStart: false,
-              isHarmony,
-              drag: (x) => {
-                const newWidth = x - props.x;
-                // The reason we can't just do props.width here is that when
-                // this is called in the future, props.width may be out of date
-                const oldWidth =
-                  measure.fixedWidth === 'auto' ? props.width : measure.fixedWidth;
-                if (props.canResize(newWidth)) {
-                  props.resize(newWidth - oldWidth);
-                  measure.fixedWidth = newWidth;
-                }
-              },
-              dispatch: props.dispatch,
-              barlineState: props.barlineState,
-        })
+            x: props.x + props.width,
+            y: staveY,
+            atStart: false,
+            isHarmony,
+            drag: (x) => {
+              const newWidth = x - props.x;
+              // The reason we can't just do props.width here is that when
+              // this is called in the future, props.width may be out of date
+              const oldWidth =
+                measure.fixedWidth === 'auto' ? props.width : measure.fixedWidth;
+              if (props.canResize(newWidth)) {
+                props.resize(newWidth - oldWidth);
+                measure.fixedWidth = newWidth;
+              }
+            },
+            dispatch: props.dispatch,
+            barlineState: props.barlineState,
+            isAnacrusis: measure.isAnacrusis(),
+          })
           : null,
         hasTimeSignature
           ? drawTimeSignature(measure.timeSignature(), {
-              x: props.x + 10,
-              y: staveY,
-              dispatch: props.dispatch,
-            })
+            x: props.x + 10,
+            y: staveY,
+            dispatch: props.dispatch,
+          })
           : null,
       ];
     })

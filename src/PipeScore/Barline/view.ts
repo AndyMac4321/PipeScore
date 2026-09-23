@@ -30,6 +30,7 @@ interface BarlineProps {
   drag: (x: number) => void;
   dispatch: Dispatch;
   barlineState: BarlineState;
+  isAnacrusis: boolean;
 }
 
 function yStart(y: number, isHarmony: boolean) {
@@ -46,16 +47,19 @@ function height(isHarmony: boolean) {
   return settings.lineHeightOf(4) + (isHarmony ? settings.harmonyGap : 0);
 }
 
-function drawNormal({ x, y, isHarmony, drag, dispatch, barlineState }: BarlineProps) {
+function drawNormal({ x, y, isHarmony, drag, dispatch, barlineState, isAnacrusis }: BarlineProps) {
   const top = yStart(y, isHarmony);
-  barlineState.barNumber++;
+  var prevX = barlineState.previousBarlineX;
+  if (x < prevX) prevX = 0;
+  barlineState.previousBarlineX = x;
+  if (!isAnacrusis) barlineState.barNumber++;
   return m('g', [
-    barlineState.showBarNumbers?m('text', {
-      x: x - 20,
+    barlineState.showBarNumbers && !isAnacrusis ? m('text', {
+      x: prevX + 5,
       y: y - 10,
     },
       barlineState.barNumber.toString()
-    ):null,
+    ) : null,
 
     m('line', {
       x1: x,
@@ -98,14 +102,17 @@ function drawRepeat(props: BarlineProps) {
   ]);
 }
 
-function drawPart({ x, y, atStart, isHarmony, drag, dispatch, barlineState }: BarlineProps) {
+function drawPart({ x, y, atStart, isHarmony, drag, dispatch, barlineState, isAnacrusis }: BarlineProps) {
+  var prevX = barlineState.previousBarlineX;
+  if (x < prevX) prevX = 0;
+  barlineState.previousBarlineX = x;
   const thickX = x - thickLineWidth / 2;
   const thinX = atStart ? x + lineOffset : x - lineOffset;
   const top = yStart(y, isHarmony);
   if (!atStart) barlineState.barNumber++;
   return m('g[class=barline-end]', [
-    !atStart && barlineState.showBarNumbers? m('text', {
-      x: x - 20,
+    !atStart && barlineState.showBarNumbers && !isAnacrusis ? m('text', {
+      x: prevX + 5,
       y: y - 10,
     },
       barlineState.barNumber.toString()

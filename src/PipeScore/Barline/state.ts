@@ -17,4 +17,5 @@
 export interface BarlineState {
   barNumber:number;
   showBarNumbers:boolean;
+  previousBarlineX:number;
 }
