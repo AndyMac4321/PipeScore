@@ -187,6 +187,7 @@ export function exportPDF(): ScoreEvent {
       barlineState: {
         barNumber: 0,
         showBarNumbers: state.score.showBarNumbers,
+        previousBarlinex:0,
       },
       gracenoteState: {
         dragged: null,

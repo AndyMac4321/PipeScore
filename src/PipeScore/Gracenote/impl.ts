@@ -126,11 +126,11 @@ export abstract class Gracenote extends IGracenote {
   cantHGGracenote: string[] = ['hggnHA', 'hi', 'he', 'che', 'ha', 'ho', 'hio', 'hin', 'him'];
   cantEGracenote: string[] = ['egnHA', 'egnHG', 'egnF', 'egnE', 'ea', 'eo', 'eo', 'en', 'em'];
   cantDGracenote: string[] = ['dgnHA', 'dgnHG', 'dgnF', 'dgnE', 'dgnD', 'do', 'to', 'dan', 'dam'];
-  cantGGracenote: string[] = ['', 'din', 'din', 'din', 'da', 'ro', 'ro', 'din', ''];
+  cantLGGracenote: string[] = ['ggHA', 'din', 'din', 'din', 'da', 'ro', 'ro', 'din', ''];
   cantEDoubling: string[] = ['edre', 'edre', 'edre', 'dre', 'dre', 'dre', 'dre', 'dre', 'dre', ''];
   cantFDoubling: string[] = ['vedare', 'vedare', 'hedale', 'dare', 'dare', 'dare', 'dare', 'dare', 'dare', ''];
   cantGDoubling: string[] = ['gdblHA', 'gdblHG', 'gdblF', 'chedari', 'gdblD', 'gdblC', 'gdblB', 'embari', 'endari', ''];
-  cantGrip: string[] = ['gripHA', 'gripHG', 'gripF', 'gripE', 'adeda', 'dro', 'tro', 'ban', ''];
+  cantGrip: string[] = ['grpHA', 'grpHG', 'grpF', 'grpE', 'adeda', 'dro', 'tro', 'ban', ''];
   cantEdre: string[] = ['edre', 'edre', 'edre', 'dre', 'dre', 'dre', 'dre', 'dre', 'dre', ''];
 
 
@@ -168,7 +168,26 @@ export abstract class Gracenote extends IGracenote {
             }
             break;
           case 'half-doubling':
-            canntaireachd = 'hdDbl';
+            switch (note.pitch()) {
+              case Pitch.G:
+                canntaireachd = this.cantGDoubling[previousNoteIndex];  //
+                break;
+              case Pitch.F:
+                canntaireachd = this.cantFDoubling[previousNoteIndex];  //
+                break;
+              case Pitch.E:
+                canntaireachd = this.cantEDoubling[previousNoteIndex];  //
+                break;
+              case Pitch.C:
+                canntaireachd = 'dro';  //
+                break;
+              case Pitch.A:
+                canntaireachd = 'adeda';  //ademda
+                break;
+              default:
+                canntaireachd = 'dro';  //
+                break;
+            }
             break;
           case 'g-strike':
             canntaireachd = 'gstrk';
@@ -216,7 +235,7 @@ export abstract class Gracenote extends IGracenote {
             canntaireachd = this.cantDGracenote[index];
             break;
           case Pitch.G:
-            canntaireachd = this.cantGGracenote[index];
+            canntaireachd = this.cantLGGracenote[index];
             break;
         }
         break;
