@@ -53,6 +53,7 @@ export class Score extends IScore {
 
   showNumberOfPages: boolean;
   showBarNumbers: boolean;
+  showCanntaireachd: boolean;
 
   zoom: number;
 
@@ -68,6 +69,7 @@ export class Score extends IScore {
     this.landscape = true;
     this.showNumberOfPages = true;
     this.showBarNumbers = true;
+    this.showCanntaireachd = false;
     this._tunes = [
       Tune.create(
         timeSignature,
@@ -97,6 +99,7 @@ export class Score extends IScore {
     s._timings = o.secondTimings.map(Timing.fromJSON);
     s.showNumberOfPages = o.showNumberOfPages;
     s.showBarNumbers=o.showBarNumbers??true;
+    s.showCanntaireachd=o.showCanntaireachd??false;
 
     if (scoreHasStavesNotTunes(o)) {
       const name = s._textBoxes[0]?.[0]?.text() || 'My Tune';
@@ -123,6 +126,7 @@ export class Score extends IScore {
       landscape: this.landscape,
       showNumberOfPages: this.showNumberOfPages,
       showBarNumbers:this.showBarNumbers,
+      showCanntaireachd:this.showCanntaireachd,
       tunes: this._tunes.map((tune) => tune.toJSON()),
       textBoxes: this._textBoxes.map((p) => ({
         texts: p.map((txt) => txt.toJSON()),

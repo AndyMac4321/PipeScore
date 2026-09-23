@@ -44,6 +44,7 @@ export type SavedScore = {
   secondTimings: SavedTiming[];
   showNumberOfPages: boolean;
   showBarNumbers:boolean;
+  showCanntaireachd:boolean;
   settings: SavedSettings;
 };
 

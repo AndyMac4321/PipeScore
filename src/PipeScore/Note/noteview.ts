@@ -26,7 +26,7 @@ import {
   gracenoteWidth,
 } from '../Gracenote/view';
 import { pitchBoxes } from '../PitchBoxes';
-import { Pitch, isPitchOnLine, pitchY } from '../global/pitch';
+import { Pitch, isPitchOnLine, pitchCanntaireachd, pitchY } from '../global/pitch';
 import { settings } from '../global/settings';
 import { foreach, isRoughlyZero, sum } from '../global/utils';
 import width, { type Width } from '../global/width';
@@ -59,7 +59,6 @@ const stemThickness = 1;
 const stemYOffset = 2;
 const noteHeadRadius = 4;
 export const noteHeadWidth = 2 * noteHeadRadius;
-
 export function spacerWidth() {
   return width.init(noteHeadWidth, 1);
 }
@@ -111,11 +110,11 @@ function drawBeam(
 
   const drawExtraTails = moreTailsOnLeft
     ? tailsBefore === null ||
-      (leftShortBeamDirection === ShortBeamDirection.Right &&
-        leftTails > tailsBefore)
+    (leftShortBeamDirection === ShortBeamDirection.Right &&
+      leftTails > tailsBefore)
     : tailsAfter === null ||
-      (rightShortBeamDirection === ShortBeamDirection.Left &&
-        rightTails > tailsAfter);
+    (rightShortBeamDirection === ShortBeamDirection.Left &&
+      rightTails > tailsAfter);
 
   // tails shared by both notes
   const sharedTails = Math.min(leftTails, rightTails);
@@ -196,33 +195,33 @@ function drawHead(note: INote, x: number, y: number, props: NoteProps): m.Childr
     note.length().isFilled()
       ? null
       : m('ellipse', {
-          cx: x,
-          cy: y,
-          rx: maskrx,
-          ry: maskry,
-          'stroke-width': 0,
-          fill: 'white',
-          'pointer-events': pointerEvents,
-          transform: `rotate(${holeRotation} ${x} ${y})`,
-        }),
+        cx: x,
+        cy: y,
+        rx: maskrx,
+        ry: maskry,
+        'stroke-width': 0,
+        fill: 'white',
+        'pointer-events': pointerEvents,
+        transform: `rotate(${holeRotation} ${x} ${y})`,
+      }),
     note.length().hasDot()
       ? m('circle', {
-          cx: x + dotXOffset,
-          cy: y + dotYOffset,
-          r: dotRadius,
-          fill: colour(note),
-          'pointer-events': 'none',
-        })
+        cx: x + dotXOffset,
+        cy: y + dotYOffset,
+        r: dotRadius,
+        fill: colour(note),
+        'pointer-events': 'none',
+      })
       : null,
     note.pitch() === Pitch.HA
       ? m('line[class=ledger]', {
-          x1: x - 8,
-          x2: x + 8,
-          y1: y,
-          y2: y,
-          stroke: colour(note),
-          'pointer-events': pointerEvents,
-        })
+        x1: x - 8,
+        x2: x + 8,
+        y1: y,
+        y2: y,
+        stroke: colour(note),
+        'pointer-events': pointerEvents,
+      })
       : null,
 
     m('rect', {
@@ -333,18 +332,18 @@ function drawTails(note: INote, x: number, y: number) {
       'g[class=tails]',
       note.length().numTails() === 1
         ? m('path', {
+          fill: colour(note),
+          stroke: colour(note),
+          'stroke-width': 0.5,
+          d: `M ${x},${stemY} c 16,-10 6,-22 4,-25 c 3,6 8,15 -4,22`,
+        })
+        : foreach(note.length().numTails(), (t) =>
+          m('path', {
             fill: colour(note),
             stroke: colour(note),
-            'stroke-width': 0.5,
-            d: `M ${x},${stemY} c 16,-10 6,-22 4,-25 c 3,6 8,15 -4,22`,
+            d: `M ${x}, ${stemY - 5 * t} c 12,-5 9,-8 6,-10 c 4,3 4,5 -6,8`,
           })
-        : foreach(note.length().numTails(), (t) =>
-            m('path', {
-              fill: colour(note),
-              stroke: colour(note),
-              d: `M ${x}, ${stemY - 5 * t} c 12,-5 9,-8 6,-10 c 4,3 4,5 -6,8`,
-            })
-          )
+        )
     )
   );
 }
@@ -375,7 +374,7 @@ export function shortBeamDirection(
   index: number
 ): ShortBeamDirection {
   const lengthOfNotes = (notes: INote[]) =>
-    sum(notes.map((n) => n.length().inBeats()));
+    sum(notes.map((n) => n.length().inBeats(null, null)));
 
   // If we're on the outside of the group, point inwards
   if (index === 0) {
@@ -389,7 +388,7 @@ export function shortBeamDirection(
   // through a "beat" ("beat" = 2 * length of note) - i.e. if it "completes the beat"
   // Otherwise, we're at the start of a new "beat" so point to the right
   const lengthUpToNote = lengthOfNotes(notes.slice(0, index));
-  if (isRoughlyZero(lengthUpToNote % (notes[index].length().inBeats() * 2))) {
+  if (isRoughlyZero(lengthUpToNote % (notes[index].length().inBeats(null, null) * 2))) {
     return ShortBeamDirection.Right;
   }
   return ShortBeamDirection.Left;
@@ -431,24 +430,24 @@ export function drawNoteGroup(notes: INote[], props: NoteProps) {
       return m('g', { class: `grouped-note ${note.pitch()}` }, [
         props.state.inputtingNotes && !note.isPreview()
           ? pitchBoxes(
-              pitchBoxX,
-              props.y,
-              x(index) + noteHeadWidth - pitchBoxX,
-              (pitch) => props.dispatch(mouseOverPitch(pitch, note)),
-              (pitch) => props.dispatch(addNoteBefore(pitch, note)),
-              props.justAddedNote
-            )
+            pitchBoxX,
+            props.y,
+            x(index) + noteHeadWidth - pitchBoxX,
+            (pitch) => props.dispatch(mouseOverPitch(pitch, note)),
+            (pitch) => props.dispatch(addNoteBefore(pitch, note)),
+            props.justAddedNote
+          )
           : m('g'),
 
         shouldDrawTie(note, previousNote)
           ? drawTie(
-              note,
-              x(index),
-              props.y,
-              props.noteWidth,
-              previousNote,
-              props.endOfLastStave
-            )
+            note,
+            x(index),
+            props.y,
+            props.noteWidth,
+            previousNote,
+            props.endOfLastStave
+          )
           : null,
 
         note.natural() ? drawNatural(note, naturalX(index), y(index)) : null,
@@ -458,46 +457,54 @@ export function drawNoteGroup(notes: INote[], props: NoteProps) {
         shouldDrawTie(note, previousNote)
           ? null
           : drawGrace(note, {
-              x: gracenoteX(index) + noteHeadRadius,
-              y: props.y,
-              thisNote: note.pitch(),
-              preview: false,
-              previousNote:
-                previousNote?.pitch() || props.previousNote?.pitch() || null,
-              state: props.gracenoteState,
-              dispatch: props.dispatch,
-            }),
+            x: gracenoteX(index) + noteHeadRadius,
+            y: props.y,
+            thisNote: note.pitch(),
+            preview: false,
+            previousNote:
+              previousNote?.pitch() || props.previousNote?.pitch() || null,
+            state: props.gracenoteState,
+            dispatch: props.dispatch,
+          }),
 
         previousNote !== null &&
-          index > 0 &&
-          drawBeam(
-            x(index - 1),
-            x(index),
-            stemY,
-            previousNote.length().numTails(),
-            note.length().numTails(),
-            (notes[index - 2] && notes[index - 2].length().numTails()) || null,
-            (notes[index + 1] && notes[index + 1].length().numTails()) || null,
-            shortBeamDirection(notes, index - 1),
-            shortBeamDirection(notes, index)
-          ),
+        index > 0 &&
+        drawBeam(
+          x(index - 1),
+          x(index),
+          stemY,
+          previousNote.length().numTails(),
+          note.length().numTails(),
+          (notes[index - 2] && notes[index - 2].length().numTails()) || null,
+          (notes[index + 1] && notes[index + 1].length().numTails()) || null,
+          shortBeamDirection(notes, index - 1),
+          shortBeamDirection(notes, index)
+        ),
         note.length().hasStem()
           ? [
-              notes.length === 1 && drawTails(note, x(index), y(index)),
+            notes.length === 1 && drawTails(note, x(index), y(index)),
 
-              m('line', {
-                x1: x(index),
-                x2: x(index),
-                y1: y(index) + stemYOffset,
-                y2:
-                  note.length().hasBeam() && notes.length > 1
-                    ? stemY
-                    : y(index) + normalStemHeight,
-                stroke: colour(note),
-                'stroke-width': stemThickness,
-              }),
-            ]
+            m('line', {
+              x1: x(index),
+              x2: x(index),
+              y1: y(index) + stemYOffset,
+              y2:
+                note.length().hasBeam() && notes.length > 1
+                  ? stemY
+                  : y(index) + normalStemHeight,
+              stroke: colour(note),
+              'stroke-width': stemThickness,
+            }),
+          ]
           : null,
+        props.state.showCanntaireachd?
+        m('text', {
+          x: x(index),
+          y: stemY + 15,
+        },
+          pitchCanntaireachd(note,previousNote)
+        ):null,
+
       ]);
     })
   );

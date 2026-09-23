@@ -42,6 +42,7 @@ import {
   redo,
   save,
   setBarNumberVisibility,
+  setCanntaireachdVisibility,
   setMenu,
   setPageNumberVisibility,
   undo,
@@ -141,6 +142,7 @@ export interface UIState {
   firstTune: ITune | null;
   showingPageNumbers: boolean;
   showingBarNumbers: boolean;
+  showingCanntaireached: boolean;
   preview: IPreview | null;
   isLandscape: boolean;
   currentMenu: Menu;
@@ -1270,23 +1272,6 @@ export default function render(state: UIState): m.Children {
           state.dispatch
         ),
       ]),
-      m('div.section-content', [
-        help(
-          'bar-numbers',
-          m('label', [
-            `${text('showBarNumbers')}: `,
-            m('input', {
-              type: 'checkbox',
-              checked: state.showingBarNumbers,
-              onclick: (e: MouseEvent) =>
-                state.dispatch(
-                  setBarNumberVisibility(e.target as HTMLInputElement)
-                ),
-            }),
-          ]),
-          state.dispatch
-        ),
-      ]),
     ]),
     m('section', [
       m('h2', text('export')),
@@ -1316,6 +1301,43 @@ export default function render(state: UIState): m.Children {
             { onclick: () => state.dispatch(download()) },
             text('download')
           ),
+          state.dispatch
+        ),
+      ]),
+    ]),
+        m('section', [
+      m('h2', text('displayOptions')),
+      m('div.section-content', [
+        help(
+          'bar-numbers',
+          m('label', [
+            `${text('showBarNumbers')}: `,
+            m('input', {
+              type: 'checkbox',
+              checked: state.showingBarNumbers,
+              onclick: (e: MouseEvent) =>
+                state.dispatch(
+                  setBarNumberVisibility(e.target as HTMLInputElement)
+                ),
+            }),
+          ]),
+          state.dispatch
+        ),
+      ]),
+      m('div.section-content', [
+        help(
+          'bar-numbers',
+          m('label', [
+            `${text('showCanntaireachd')}: `,
+            m('input', {
+              type: 'checkbox',
+              checked: state.showingCanntaireached,
+              onclick: (e: MouseEvent) =>
+                state.dispatch(
+                  setCanntaireachdVisibility(e.target as HTMLInputElement)
+                ),
+            }),
+          ]),
           state.dispatch
         ),
       ]),

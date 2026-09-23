@@ -24,6 +24,8 @@
 //  - (NoGracenote - used if the note has no gracenote)
 
 import { IGracenote } from '.';
+import { previousNote } from '../Measure';
+import { INote } from '../Note';
 import { playbackGracenote } from '../Playback';
 import type { IPreview } from '../Preview';
 import { ReactiveGracenotePreview, SingleGracenotePreview } from '../Preview/impl';
@@ -32,7 +34,7 @@ import type {
   SavedGracenote,
   SavedReactiveGracenote,
 } from '../SavedModel';
-import { Pitch, pitchDown, pitchUp } from '../global/pitch';
+import { Pitch, PitchDirection, pitchDown, pitchIndex, pitchUp } from '../global/pitch';
 import { gracenotes, noteList } from './gracenotes';
 
 export abstract class Gracenote extends IGracenote {
@@ -119,8 +121,117 @@ export abstract class Gracenote extends IGracenote {
   reactiveName(): string | null {
     return null;
   }
-}
+  //                     HA    HG   F    E    D    C     B    A     G
+  cantNotes: string[] = ['di', 'u', 'i', 'e', 'a', 'ie', 'o', 'in', 'un'];
+  cantHGGracenote: string[] = ['hggnHA', 'hi', 'he', 'che', 'ha', 'ho', 'hio', 'hin', 'him'];
+  cantEGracenote: string[] = ['egnHA', 'egnHG', 'egnF', 'egnE', 'ea', 'eo', 'eo', 'en', 'em'];
+  cantDGracenote: string[] = ['dgnHA', 'dgnHG', 'dgnF', 'dgnE', 'dgnD', 'do', 'to', 'dan', 'dam'];
+  cantGGracenote: string[] = ['', 'din', 'din', 'din', 'da', 'ro', 'ro', 'din', ''];
+  cantEDoubling: string[] = ['edre', 'edre', 'edre', 'dre', 'dre', 'dre', 'dre', 'dre', 'dre', ''];
+  cantFDoubling: string[] = ['vedare', 'vedare', 'hedale', 'dare', 'dare', 'dare', 'dare', 'dare', 'dare', ''];
+  cantGDoubling: string[] = ['gdblHA', 'gdblHG', 'gdblF', 'chedari', 'gdblD', 'gdblC', 'gdblB', 'embari', 'endari', ''];
+  cantGrip: string[] = ['gripHA', 'gripHG', 'gripF', 'gripE', 'adeda', 'dro', 'tro', 'ban', ''];
+  cantEdre: string[] = ['edre', 'edre', 'edre', 'dre', 'dre', 'dre', 'dre', 'dre', 'dre', ''];
 
+
+  canntaireachd(note: INote, previous: INote | null): string {
+    var index: number = pitchIndex(note);
+    var previousNoteIndex = pitchIndex(previous);
+    let canntaireachd = '';
+    var gracenote = note.gracenote() as ReactiveGracenote;
+    switch (gracenote.type) {
+      case 'reactive':
+        switch (gracenote.reactiveName()) {
+          case 'throw-d':
+            canntaireachd = 'tra';
+            break;
+          case 'doubling':
+            switch (note.pitch()) {
+              case Pitch.G:
+                canntaireachd = this.cantGDoubling[previousNoteIndex];  //
+                break;
+              case Pitch.F:
+                canntaireachd = this.cantFDoubling[previousNoteIndex];  //
+                break;
+              case Pitch.E:
+                canntaireachd = this.cantEDoubling[previousNoteIndex];  //
+                break;
+              case Pitch.C:
+                canntaireachd = 'dro';  //
+                break;
+              case Pitch.A:
+                canntaireachd = 'adeda';  //ademda
+                break;
+              default:
+                canntaireachd = 'dro';  //
+                break;
+            }
+            break;
+          case 'half-doubling':
+            canntaireachd = 'hdDbl';
+            break;
+          case 'g-strike':
+            canntaireachd = 'gstrk';
+            break;
+          case 'grip':
+            canntaireachd = this.cantGrip[index]
+            break;
+          case 'edre':
+            canntaireachd = this.cantEdre[index]
+            break;
+          case 'shake':
+            canntaireachd = 'shk';
+            break;
+          case 'c-shake':
+            canntaireachd = 'cshk';
+            break;
+          case 'taorluath':
+            canntaireachd = 'darid';
+            break;
+          case 'crunluath':
+            canntaireachd = 'bamdre';
+            break;
+          case 'birl':
+            canntaireachd = 'rin';
+            break;
+          case 'g-gracenote-birl':
+            canntaireachd = 'rin';
+            break;
+          case 'bubbly':
+            canntaireachd = 'bub';
+            break;
+          default:
+            break;
+        }
+        break;
+      case 'custom':
+        switch (gracenote.notes()[0]) {
+          case Pitch.HG:
+            canntaireachd = this.cantHGGracenote[index];
+            break;
+          case Pitch.E:
+            canntaireachd = this.cantEGracenote[index];
+            break;
+          case Pitch.D:
+            canntaireachd = this.cantDGracenote[index];
+            break;
+          case Pitch.G:
+            canntaireachd = this.cantGGracenote[index];
+            break;
+        }
+        break;
+
+
+      case 'none': {
+        // No gracenotes
+        canntaireachd = this.cantNotes[index];
+        break;
+
+      }
+    }
+    return canntaireachd;
+  }
+}
 export class ReactiveGracenote extends Gracenote {
   private grace: string;
 

@@ -16,13 +16,13 @@
 
 //  Note model
 
-import { INote } from '.';
+import { INote, ITriplet } from '.';
 import { IGracenote } from '../Gracenote';
 import { Gracenote, NoGracenote } from '../Gracenote/impl';
 import { type PlaybackItem, playbackNote, playbackObject } from '../Playback';
 import type { SavedNote } from '../SavedModel';
 import { genID } from '../global/id';
-import { Pitch, pitchDown, pitchUp } from '../global/pitch';
+import { PitchDirection, Pitch, pitchDirection, pitchDown, pitchUp } from '../global/pitch';
 import { NoteLength } from './notelength';
 
 export class Note extends INote {
@@ -34,6 +34,7 @@ export class Note extends INote {
 
   private previewGracenote: IGracenote | null;
   private preview = false;
+  private pitchDirection: PitchDirection;
 
   constructor(
     pitch: Pitch,
@@ -49,6 +50,7 @@ export class Note extends INote {
     this._gracenote = gracenote;
     this.hasNatural = hasNatural;
     this.previewGracenote = null;
+    this.pitchDirection = PitchDirection.same;
   }
 
   static fromObject(o: SavedNote) {
@@ -221,10 +223,41 @@ export class Note extends INote {
     if (this._gracenote === g) this._gracenote = n || new NoGracenote();
   }
 
-  play(pitchBefore: Pitch | null,noteBefore :INote|null,noteAfter :INote|null ): PlaybackItem[] {
+  play(pitchBefore: Pitch | null, noteBefore: INote | null, noteAfter: INote | null): PlaybackItem[] {
     return playbackObject(this.id, [
       ...this.gracenote().play(this._pitch, pitchBefore),
-      playbackNote(this._pitch, this._length.inBeats(noteBefore,noteAfter), this.tied),
+      playbackNote(this._pitch, this._length.inBeats(noteBefore, noteAfter), this.tied),
     ]);
+  }
+  setNotePitchDirection(note: INote | ITriplet) {
+    if (note instanceof ITriplet) {
+      // Todo : triplet direcitons?
+
+    }
+    else {
+      this.pitchDirection = pitchDirection(note, this);
+      var nextNotePitchDirection = PitchDirection.same;
+      switch (this.pitchDirection) {
+        case PitchDirection.ascending:
+          nextNotePitchDirection = PitchDirection.ascended;
+          break;
+        case PitchDirection.descending:
+          nextNotePitchDirection = PitchDirection.descended;
+          break;
+        case PitchDirection.same:
+          nextNotePitchDirection = PitchDirection.sameAgain;
+          break;
+        case PitchDirection.backcutting:
+          nextNotePitchDirection = PitchDirection.cut;
+          break;
+      }
+      note.setPitchDirection(nextNotePitchDirection);
+    }
+  }
+  setPitchDirection(direction: PitchDirection) {
+    this.pitchDirection = direction;
+  }
+  getPitchDirection(): PitchDirection {
+    return this.pitchDirection;
   }
 }

@@ -21,14 +21,13 @@ import type { PlaybackItem } from '../Playback';
 import type { Previews } from '../Preview/previews';
 import type { SavedNote, SavedNoteOrTriplet, SavedTriplet } from '../SavedModel';
 import { Item } from '../global/id';
-import type { Pitch } from '../global/pitch';
+import type { PitchDirection, Pitch } from '../global/pitch';
 import { unreachable } from '../global/utils';
 import type { NoteLength } from './notelength';
 
 export abstract class INote
   extends Item
-  implements Previews<IGracenote>, Previews<Pitch>
-{
+  implements Previews<IGracenote>, Previews<Pitch> {
   abstract toObject(): SavedNote;
   abstract copy(): INote;
   abstract toggleTie(notes: INote[][]): void;
@@ -55,7 +54,10 @@ export abstract class INote
   abstract setGracenote(gracenote: IGracenote): void;
   abstract addSingleGracenote(grace: Pitch, previous: INote | null): void;
   abstract replaceGracenote(g: IGracenote, n: IGracenote | null): void;
-  abstract play(pitchBefore: Pitch | null,noteBefore :INote|null,noteAfter :INote|null ): PlaybackItem[];
+  abstract play(pitchBefore: Pitch | null, noteBefore: INote | null, noteAfter: INote | null): PlaybackItem[];
+  abstract setNotePitchDirection(note: INote | ITriplet): void;
+  abstract setPitchDirection(direction: PitchDirection): void;
+  abstract getPitchDirection():PitchDirection;
 }
 
 // TODO : must we extend Item here?
@@ -128,21 +130,25 @@ export function groupNotes(
       currentGroup.push(note);
       endGroup();
     }
-    remainingLength -= note.length().inBeats(null,null);
+    remainingLength -= note.length().inBeats(null, null);
   }
-
+  let previousNote: INote | ITriplet | null = null;
   for (const note of notes) {
     if (note instanceof ITriplet) {
       endGroup();
       groupedNotes.push(note);
+      previousNote = null; // Reset so next note is first note in group
       remainingLength = findLengthOfGroup(++i);
     } else {
-      if (remainingLength >= note.length().inBeats(null,null)) {
+      if (remainingLength >= note.length().inBeats(null, null)) {
+        previousNote?.setNotePitchDirection(note);
         pushNote(note);
+        previousNote = note;
       } else {
         endGroup();
         remainingLength += findLengthOfGroup(++i);
         pushNote(note);
+        previousNote = null; // Reset so next note is first note in group
       }
       if (remainingLength < 0) {
         remainingLength += findLengthOfGroup(++i);

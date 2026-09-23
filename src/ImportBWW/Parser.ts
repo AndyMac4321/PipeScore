@@ -20,7 +20,7 @@ function dotDuration(d: Duration) {
 }
 
 function durationInBeats(d: Duration) {
-  return new NoteLength(d).inBeats();
+  return new NoteLength(d).inBeats(null,null);
 }
 
 type ParsedScore = {
