@@ -115,6 +115,7 @@ function redraw() {
               state.selection.selected) ||
             null,
           inputtingNotes: state.preview !== null,
+          showCanntaireachd:state.score.showCanntaireachd,
         },
         barlineState:{
           barNumber:0,
@@ -150,6 +151,7 @@ function redraw() {
         preview: state.preview,
         showingPageNumbers: state.score.showNumberOfPages,
         showingBarNumbers: state.score.showBarNumbers,
+        showingCanntaireached: state.score.showCanntaireachd,
         selectedNotes:
           state.selection instanceof ScoreSelection
             ? state.selection.notes(state.score)

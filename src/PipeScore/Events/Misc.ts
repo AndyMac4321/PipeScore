@@ -43,6 +43,13 @@ export function setBarNumberVisibility(element: HTMLInputElement): ScoreEvent {
     return Update.ShouldSave;
   };
 }
+export function setCanntaireachdVisibility(element: HTMLInputElement): ScoreEvent {
+  return async (state: State) => {
+    const visibility = element.checked;
+    state.score.showCanntaireachd = Boolean(visibility);
+    return Update.ShouldSave;
+  };
+}
 
 export function changeSetting<T extends keyof Settings>(
   setting: T,
@@ -175,6 +182,7 @@ export function exportPDF(): ScoreEvent {
         dragged: null,
         inputtingNotes: false,
         selectedTripletLine: null,
+        showCanntaireachd:state.score.showCanntaireachd,
       },
       barlineState: {
         barNumber: 0,

@@ -253,4 +253,6 @@ export const EnglishTextItems: TextItems = {
   metronomeplaybackdoubletime:'Double time',
   barNumbers:"Show bar numbers",
   showBarNumbers:"Show bar numbers",
+  showCanntaireachd:"Show canntaireachd",
+  displayOptions:"Display options",
 };

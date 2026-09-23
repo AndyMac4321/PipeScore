@@ -214,4 +214,6 @@ export type TextItems = {
   metronomeplaybackdoubletime:string;
   barNumbers:string;
   showBarNumbers:string;
+  showCanntaireachd:string;
+  displayOptions:string;
 };

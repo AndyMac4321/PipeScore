@@ -16,6 +16,8 @@
 
 //  Pitch type and methods.
 
+import { nextNote } from '../Measure';
+import { INote } from '../Note';
 import { settings } from './settings';
 
 export enum Pitch {
@@ -29,7 +31,16 @@ export enum Pitch {
   A = 'A',
   G = 'G',
 }
-
+export enum PitchDirection {
+  ascending,
+  descending,
+  same,
+  backcutting,
+  ascended,
+  descended,
+  sameAgain,
+  cut,
+}
 export function pitchToHeight(pitch: Pitch): number {
   // Finds the height of the pitch from the top of the stave, in lines
 
@@ -55,6 +66,66 @@ export function pitchToHeight(pitch: Pitch): number {
   }
 }
 
+export function pitchCanntaireachd(note: INote, previous: INote | null): string {
+  var index = pitchIndex(note);
+  return note.gracenote().canntaireachd(note, previous);
+}
+
+export function pitchIndex(note: INote | null): number {
+  var index = 10;
+  if (note == null) return index;
+  switch (note.pitch()) {
+    case Pitch.HA:
+      index = 0;
+      break;
+    case Pitch.HG:
+      index = 1;
+      break;
+    case Pitch.F:
+      index = 2;
+      break;
+    case Pitch.E:
+      index = 3;
+      break;
+    case Pitch.D:
+      index = 4;
+      break;
+    case Pitch.C:
+      index = 5;
+      break;
+    case Pitch.B:
+      index = 6;
+      break;
+    case Pitch.A:
+      index = 7;
+      break;
+    case Pitch.G:
+      index = 8;
+      break;
+  }
+  return index;
+}
+
+export function pitchDirection(note: INote, previousNote: INote): PitchDirection {
+  let noteIndex = pitchIndex(note);
+  let previousNoteIndex = pitchIndex(previousNote)
+  if (noteIndex == previousNoteIndex) {
+    if (previousNote.gracenote().numberOfNotes() == 0) {
+      return PitchDirection.backcutting;
+    }
+    return PitchDirection.same;
+  }
+  if (previousNoteIndex > noteIndex) {
+    if (previousNote.gracenote().numberOfNotes() == 0) {
+      return PitchDirection.backcutting;
+    }
+    return PitchDirection.descending;
+
+  }
+  else {
+    return PitchDirection.ascending;
+  }
+};
 export function pitchUp(pitch: Pitch): Pitch {
   switch (pitch) {
     case Pitch.G:

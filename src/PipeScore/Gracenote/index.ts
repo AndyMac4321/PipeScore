@@ -14,6 +14,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { INote } from '../Note';
 import type { PlaybackItem } from '../Playback';
 import type { IPreview } from '../Preview';
 import type { SavedGracenote } from '../SavedModel';
@@ -36,4 +37,5 @@ export abstract class IGracenote {
   abstract removeSingle(index: number): IGracenote;
   abstract copy(): IGracenote;
   abstract reactiveName(): string | null;
+  abstract canntaireachd(note: INote, previous: INote | null): string
 }

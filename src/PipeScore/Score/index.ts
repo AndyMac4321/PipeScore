@@ -36,6 +36,7 @@ export abstract class IScore {
   abstract landscape: boolean;
   abstract showNumberOfPages: boolean;
   abstract showBarNumbers:boolean;
+  abstract showCanntaireachd:boolean;
   abstract zoom: number;
   abstract name(): string;
   abstract toJSON(): SavedScore;

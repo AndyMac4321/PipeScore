@@ -20,4 +20,5 @@ export interface NoteState {
   dragged: INote | null;
   selectedTripletLine: ITriplet | null;
   inputtingNotes: boolean;
+  showCanntaireachd:boolean;
 }
