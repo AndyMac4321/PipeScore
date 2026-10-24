@@ -20,9 +20,9 @@ import Auth from 'firebase-auth-lite';
 import { Database, type Document } from 'firebase-firestore-lite';
 import m from 'mithril';
 import {
-  type DeprecatedSavedScore,
-  type SavedScore,
-  scoreHasStavesNotTunes,
+  type SavedScorev1,
+  type SavedScorev2,
+  type SavedScorev3,
 } from '../PipeScore/SavedModel';
 import { onUserChange } from '../auth-helper';
 import { readFile } from '../common/file';
@@ -42,7 +42,7 @@ type ScoreRef = { name: string; path: string; timeSignature: string; composer: s
 type FileInput = HTMLInputElement & { files: FileList };
 
 function getName(
-  score: Document | ScoreRef | SavedScore | DeprecatedSavedScore
+  score: Document | ScoreRef | SavedScorev1, SavedScorev2, SavedScorev3
 ) {
   const defaultName = 'Empty Score';
   if ((score as DeprecatedSavedScore).name) {

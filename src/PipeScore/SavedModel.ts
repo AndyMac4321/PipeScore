@@ -139,6 +139,8 @@ export function updateScoreVersion(
       ],
       secondTimings: score.secondTimings,
       showNumberOfPages: score.showNumberOfPages,
+      showBarNumbers:score.showBarNumbers,
+      showCanntaireachd:score.showCanntaireachd,
       settings: score.settings,
     };
   }
@@ -181,6 +183,8 @@ export type SavedScorev1 = {
   textBoxes: SavedTextBoxPage[];
   secondTimings: SavedTiming[];
   showNumberOfPages: boolean;
+  showBarNumbers:boolean;
+  showCanntaireachd:boolean;
   settings: SavedSettings;
 };
 
@@ -191,6 +195,8 @@ export type SavedScorev2 = {
   textBoxes: SavedTextBoxPage[];
   secondTimings: SavedTiming[];
   showNumberOfPages: boolean;
+  showBarNumbers:boolean;
+  showCanntaireachd:boolean;
   settings: SavedSettings;
 };
 
@@ -202,6 +208,8 @@ export type SavedScorev3 = {
   textBoxes: SavedTextBoxPage[];
   secondTimings: SavedTiming[];
   showNumberOfPages: boolean;
+  showBarNumbers:boolean;
+  showCanntaireachd:boolean;
   settings: SavedSettings;
 };
 

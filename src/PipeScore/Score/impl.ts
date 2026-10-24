@@ -103,21 +103,6 @@ export class Score extends IScore {
     s.showBarNumbers=o.showBarNumbers??true;
     s.showCanntaireachd=o.showCanntaireachd??false;
 
-    if (scoreHasStavesNotTunes(o)) {
-      const name = s._textBoxes[0]?.[0]?.text() || 'My Tune';
-      const composer = s._textBoxes[0]?.[1]?.text() || 'Composer';
-      const tuneType = s._textBoxes[0]?.[2]?.text() || 'Tune Type';
-      s._textBoxes[0].splice(0, 3);
-      s._tunes = [
-        Tune.createFromStaves(
-          name,
-          composer,
-          tuneType,
-          o._staves.map(Stave.fromJSON)
-        ),
-      ];
-    } else {
-      s._tunes = o.tunes.map(Tune.fromJSON);
     s._tunes = o.tunes.map(Tune.fromJSON);
 
     if (s._tunes.length === 1) {
