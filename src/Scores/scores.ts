@@ -20,9 +20,11 @@ import Auth from 'firebase-auth-lite';
 import { Database, type Document } from 'firebase-firestore-lite';
 import m from 'mithril';
 import {
-  type DeprecatedSavedScore,
-  type SavedScore,
-  scoreHasStavesNotTunes,
+  type JustCreatedScore,
+  type SavedData,
+  type SavedScorev3,
+  isJustCreatedScore,
+  updateScoreVersion,
 } from '../PipeScore/SavedModel';
 import { onUserChange } from '../auth-helper';
 import { readFile } from '../common/file';
@@ -195,38 +197,23 @@ class ScoresList {
     });
   }
 
-  async duplicate(score: ScoreRef) {
-    try {
-      const scoreContents = (await db
-        .ref(`scores${score.path}`)
-        .get()) as unknown as SavedScore;
-
-      const newTitle = `${getName(scoreContents)} (copy)`;
-      setName(scoreContents, newTitle);
-
-      await db.ref(`scores/${userId}/scores`).add(scoreContents);
-
-      this.refreshScores();
-    } catch (e) {
-      console.log(e);
-      alert(`Error duplicating score: ${(e as Error).name}`);
-    }
+  async duplicate(score: ScoreDoc) {
+    await score.duplicate();
+    this.refreshScores();
   }
 
-  async delete(score: ScoreRef) {
-    const sure = confirm(`Are you sure you want to delete ${getName(score)}?`);
+  async delete(score: ScoreDoc) {
+    const sure = confirm(`Are you sure you want to delete ${score.name()}?`);
     if (sure) {
-      await db.ref(`scores${score.path}`).delete();
+      await score.delete();
       this.refreshScores();
     }
   }
 
-  async rename(scoreRef: ScoreRef) {
-    const score = await db.ref(`scores${scoreRef.path}`).get();
-    const newName = prompt('Rename:', getName(score));
+  async rename(score: ScoreDoc) {
+    const newName = prompt('Rename:', score.name());
     if (newName) {
-      setName(score, newName);
-      await db.ref(`scores${scoreRef.path}`).set(score);
+      await score.setName(newName);
       this.refreshScores();
     }
   }
@@ -293,6 +280,11 @@ class ScoresList {
       .sort((one: String, two: String) => (one < two ? -1 : 1));
 
     this.loading = false;
+    m.redraw();
+  }
+
+  showUpdatingScoresMessage() {
+    this.updatingScoresMessage = true;
     m.redraw();
   }
 
@@ -550,10 +542,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('new-score')?.addEventListener('click', async () => {
     if (userId) {
       const collection = db.ref(`scores/${userId}/scores`);
-      const newScore = await collection.add({
-        name: 'Empty Score',
+      const justCreatedScore: JustCreatedScore = {
+        scoreName: DEFAULT_SCORE_NAME,
         justCreated: true,
-      });
+      };
+      const newScore = await collection.add(justCreatedScore);
       if (newScore) {
         window.location.assign(`/pipescre/${userId}/${newScore.id}`);
       }

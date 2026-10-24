@@ -1481,28 +1481,28 @@ export default function render(state: UIState): m.Children {
         ]
       ),
 
-      ...(state.canSave
-        ? [
-          m(
-            'span.save-text',
-            { class: state.saved ? 'saved' : 'unsaved' },
-            state.saved ? text('allChangesSaved') : text('unsavedChanges')
-          ),
-          help(
-            'save',
-            m(
-              'button.save',
-              {
-                disabled: state.saved,
-                onclick: () => state.dispatch(save()),
-              },
-              text('save')
-            ),
-            state.dispatch
-          ),
-        ]
-        : []),
-    ]
+        ...(state.canSave
+          ? [
+              m(
+                'span.save-text',
+                { class: state.saved ? 'saved' : 'unsaved' },
+                state.saved ? text('allChangesSaved') : text('unsavedChanges')
+              ),
+              help(
+                'save',
+                m(
+                  'button.save',
+                  {
+                    disabled: state.saved,
+                    onclick: () => state.dispatch(save()),
+                  },
+                  text('save')
+                ),
+                state.dispatch
+              ),
+            ]
+          : []),
+      ]
     : [
       help(
         'home',
