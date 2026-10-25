@@ -23,7 +23,7 @@ import { Update } from '../Events/types';
 import { nextBar, nextNote, previousBar, previousNote } from '../Measure';
 import type { NoteOrTriplet } from '../Note';
 import type { PlaybackMeasure } from '../Playback';
-import type { SavedScorev3 } from '../SavedModel';
+import type { SavedScorev4 } from '../SavedModel';
 import type { IStave } from '../Stave';
 import type { IMovableTextBox } from '../TextBox';
 import { MovableTextBox } from '../TextBox/impl';
@@ -46,7 +46,12 @@ export class Score extends IScore {
   landscape: boolean;
 
   private _name: string;
+  private _tuneType: string;
+  private _timeSignature: string;
+  private _composer: string;
   private _tunes: ITune[];
+  private _bpm: string;
+
   // an array rather than a set since it makes rendering easier (with map)
   private _textBoxes: IMovableTextBox[][];
   private _timings: ITiming[];
@@ -69,6 +74,11 @@ export class Score extends IScore {
     this.landscape = true;
     this.showNumberOfPages = true;
     this._name = name;
+    this._composer = composer;
+    this._tuneType = tuneType;
+    this._timeSignature = timeSignature.cutTime() ? 'Cut' : timeSignature.commonTime() ? 'Com' : `${timeSignature.top()}/${timeSignature.bottom()}`;
+    this._tuneType = tuneType;
+    this._bpm = `${settings.bpm} BPM`;
     this.showBarNumbers = true;
     this.showCanntaireachd = false;
     this._tunes = [
@@ -91,19 +101,25 @@ export class Score extends IScore {
     return new Score('My Score', '', '', 2, true, new TimeSignature());
   }
 
-  static fromJSON(o: SavedScorev3) {
+  static fromJSON(o: SavedScorev4) {
     const s = Score.blank();
     settings.fromJSON(o.settings);
 
     s._name = o.scoreName;
-    s.landscape = o.landscape;
+    s._timeSignature = o.scoreTimeSignature,
+      s._tuneType = o.scoreTuneType,
+      s._bpm = o.scoreBpm,
+      s.landscape = o.landscape;
     s._textBoxes = o.textBoxes.map((p) => p.texts.map(MovableTextBox.fromJSON));
     s._timings = o.secondTimings.map(Timing.fromJSON);
     s.showNumberOfPages = o.showNumberOfPages;
-    s.showBarNumbers=o.showBarNumbers??true;
-    s.showCanntaireachd=o.showCanntaireachd??false;
+    s.showBarNumbers = o.showBarNumbers ?? true;
+    s.showCanntaireachd = o.showCanntaireachd ?? false;
 
     s._tunes = o.tunes.map(Tune.fromJSON);
+    s._composer = s._tunes[0].composer().text();
+    s._tuneType = s._tunes[0].tuneType().text();
+
 
     if (s._tunes.length === 1) {
       s._tunes[0].setName(o.scoreName);
@@ -114,15 +130,22 @@ export class Score extends IScore {
     return s;
   }
 
-  toJSON(): SavedScorev3 {
+  toJSON(): SavedScorev4 {
     this.updateNameToMatchTune();
+    this.updateComposerToMatchTune();
+    this.updateTuneTypeToMatchTune();
+    this.updateTimeSigatureToMatchTune();
     return {
-      version: 'v3',
+      version: 'v4',
       scoreName: this._name,
+      scoreTimeSignature: this._timeSignature,
+      scoreTuneType: this._tuneType,
+      scoreComposer: this._composer,
+      scoreBpm: `${settings.bpm} BPM`,
       landscape: this.landscape,
       showNumberOfPages: this.showNumberOfPages,
-      showBarNumbers:this.showBarNumbers,
-      showCanntaireachd:this.showCanntaireachd,
+      showBarNumbers: this.showBarNumbers,
+      showCanntaireachd: this.showCanntaireachd,
       tunes: this._tunes.map((tune) => tune.toJSON()),
       textBoxes: this._textBoxes.map((p) => ({
         texts: p.map((txt) => txt.toJSON()),
@@ -142,11 +165,41 @@ export class Score extends IScore {
    * the score's name matches the tune's name.
    */
   private updateNameToMatchTune() {
-    if (this._tunes.length === 1) {
+    if (this._tunes.length > 0) {
       this._name = this._tunes[0].name().text();
       this.updateWindowTitle();
     }
   }
+  /**
+     * If there is a single tune in the score, ensure that
+     * the score's composer is updated in score.
+     */
+  private updateComposerToMatchTune() {
+    if (this._tunes.length > 0) {
+      this._composer = this._tunes[0]?.composer().text() || 'Composer';
+    }
+  }
+  /**
+     * If there is a single tune in the score, ensure that
+     * the score's composer is updated in score.
+     */
+  private updateTuneTypeToMatchTune() {
+    if (this._tunes.length > 0) {
+      this._tuneType = this._tunes[0]?.tuneType().text() || 'Tune Type';
+    }
+  }
+
+  /**
+     * If there is a single tune in the score, ensure that
+     * the score's composer is updated in score.
+     */
+  private updateTimeSigatureToMatchTune() {
+    if (this._tunes.length > 0) {
+      const timeSignature = this._tunes[0]?.staves()[0]?.measures()[0]?.timeSignature();
+      this._timeSignature = timeSignature.cutTime() ? 'Cut' : timeSignature.commonTime() ? 'Com' : `${timeSignature.top()}/${timeSignature.bottom()}`;
+    }
+  }
+
 
   /**
    * Update window title (shown in browser tab) to match the score name.

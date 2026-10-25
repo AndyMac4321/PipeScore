@@ -2,7 +2,7 @@ import { Duration, NoteLength } from '../PipeScore/Note/notelength';
 import type {
   SavedGracenote,
   SavedMeasure,
-  SavedScorev3,
+  SavedScorev4,
   SavedTimeSignature,
   SavedTiming,
 } from '../PipeScore/SavedModel';
@@ -25,11 +25,11 @@ function dotDuration(d: Duration) {
 }
 
 function durationInBeats(d: Duration) {
-  return new NoteLength(d).inBeats(null,null);
+  return new NoteLength(d).inBeats(null, null);
 }
 
 type ParsedScore = {
-  score: SavedScorev3;
+  score: SavedScorev4;
   warnings: string[];
   textboxes: string[];
 };
@@ -181,14 +181,18 @@ class PartialScore {
   private currentTiming: SavedTiming | null = null;
   private currentStave: SavedMeasure[] = [emptyMeasure(this.timeSignature)];
 
-  private score: SavedScorev3;
+  private score: SavedScorev4;
 
   public currentLineIsEmpty = true;
 
   constructor() {
     this.score = {
-      version: 'v3',
+      version: 'v4',
       scoreName: '[Imported from BWW]',
+      scoreTimeSignature: '4/4',
+      scoreTuneType: 'Tune Type',
+      scoreComposer: 'Composer',
+      scoreBpm: '80 BPM',
       tunes: [
         {
           name: {
@@ -209,7 +213,8 @@ class PartialScore {
       landscape: true,
       textBoxes: [{ texts: [] }],
       showNumberOfPages: true,
-      showBarNumbers:true,
+      showCanntaireachd:false,
+      showBarNumbers: true,
       secondTimings: this.timings,
       settings: new Settings().toJSON(),
     };
@@ -447,16 +452,16 @@ class Parser implements Record<TokenType, (t: Token) => void> {
     return this.score.toScore(this.ts.warnings);
   }
 
-  [TokenType.SPACE]() {}
+  [TokenType.SPACE]() { }
 
-  [TokenType.SOFTWARE_NAME_AND_VERSION]() {}
-  [TokenType.MIDI_NOTE_MAPPINGS]() {}
-  [TokenType.FREQUENCY_MAPPINGS]() {}
-  [TokenType.INSTRUMENT_MAPPINGS]() {}
-  [TokenType.GRACENOTE_DURATIONS]() {}
-  [TokenType.FONT_SIZES]() {}
-  [TokenType.TUNE_FORMAT]() {}
-  [TokenType.TUNE_TEMPO]() {}
+  [TokenType.SOFTWARE_NAME_AND_VERSION]() { }
+  [TokenType.MIDI_NOTE_MAPPINGS]() { }
+  [TokenType.FREQUENCY_MAPPINGS]() { }
+  [TokenType.INSTRUMENT_MAPPINGS]() { }
+  [TokenType.GRACENOTE_DURATIONS]() { }
+  [TokenType.FONT_SIZES]() { }
+  [TokenType.TUNE_FORMAT]() { }
+  [TokenType.TUNE_TEMPO]() { }
   [TokenType.TEXT_TAG](t: Token) {
     this.score.newText(t.value[1]);
   }
@@ -468,7 +473,7 @@ class Parser implements Record<TokenType, (t: Token) => void> {
 
     // Skipping these allows us to treat all accidentals
     // as accidentals, not part of the key signature
-    while (this.ts.match(TokenType.ACCIDENTAL)) {}
+    while (this.ts.match(TokenType.ACCIDENTAL)) { }
   }
 
   [TokenType.TIME_SIGNATURE](t: Token) {

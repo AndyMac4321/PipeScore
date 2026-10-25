@@ -29,10 +29,10 @@ import { SUBTITLE_SIZE, Settings, TITLE_SIZE } from './global/settings';
 // that could be stored - SavedScorev{1,2,3} - due to changes in
 // the format over time as features have been added. All 3 must be able
 // to be loaded. SavedScorev2 also has two different types of SavedTune
-// it could contain, SavedTunev{1,2}. SavedScorev3 only contains SavedTunev2.
+// it could contain, SavedTunev{1,2}. SavedScorev4 only contains SavedTunev2.
 //
 // The resolution of these different versions is done in the updateScoreVersion()
-// function, which turns any (potentially old) SavedData object into a SavedScorev3.
+// function, which turns any (potentially old) SavedData object into a SavedScorev4.
 //
 // Separately to these versioned types, every type of score can contain
 // bars as SavedMeasures OR DeprecatedSavedMeasures, and SavedNoteOrTriplets
@@ -73,9 +73,14 @@ function isv2(score: SavedData): score is SavedScorev2 {
     (score as SavedScorev3).version === undefined
   );
 }
+function isv3(score: SavedData): score is SavedScorev3 {
+  return (
+    (score as SavedScorev3).version === 'v3'
+  );
+}
 
-export function isLatestScoreVersion(score: SavedData): score is SavedScorev3 {
-  return (score as SavedScorev3).version === 'v3';
+export function isLatestScoreVersion(score: SavedData): score is SavedScorev4 {
+  return (score as SavedScorev4).version === 'v4';
 }
 
 /**
@@ -111,8 +116,8 @@ function updateTuneVersion(tune: SavedTunev1 | SavedTunev2): SavedTunev2 {
  * @returns
  */
 export function updateScoreVersion(
-  score: SavedScorev1 | SavedScorev2 | SavedScorev3
-): SavedScorev3 {
+  score: SavedScorev1 | SavedScorev2 | SavedScorev3 | SavedScorev4
+): SavedScorev4 {
   if (isLatestScoreVersion(score)) {
     return score;
   }
@@ -121,11 +126,31 @@ export function updateScoreVersion(
     const name = score.textBoxes[0]?.texts?.[0]?._text || 'My Tune';
     const composer = score.textBoxes[0]?.texts?.[1]?._text || 'Composer';
     const tuneType = score.textBoxes[0]?.texts?.[2]?._text || 'Tune Type';
+    
+    const ts1 = score._staves[0].bars[0].timeSignature.ts[0];
+    const ts2 = score._staves[0].bars[0].timeSignature.ts[1];
+    var timeSignature = '4/4'; // default
+    if (typeof ts1 === 'string') {
+      if (ts1 == 'c' || ts1 == 'C') timeSignature = 'Com';
+      if (ts1 == 'c_' || ts1 == 'C_') timeSignature = 'Cut';
+    }
+    if (typeof ts1 === 'number') {
+      timeSignature = `${ts1}/${ts2}`;
+    }
+
+    var bpm = '80 BPM'; // default
+    if (typeof score.settings.bpm === 'number') {
+      bpm = `${score.settings.bpm} BPM`;
+    }
     score.textBoxes[0]?.texts?.splice(0, 3);
 
     return {
-      version: 'v3',
+      version: 'v4',
       scoreName: score.name,
+      scoreTimeSignature: timeSignature,
+      scoreTuneType: tuneType,
+      scoreComposer: composer,
+      scoreBpm: bpm,
       landscape: score.landscape,
       textBoxes: score.textBoxes,
       tunes: [
@@ -139,8 +164,8 @@ export function updateScoreVersion(
       ],
       secondTimings: score.secondTimings,
       showNumberOfPages: score.showNumberOfPages,
-      showBarNumbers:score.showBarNumbers,
-      showCanntaireachd:score.showCanntaireachd,
+      showBarNumbers: score.showBarNumbers,
+      showCanntaireachd: score.showCanntaireachd,
       settings: score.settings,
     };
   }
@@ -151,12 +176,69 @@ export function updateScoreVersion(
     // - in the `name.text` field of the first tune (legacy)
     const text = score.tunes?.[0]?.name;
     const name = typeof text === 'string' ? text : text?.text;
+    const composer = score.textBoxes[0]?.texts?.[1]?._text || 'Composer';
+    const tuneType = score.textBoxes[0]?.texts?.[2]?._text || 'Tune Type';
+    const ts1 = score.tunes?.[0]?.staves[0].bars[0].timeSignature.ts[0];
+    const ts2 = score.tunes?.[0]?.staves[0].bars[0].timeSignature.ts[1];
+    var timeSignature = '4/4'; // default
+    if (typeof ts1 === 'string') {
+      if (ts1 == 'c' || ts1 == 'C') timeSignature = 'Com';
+      if (ts1 == 'c_' || ts1 == 'C_') timeSignature = 'Cut';
+    }
+    if (typeof ts1 === 'number') {
+      timeSignature = `${ts1}/${ts2}`;
+    }
+
+    var bpm = '80 BPM'; // default
+    if (typeof score.settings.bpm === 'number') {
+      bpm = `${score.settings.bpm} BPM`;
+    }
 
     return {
       ...score,
       tunes: score.tunes.map(updateTuneVersion),
       scoreName: name || 'Empty Score',
-      version: 'v3',
+      scoreTimeSignature: timeSignature,
+      scoreTuneType: tuneType,
+      scoreComposer: composer,
+      scoreBpm: bpm,
+      version: 'v4',
+    };
+  }
+  if (isv3(score)) {
+    // The name might be stored in one of 2 places:
+    // - in the `name` field of the first tune (legacy)
+    // - in the `name.text` field of the first tune (legacy)
+    const text = score.tunes?.[0]?.name;
+    const name = typeof text === 'string' ? text : text?.text;
+    const composer = score.tunes?.[0]?.composer?.text || 'Composer';
+    const tuneType = score.tunes?.[0]?.tuneType?.text || 'Tune Type';
+
+    const ts1 = score.tunes?.[0]?.staves[0].bars[0].timeSignature.ts[0];
+    const ts2 = score.tunes?.[0]?.staves[0].bars[0].timeSignature.ts[1];
+    var timeSignature = '4/4'; // default
+    if (typeof ts1 === 'string') {
+      if (ts1 == 'c' || ts1 == 'C') timeSignature = 'Com';
+      if (ts1 == 'c_' || ts1 == 'C_') timeSignature = 'Cut';
+    }
+    if (typeof ts1 === 'number') {
+      timeSignature = `${ts1}/${ts2}`;
+    }
+
+    var bpm = '80 BPM'; // default
+    if (typeof score.settings.bpm === 'number') {
+      bpm = `${score.settings.bpm} BPM`;
+    }
+
+    return {
+      ...score,
+      tunes: score.tunes.map(updateTuneVersion),
+      scoreName: name || 'Empty Score',
+      scoreTimeSignature: timeSignature,
+      scoreTuneType: tuneType,
+      scoreComposer: composer,
+      scoreBpm: bpm,
+      version: 'v4',
     };
   }
 
@@ -168,6 +250,7 @@ export type SavedData =
   | SavedScorev1
   | SavedScorev2
   | SavedScorev3
+  | SavedScorev4
   | JustCreatedScore;
 
 export type JustCreatedScore = {
@@ -183,8 +266,8 @@ export type SavedScorev1 = {
   textBoxes: SavedTextBoxPage[];
   secondTimings: SavedTiming[];
   showNumberOfPages: boolean;
-  showBarNumbers:boolean;
-  showCanntaireachd:boolean;
+  showBarNumbers: boolean;
+  showCanntaireachd: boolean;
   settings: SavedSettings;
 };
 
@@ -195,8 +278,8 @@ export type SavedScorev2 = {
   textBoxes: SavedTextBoxPage[];
   secondTimings: SavedTiming[];
   showNumberOfPages: boolean;
-  showBarNumbers:boolean;
-  showCanntaireachd:boolean;
+  showBarNumbers: boolean;
+  showCanntaireachd: boolean;
   settings: SavedSettings;
 };
 
@@ -208,8 +291,24 @@ export type SavedScorev3 = {
   textBoxes: SavedTextBoxPage[];
   secondTimings: SavedTiming[];
   showNumberOfPages: boolean;
-  showBarNumbers:boolean;
-  showCanntaireachd:boolean;
+  showBarNumbers: boolean;
+  showCanntaireachd: boolean;
+  settings: SavedSettings;
+};
+export type SavedScorev4 = {
+  version: 'v4';
+  scoreName: string;
+  scoreTimeSignature: string;
+  scoreTuneType: string;
+  scoreComposer: string;
+  scoreBpm: string;
+  landscape: boolean;
+  tunes: SavedTunev2[];
+  textBoxes: SavedTextBoxPage[];
+  secondTimings: SavedTiming[];
+  showNumberOfPages: boolean;
+  showBarNumbers: boolean;
+  showCanntaireachd: boolean;
   settings: SavedSettings;
 };
 
@@ -288,13 +387,13 @@ export type SavedTriplet = {
 
 export type SavedNoteOrTriplet =
   | {
-      notetype: 'single';
-      value: SavedNote;
-    }
+    notetype: 'single';
+    value: SavedNote;
+  }
   | {
-      notetype: 'triplet';
-      value: SavedTriplet;
-    }
+    notetype: 'triplet';
+    value: SavedTriplet;
+  }
   | DeprecatedSavedNoteOrTriplet;
 
 export type SavedReactiveGracenote = {
@@ -311,20 +410,20 @@ export type SavedCustomGracenote = {
 
 export type SavedGracenote =
   | {
-      type: 'reactive';
-      value: SavedReactiveGracenote;
-    }
+    type: 'reactive';
+    value: SavedReactiveGracenote;
+  }
   | {
-      type: 'single';
-      value: SavedSingleGracenote;
-    }
+    type: 'single';
+    value: SavedSingleGracenote;
+  }
   | {
-      type: 'custom';
-      value: SavedCustomGracenote;
-    }
+    type: 'custom';
+    value: SavedCustomGracenote;
+  }
   | {
-      type: 'none';
-    };
+    type: 'none';
+  };
 
 export type SavedTextBoxPage = {
   texts: SavedMovableTextBox[];
@@ -361,13 +460,13 @@ export type SavedSingleTiming = {
 
 export type SavedTiming =
   | {
-      type: 'second timing';
-      value: SavedSecondTiming;
-    }
+    type: 'second timing';
+    value: SavedSecondTiming;
+  }
   | {
-      type: 'single timing';
-      value: SavedSingleTiming;
-    };
+    type: 'single timing';
+    value: SavedSingleTiming;
+  };
 
 export type DeprecatedSavedMeasure = {
   id: ID;
@@ -381,17 +480,17 @@ export type DeprecatedSavedMeasure = {
 
 export type DeprecatedSavedNoteOrTriplet =
   | {
-      notetype: 'single';
-      // deprecated : use id in SavedNote instead
-      id: ID;
-      value: SavedNote;
-    }
+    notetype: 'single';
+    // deprecated : use id in SavedNote instead
+    id: ID;
+    value: SavedNote;
+  }
   | {
-      notetype: 'triplet';
-      // deprecated : use id in SavedTriplet instead
-      id: ID;
-      value: SavedTriplet;
-    };
+    notetype: 'triplet';
+    // deprecated : use id in SavedTriplet instead
+    id: ID;
+    value: SavedTriplet;
+  };
 
 export function isDeprecatedSavedNoteOrTriplet(
   noteOrTriplet: SavedNoteOrTriplet
