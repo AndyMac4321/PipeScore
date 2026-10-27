@@ -78,15 +78,20 @@ export class Firestore {
         throw new Error("Couldn't save just-created score.");
     } else if (!isLatestScoreVersion(data)) {
       // If it is an out-of-date score, then update it and save.
-
-      store.save(updateScoreVersion(data));
-      await store.commit();
-      const score = await store.pull();
-      if (!score || !isLatestScoreVersion(score))
-        throw new Error("Couldn't save update version of score.");
+      if (!store.isReadOnly) {
+        store.save(updateScoreVersion(data));
+        await store.commit();
+        const score = await store.pull();
+        if (!score || !isLatestScoreVersion(score)) {
+          throw new Error("Couldn't save update version of score.");
+        }
+      }
+      else {
+        // Temporary transform
+        store.score = updateScoreVersion(data);
+      }
     } else {
       // Otherwise, set the score to the data.
-
       store.score = data;
     }
 

@@ -176,8 +176,10 @@ export function updateScoreVersion(
     // - in the `name.text` field of the first tune (legacy)
     const text = score.tunes?.[0]?.name;
     const name = typeof text === 'string' ? text : text?.text;
-    const composer = score.textBoxes[0]?.texts?.[1]?._text || 'Composer';
-    const tuneType = score.textBoxes[0]?.texts?.[2]?._text || 'Tune Type';
+    const composerText = score.tunes[0].composer;
+    const composer = typeof composerText === 'string' ? composerText : composerText.text;
+    const tuneTypeText = score.tunes[0].tuneType;
+    const tuneType = typeof tuneTypeText === 'string' ? tuneTypeText : tuneTypeText.text;
     const ts1 = score.tunes?.[0]?.staves[0].bars[0].timeSignature.ts[0];
     const ts2 = score.tunes?.[0]?.staves[0].bars[0].timeSignature.ts[1];
     var timeSignature = '4/4'; // default

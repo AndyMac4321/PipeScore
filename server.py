@@ -5,7 +5,9 @@
 
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import re
+import logging
 
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 class RequestHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -16,8 +18,11 @@ class RequestHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_GET(self):
+        logging.debug(self.path)
         if self.path.startswith("/pipescre"):
             self.path = "/pipescre.htm"
+        if self.path.startswith("/shared"):
+            self.path = "/shared.htm"
         elif self.path == "/":
             self.path = "/index.htm"
         elif "." not in re.search("(/.*?)$", self.path).group(0):

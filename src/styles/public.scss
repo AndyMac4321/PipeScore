@@ -1,0 +1,49 @@
+@use './spinner.scss';
+
+button {
+  font-size: 1rem;
+}
+
+#buttons {
+  padding: 1rem;
+  border-bottom: 1px solid black;
+}
+
+#scores {
+  padding: 1rem;
+}
+
+#horizontal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+table {
+  padding: 0;
+  border-collapse: collapse;
+
+  & > tr + tr {
+    border-top: 1px solid #ddd;
+  }
+
+  button {
+    margin-left: 1rem;
+    margin: 0.4rem 0rem;
+  }
+}
+.td-name {
+  width: 50vw;
+}
+.td-timesig {
+  width: 3vw;
+}
+.td-composer {
+  width: 8vw;
+}
+.td-tunetype {
+  padding: 1vw;
+  width: 8vw;
+}
+.td-bpm {
+  width: 8vw;
+}

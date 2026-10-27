@@ -239,7 +239,7 @@ class ScoresList {
 
             // If only one file was selected, open it up in PipeScore
             if (score && f.files.length === 1) {
-              window.location.assign(`/pipescore/${userId}/${score.id}`);
+              window.location.assign(`/pipescre/${userId}/${score.id}`);
             }
           }
         }
@@ -362,7 +362,12 @@ document.addEventListener('DOMContentLoaded', () => {
     ?.addEventListener('click', () => auth.signOut());
   document
     .getElementById('import-bww')
-    ?.addEventListener('click', () => window.location.replace('/importbww'));
+    ?.addEventListener('click', () => window.location.replace('/impbww'));
+  document
+    .getElementById('shared')
+    ?.addEventListener('click', () => {
+      copyToClipboard(`${window.location.href.replace('scores', 'shared')}/${userId}`);
+    });
   document.getElementById('new-score')?.addEventListener('click', async () => {
     if (userId) {
       const collection = db.ref(`scores/${userId}/scores`);
@@ -372,8 +377,14 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       const newScore = await collection.add(justCreatedScore);
       if (newScore) {
-        window.location.assign(`/pipescore/${userId}/${newScore.id}`);
+        window.location.assign(`/pipescre/${userId}/${newScore.id}`);
       }
     }
   });
+  function copyToClipboard(text: string): void {
+    navigator.clipboard.writeText(text)
+      .then(() => console.log("Text copied to clipboard!"))
+      .catch((err) => console.error("Failed to copy text: ", err));
+  }
+
 });

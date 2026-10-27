@@ -23,12 +23,12 @@ def reify_template(title, body, css=None, js=None):
     if css:
         s = re.sub(
             r"\<\/head\>",
-            f'  <link type="text/css" rel="stylesheet" href="styles/{css}.css" />\n  </head>',
+            f'  <link type="text/css" rel="stylesheet" href="/styles/{css}.css" />\n  </head>',
             s,
         )
     if js:
         s = re.sub(
-            r"\<\/head\>", f'  <script src="dist/{js}.js"></script>\n  </head>', s
+            r"\<\/head\>", f'  <script src="/dist/{js}.js"></script>\n  </head>', s
         )
 
     return s
@@ -85,3 +85,4 @@ build("license")
 cp_file("pipescre")
 cp_file("help")
 build("comhpb")
+build("shared")

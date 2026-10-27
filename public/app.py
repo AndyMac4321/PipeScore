@@ -16,9 +16,11 @@ def root_dir():  # pragma: no cover
 
 @app.route('/<path:path>')
 def serve_page(path):
-    # logging.debug(path)
+    logging.debug(path)
     if path.startswith("pipescre"):
         path = "pipescre.htm"
+    elif path.startswith("public"):
+        path = "public.htm"
     elif "." not in re.search("(.*?)$", path).group(0):
         path += ".htm"
     return send_from_directory(app.root_path, path)

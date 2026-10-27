@@ -24,6 +24,7 @@ import {
   type SavedData,
   type SavedScorev4,
   isJustCreatedScore,
+  isLatestScoreVersion,
   updateScoreVersion,
 } from '../PipeScore/SavedModel';
 import { onUserChange } from '../auth-helper';
@@ -32,7 +33,7 @@ import { readFile } from '../common/file';
 let userId = '';
 
 // This can be safely public
-const apiToken = 'AIzaSyDQXDp-MUDHHnjNg3LX-furdTZ2GSRcV2k';
+const apiToken = 'AIzaSyBa_TicvHYIJFphscfeBDGADo1Kwkq702w';
 
 const auth = new Auth({ apiKey: apiToken });
 
@@ -41,9 +42,18 @@ const db = new Database({ projectId: 'pipe-score-andy', auth });
 type ScoreQueryResult = {
   __meta__: { path: string };
   scoreName: string | undefined;
+  version: string | undefined;
+  scoreComposer: string | undefined;
+  scoreTuneType: string | undefined;
+  scoreBpm: string | undefined;
+  scoreTimeSignature: string | undefined;
 };
 
 const DEFAULT_SCORE_NAME = 'Empty Score';
+const DEFAULT_BPM = '80 BPM';
+const DEFAULT_TUNE_TYPE = 'Unknown';
+const DEFAULT_TIME_SIGNATURE = 'Unknown';
+const DEFAULT_COMPOSER = 'Unknown';
 
 /**
  * Get the Firestore path to the user's scores.
@@ -67,7 +77,7 @@ async function getScoreDocuments(
   // Only select the name to avoid loading the entire score.
   const documents: ScoreQueryResult[] = await db
     .ref(scoresDbPath(userId))
-    .query({ select: ['scoreName'] })
+    .query({ select: ['scoreName', 'version', 'scoreTimeSignature', 'scoreTuneType', 'scoreComposer', 'scoreBpm'] })
     .run();
   return Promise.all(documents.map((doc) => ScoreDoc.init(doc, scoresList)));
 }
@@ -126,7 +136,15 @@ class ScoreDoc {
         meta.scoreName = `Invalid score (${path[path.length - 1]})`;
       }
     }
-
+    if (meta.version !== undefined && meta.version != 'v4') {
+      const scoreContents = await getScoreContents(meta);
+      if (!isJustCreatedScore(scoreContents)) {
+        const updatedScore = updateScoreVersion(scoreContents);
+        scoresList.showUpdatingScoresMessage();
+        await db.ref(meta.__meta__.path).set(updatedScore);
+        meta.scoreName = updatedScore.scoreName;
+      }
+    }
     return new ScoreDoc(meta);
   }
 
@@ -138,39 +156,25 @@ class ScoreDoc {
   name(): string {
     return this._meta.scoreName || DEFAULT_SCORE_NAME;
   }
-
-  async setName(name: string) {
-    const scoreContents = await this.contents();
-    scoreContents.scoreName = name;
-    await db.ref(this._meta.__meta__.path).set(scoreContents);
-
-    // Set the name temporarily. The list will be refreshed, but this can take
-    // a second or two for large numbers of scores, so setting the name updates
-    // the interface immediately.
-    this._meta.scoreName = name;
+  bpm(): string {
+    return this._meta.scoreBpm || DEFAULT_BPM;
   }
+  timeSignature(): string {
+    return this._meta.scoreTimeSignature || DEFAULT_TIME_SIGNATURE;
+  }
+  tuneType(): string {
+    return this._meta.scoreTuneType || DEFAULT_TUNE_TYPE;
+  }
+  composer(): string {
+    return this._meta.scoreComposer || DEFAULT_COMPOSER;
+  }
+
 
   scoreURL() {
-    return `/pipescore${this._meta.__meta__.path.replaceAll('/scores/', '/')}`;
+    return `/pipescre${this._meta.__meta__.path.replaceAll('/scores/', '/')}`;
   }
 
-  async duplicate() {
-    const name = `${this._meta.scoreName} (copy)`;
-    const scoreContents = await this.contents();
-    scoreContents.scoreName = name;
-    await db.ref(this._meta.__meta__.path).parentCollection.add(scoreContents);
-  }
-
-  async delete() {
-    await db.ref(this._meta.__meta__.path).delete();
-  }
-
-  async contents(): Promise<SavedScorev4 | JustCreatedScore> {
-    return (await getScoreContents(this._meta)) as SavedScorev4 | JustCreatedScore;
-  }
 }
-
-type FileInput = HTMLInputElement & { files: FileList };
 
 class ScoresList {
   loading = true;
@@ -178,68 +182,8 @@ class ScoresList {
   updatingScoresMessage = false;
 
   oninit() {
-    onUserChange(auth, (user) => {
-      if (user) {
-        userId = user.localId;
-        this.refreshScores();
-      } else {
-        window.location.assign('/login');
-      }
-    });
-
-    // Need to do this here so we have access to refreshScores()
-    document.getElementById('upload')?.addEventListener('click', () => {
-      // Create a temporary file input element, and use that to
-      // prompt the user to select a file
-      const f = document.createElement('input') as FileInput;
-
-      f.setAttribute('type', 'file');
-      f.setAttribute('multiple', 'multiple');
-      f.setAttribute('accept', '.pipescore,.json,text/json');
-
-      f.addEventListener('change', async () => {
-        // For each file selected, read it and add it to the scores collection
-        const collection = db.ref(`scores/${userId}/scores`);
-        for (let i = 0; i < f.files.length; i++) {
-          const file = f.files.item(i);
-          if (file) {
-            const contents = await readFile(file);
-            const json = JSON.parse(contents);
-            const score = await collection.add(json);
-
-            // If only one file was selected, open it up in PipeScore
-            if (score && f.files.length === 1) {
-              window.location.assign(`/pipescore/${userId}/${score.id}`);
-            }
-          }
-        }
-        this.refreshScores();
-      });
-
-      // Trigger the file dialogue
-      f.click();
-    });
-  }
-
-  async duplicate(score: ScoreDoc) {
-    await score.duplicate();
+    userId = 'JRcCHSNJSogzDWUeKcbYuPV1Mxm2';
     this.refreshScores();
-  }
-
-  async delete(score: ScoreDoc) {
-    const sure = confirm(`Are you sure you want to delete ${score.name()}?`);
-    if (sure) {
-      await score.delete();
-      this.refreshScores();
-    }
-  }
-
-  async rename(score: ScoreDoc) {
-    const newName = prompt('Rename:', score.name());
-    if (newName) {
-      await score.setName(newName);
-      this.refreshScores();
-    }
   }
 
   async refreshScores() {
@@ -281,29 +225,17 @@ class ScoresList {
         ...this.scores.map((score) =>
           m('tr', [
             m('td.td-name', m('a', { href: score.scoreURL() }, score.name())),
+            m('td.td-timesig', m('a', score.timeSignature())),
+            m('td.td-tunetype', m('a', score.tuneType())),
+            m('td.td-composer', m('a', score.composer())),
+            m('td.td-bpm', m('a', score.bpm())),
             m(
               'td',
               m(
-                'button.edit',
-                { onclick: () => window.location.assign(score.scoreURL()) },
-                'Edit'
+                'button.button.btn btn-primary',
+                { onclick: () => window.location.assign(score.scoreURL()), type: 'button' },
+                'Open'
               )
-            ),
-            m(
-              'td',
-              m('button.rename', { onclick: () => this.rename(score) }, 'Rename')
-            ),
-            m(
-              'td',
-              m(
-                'button.duplicate',
-                { onclick: () => this.duplicate(score) },
-                'Duplicate'
-              )
-            ),
-            m(
-              'td',
-              m('button.delete', { onclick: () => this.delete(score) }, 'Delete')
             ),
           ])
         ),
@@ -315,23 +247,4 @@ class ScoresList {
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('scores');
   if (root) m.mount(root, ScoresList);
-  document
-    .getElementById('sign-out')
-    ?.addEventListener('click', () => auth.signOut());
-  document
-    .getElementById('import-bww')
-    ?.addEventListener('click', () => window.location.replace('/importbww'));
-  document.getElementById('new-score')?.addEventListener('click', async () => {
-    if (userId) {
-      const collection = db.ref(`scores/${userId}/scores`);
-      const justCreatedScore: JustCreatedScore = {
-        scoreName: DEFAULT_SCORE_NAME,
-        justCreated: true,
-      };
-      const newScore = await collection.add(justCreatedScore);
-      if (newScore) {
-        window.location.assign(`/pipescore/${userId}/${newScore.id}`);
-      }
-    }
-  });
 });
