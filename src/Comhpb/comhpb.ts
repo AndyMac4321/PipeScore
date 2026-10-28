@@ -180,6 +180,11 @@ class ScoresList {
   loading = true;
   scores: ScoreDoc[] = [];
   updatingScoresMessage = false;
+  timeSignatures: string[] = [];
+  tuneTypes: string[] = [];
+  checkedTuneTypeLabel = '';
+  checkedTimeSignatureLabel = '';
+  filterByName = '';
 
   oninit() {
     userId = 'JRcCHSNJSogzDWUeKcbYuPV1Mxm2';
@@ -195,6 +200,15 @@ class ScoresList {
           ? -1
           : 1
     );
+    
+    // get unique list of Time signatures and Tune types
+    const timeSignatureList: string[] = this.scores.map(a => a.timeSignature());
+    this.timeSignatures = Array.from(new Set(timeSignatureList))
+      .sort((one: String, two: String) => (one < two ? -1 : 1));
+    const tuneTypesList: string[] = this.scores.map(a => a.tuneType());
+    this.tuneTypes = Array.from(new Set(tuneTypesList))
+      .sort((one: String, two: String) => (one < two ? -1 : 1));
+
     this.loading = false;
     m.redraw();
   }
@@ -217,12 +231,75 @@ class ScoresList {
       }
       return [m('div.loading', m('div.spinner'))];
     }
+    var filterdScores: ScoreDoc[] = [];
+
+    for (var i = 0; i < this.scores.length; i++) {
+      if (this.checkedTimeSignatureLabel != '' && this.checkedTimeSignatureLabel != this.scores[i].timeSignature()) continue;
+      if (this.checkedTuneTypeLabel != '' && this.checkedTuneTypeLabel != this.scores[i].tuneType()) continue;
+      if (this.filterByName != '' && !this.scores[i].name().toLowerCase().includes(this.filterByName.toLowerCase())) continue;
+      filterdScores.push(this.scores[i]);
+    };
+
+    var index = 0;
 
     return [
+      m('div.btn-group mb-3', [
+        m('span.input-group-text', 'Time Signature'),
+        ...this.timeSignatures.map((timeSignature) => {
+          const checked = this.checkedTimeSignatureLabel === timeSignature;
+
+          return [
+            m('input.btn-check', {
+              autocomplete: "off",
+              type: "checkbox",
+              id: `checkBtn${index}`,
+              checked,
+              onchange: () => this.checkedTimeSignatureLabel = checked ? '' : timeSignature,
+            }),
+            m('label.btn btn-outline-primary', { for: `checkBtn${index++}` }, timeSignature)
+          ]
+        })
+      ]),
+      m('div.btn-group mb-3', [
+        m('span.input-group-text', 'Tune Type'),
+        ...this.tuneTypes.map((tuneType) => {
+          const checked = this.checkedTuneTypeLabel === tuneType;
+          return [
+            m('input.btn-check', {
+              autocomplete: "off",
+              type: "checkbox",
+              id: `checkBtn${index}`,
+              checked,
+              onchange: () => this.checkedTuneTypeLabel = checked ? '' : tuneType,
+            }),
+            m('label.btn btn-outline-primary', { for: `checkBtn${index++}` }, tuneType),
+          ]
+        })
+      ]),
+      m('div.input-group mb-3', [
+        m('span.input-group-text', 'Filter by name'),
+        m('input.form-control', {
+          placeholder: "Enter name of tune",
+          value: this.filterByName,
+          oninput: (e: any) => {
+            const newValue = e.target.value.trim();
+            this.filterByName = newValue;
+          },
+        }),
+        //<button type="button" class= "btn btn-primary" > Primary </button>
+        m('button.btn btn-primary', {
+          onclick: () => {
+            this.filterByName = '';
+            this.checkedTimeSignatureLabel = '';
+            this.checkedTuneTypeLabel = '';
+          },
+        }, 'Reset'),
+      ]),
       m('p', 'Scores:'),
-      this.scores.length === 0 ? m('p', 'You have no scores.') : null,
+      filterdScores.length === 0 ? m('p', 'You have no scores.') : null,
       m('table', [
-        ...this.scores.map((score) =>
+        ...filterdScores.map((score) =>
+
           m('tr', [
             m('td.td-name', m('a', { href: score.scoreURL() }, score.name())),
             m('td.td-timesig', m('a', score.timeSignature())),
