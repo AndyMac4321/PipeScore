@@ -20,15 +20,11 @@ import Auth from 'firebase-auth-lite';
 import { Database, type Document } from 'firebase-firestore-lite';
 import m from 'mithril';
 import {
-  type JustCreatedScore,
   type SavedData,
-  type SavedScorev4,
   isJustCreatedScore,
-  isLatestScoreVersion,
   updateScoreVersion,
 } from '../PipeScore/SavedModel';
-import { onUserChange } from '../auth-helper';
-import { readFile } from '../common/file';
+import { Toast } from 'bootstrap';
 
 let userId = '';
 
@@ -150,7 +146,7 @@ class ScoreDoc {
         meta.scoreTimeSignature = updatedScore.scoreTimeSignature;
         meta.scoreTuneType = updatedScore.scoreTuneType;
       }
-    
+
     }
     return new ScoreDoc(meta);
   }
@@ -333,4 +329,25 @@ class ScoresList {
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('scores');
   if (root) m.mount(root, ScoresList);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const root = document.getElementById('scores');
+  if (root) m.mount(root, ScoresList);
+  document.getElementById('shared')?.addEventListener('click', () => {
+    //window.location.assign(`${window.location.href.replace('scores', 'shared')}/${userId}`);
+    copyToClipboard(`${window.location.href.replace('scores', 'shared')}/${userId}`);
+  });
+  function copyToClipboard(text: string): void {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        var myToast = Toast.getOrCreateInstance('#myToast')
+        myToast?.show();
+      })
+      .catch((err) => {
+        var myToast = Toast.getOrCreateInstance('#errorToast', {})
+        myToast?.show();
+      });
+  }
+
 });

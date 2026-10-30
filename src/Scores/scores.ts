@@ -30,7 +30,7 @@ import {
 } from '../PipeScore/SavedModel';
 import { onUserChange } from '../auth-helper';
 import { readFile } from '../common/file';
-import { StaticTextBox } from '../PipeScore/TextBox/impl';
+import { Modal, Toast } from 'bootstrap';
 
 let userId = '';
 
@@ -168,7 +168,7 @@ class ScoreDoc {
     if (typeof this._meta.scoreTuneType == 'string') {
       return this._meta.scoreTuneType
     }
-    if (typeof this._meta.scoreTuneType as unknown == 'SavedStaticTextBox') {
+    if (typeof (this._meta.scoreTuneType as SavedStaticTextBox)?.text == 'string') {
       return (this._meta.scoreTuneType as SavedStaticTextBox).text
     }
     return DEFAULT_TUNE_TYPE;
@@ -452,11 +452,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document
     .getElementById('import-bww')
     ?.addEventListener('click', () => window.location.replace('/impbww'));
-  document
-    .getElementById('shared')
-    ?.addEventListener('click', () => {
-      copyToClipboard(`${window.location.href.replace('scores', 'shared')}/${userId}`);
-    });
+  document.getElementById('shared')?.addEventListener('click', () => {
+    window.location.assign(`${window.location.href.replace('scores', 'shared')}/${userId}`);
+  });
   document.getElementById('new-score')?.addEventListener('click', async () => {
     if (userId) {
       const collection = db.ref(`scores/${userId}/scores`);
@@ -470,10 +468,4 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-  function copyToClipboard(text: string): void {
-    navigator.clipboard.writeText(text)
-      .then(() => console.log("Text copied to clipboard!"))
-      .catch((err) => console.error("Failed to copy text: ", err));
-  }
-
 });

@@ -21,6 +21,7 @@
     "@biomejs/biome": "^1.9.4",
     "@happy-dom/global-registrator": "^20.8.8",
     "@happy-dom/jest-environment": "^20.8.8",
+    "@types/bootstrap": "^5.2.11",
     "@types/bun": "^1.1.14",
     "@types/jest": "^29.5.14",
     "@types/mithril": "^2.2.7",
@@ -44,5 +45,8 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8"
   }
 }
