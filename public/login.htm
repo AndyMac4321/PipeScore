@@ -58,6 +58,18 @@
       </div>
     </div>
   </nav>
+  <!-- Toast used by toastHelper -->
+  <div class="position-fixed top-20 start-50 translate-middle-x p-3" style="z-index: 11">
+    <div id="baseToast" class="toast hide  text-bg-primary" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong  id="baseToastTitle" class="me-auto">baseToast - default Title</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div id='baseToastBody' class="toast-body">
+        baseToast - default text
+      </div>
+    </div>
+  </div>
 
   <main>
 <h1>Log in</h1>
@@ -93,6 +105,8 @@
 <a href="/pipescre"><button type="button" class="btn btn-primary">Use without an account</button></a>
 <div class="padding"></div>
 </main>
+
+
 </body>
 
 </html>

@@ -30,7 +30,7 @@ import {
 } from '../PipeScore/SavedModel';
 import { onUserChange } from '../auth-helper';
 import { readFile } from '../common/file';
-import { Modal, Toast } from 'bootstrap';
+import { displayToastError } from '../toastHelper';
 
 let userId = '';
 
@@ -49,6 +49,7 @@ type ScoreQueryResult = {
   scoreTuneType: string | SavedStaticTextBox | undefined;
   scoreBpm: string | undefined;
   scoreTimeSignature: string | undefined;
+  scoreIsShared: boolean | undefined;
 };
 
 const DEFAULT_SCORE_NAME = 'Empty Score';
@@ -77,10 +78,17 @@ async function getScoreDocuments(
 ): Promise<ScoreDoc[]> {
   // Use query() rather than list() to avoid limits.
   // Only select the name to avoid loading the entire score.
-  const documents: ScoreQueryResult[] = await db
-    .ref(scoresDbPath(userId))
-    .query({ select: ['scoreName', 'version', 'scoreTimeSignature', 'scoreTuneType', 'scoreComposer', 'scoreBpm'] })
-    .run();
+  var documents: ScoreQueryResult[] = [];
+  try {
+    documents = await db
+      .ref(scoresDbPath(userId))
+      .query({ select: ['scoreName', 'version', 'scoreTimeSignature', 'scoreTuneType', 'scoreComposer', 'scoreBpm', 'scoreIsShared'] })
+      .run();
+
+  } catch (e) {
+    console.log(e);
+    displayToastError('Error - Get Score Documents', (e as Error).message);
+  }
   return Promise.all(documents.map((doc) => ScoreDoc.init(doc, scoresList)));
 }
 
@@ -136,6 +144,7 @@ class ScoreDoc {
         console.log(meta);
         const path = meta.__meta__.path.split('/');
         meta.scoreName = `Invalid score (${path[path.length - 1]})`;
+        displayToastError('Error - Init', `Failed to get name for score - ${meta.scoreName}`);
       }
     }
     if (meta.version !== undefined && meta.version != 'v4') {
@@ -163,6 +172,12 @@ class ScoreDoc {
   }
   timeSignature(): string {
     return this._meta.scoreTimeSignature || DEFAULT_TIME_SIGNATURE;
+  }
+  isShared(): boolean {
+    return this._meta.scoreIsShared || false;
+  }
+  setIsShared(isShared: boolean) {
+    this._meta.scoreIsShared = isShared;
   }
   tuneType(): string {
     if (typeof this._meta.scoreTuneType == 'string') {
@@ -199,6 +214,12 @@ class ScoreDoc {
     await db.ref(this._meta.__meta__.path).parentCollection.add(scoreContents);
   }
 
+  async updateShared(isShared: boolean) {
+    const scoreContents = await getScoreContents(this._meta) as SavedScorev4;
+    scoreContents.scoreIsShared = isShared;
+    await db.ref(this._meta.__meta__.path).set(scoreContents);
+  }
+
   async delete() {
     await db.ref(this._meta.__meta__.path).delete();
   }
@@ -224,7 +245,13 @@ class ScoresList {
     onUserChange(auth, (user) => {
       if (user) {
         userId = user.localId;
-        this.refreshScores();
+        try {
+          this.refreshScores();
+
+        } catch (e) {
+          console.log(e);
+          displayToastError('Error - On User Change', (e as Error).message);
+        }
       } else {
         window.location.assign('/login');
       }
@@ -340,7 +367,7 @@ class ScoresList {
     };
 
     var index = 0;
-
+    var shareScoreIndex = 0;
     return [
       m('div.btn-group mb-3', [
         m('span.input-group-text', 'Time Signature'),
@@ -394,9 +421,21 @@ class ScoresList {
           },
         }, 'Reset'),
       ]),
-      m('p', 'Scores:'),
-      filterdScores.length === 0 ? m('p', 'You have no scores.') : null,
       m('table', [
+        m('tr', [
+          m('td.td-name', m('p', 'Scores:')),
+          m('td.td-timesig'),
+          m('td.td-tunetype'),
+          m('td.td-composer'),
+          m('td.td-bpm'),
+          m('td'),
+          m('td'),
+          m('td'),
+          m('td'),
+          m('td'),
+        ]),
+
+        filterdScores.length === 0 ? m('p', 'You have no scores.') : null,
         ...filterdScores.map((score) =>
           m('tr', [
             m('td.td-name', m('a', { href: score.scoreURL() }, score.name())),
@@ -404,6 +443,34 @@ class ScoresList {
             m('td.td-tunetype', m('a', score.tuneType())),
             m('td.td-composer', m('a', score.composer())),
             m('td.td-bpm', m('a', score.bpm())),
+            m(
+              'td',
+              // <input type="checkbox" class="btn-check" id="btn-check-outlined" autocomplete="off">
+              // <label class="btn btn-outline-primary" for="btn-check-outlined">Single toggle</label><br>
+              m('input.btn-check', {
+                autocomplete: "off",
+                type: "checkbox",
+                checked: score.isShared(),
+                id: `sharedBtn${shareScoreIndex}`,
+                onchange: (e: Event) => {
+                  const input = e.target as HTMLInputElement;
+                  const indexString = input.id.replace('sharedBtn', '');
+                  const scoreIndex = parseInt(indexString);
+                  filterdScores[scoreIndex]._meta.scoreIsShared = input.checked;
+                  filterdScores[scoreIndex].updateShared(input.checked)
+                },
+              }),
+              m('label.btn btn-outline-primary', { for: `sharedBtn${shareScoreIndex++}` },
+                score.isShared() ?
+                  m('s', { style: "color: white;" }, m('i.fas fa-share')) :
+                  m('s', { style: "color: grey;" }, m('i.fas fa-share'))
+              ),
+              // m(
+              //   'button.btn btn-primary',
+              //   { onclick: () => this.rename(score), type: 'button' },
+              //   m('i.fas fa-share'),
+              // )
+            ),
             m(
               'td',
               m(

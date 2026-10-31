@@ -58,6 +58,18 @@
       </div>
     </div>
   </nav>
+  <!-- Toast used by toastHelper -->
+  <div class="position-fixed top-20 start-50 translate-middle-x p-3" style="z-index: 11">
+    <div id="baseToast" class="toast hide  text-bg-primary" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong  id="baseToastTitle" class="me-auto">baseToast - default Title</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div id='baseToastBody' class="toast-body">
+        baseToast - default text
+      </div>
+    </div>
+  </div>
 
   <main>
 <div id="buttons">
@@ -68,7 +80,7 @@
         class="fas fa-cloud-upload"></i>&NonBreakingSpace;Import BWW File</button>
     <button type="button" class="btn btn-primary" id="upload"><i
         class="fas fa-cloud-upload"></i>&NonBreakingSpace;Import PipeScore File</button>
-    <button type="button" class="btn btn-primary" id="shared"><i class="fas fa-share"></i>&NonBreakingSpace;Share
+    <button type="button" class="btn btn-primary" id="shared"><i class="fas fa-share"></i>&NonBreakingSpace;Shared
       Scores</button>
     <button type="button" class="btn btn-primary" id="sign-out"><i class="fas fa-sign-out"></i>&NonBreakingSpace;Sign
       Out</button>
@@ -76,6 +88,8 @@
 </div>
 <section id="scores"></section>
 </main>
+
+
 </body>
 
 </html>

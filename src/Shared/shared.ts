@@ -24,7 +24,7 @@ import {
   isJustCreatedScore,
   updateScoreVersion,
 } from '../PipeScore/SavedModel';
-import { Toast } from 'bootstrap';
+import { displayToastMessage, displayToastWarning } from '../toastHelper';
 
 let userId = '';
 
@@ -43,6 +43,7 @@ type ScoreQueryResult = {
   scoreTuneType: string | undefined;
   scoreBpm: string | undefined;
   scoreTimeSignature: string | undefined;
+  scoreIsShared: boolean | undefined;
 };
 
 const DEFAULT_SCORE_NAME = 'Empty Score';
@@ -80,7 +81,7 @@ async function getScoreDocuments(
   // Only select the name to avoid loading the entire score.
   const documents: ScoreQueryResult[] = await db
     .ref(scoresDbPath(userId))
-    .query({ select: ['scoreName', 'version', 'scoreTimeSignature', 'scoreTuneType', 'scoreComposer', 'scoreBpm'] })
+    .query({ select: ['scoreName', 'version', 'scoreTimeSignature', 'scoreTuneType', 'scoreComposer', 'scoreBpm', 'scoreIsShared'] })
     .run();
   return Promise.all(documents.map((doc) => ScoreDoc.init(doc, scoresList)));
 }
@@ -171,6 +172,9 @@ class ScoreDoc {
   composer(): string {
     return this._meta.scoreComposer || DEFAULT_COMPOSER;
   }
+  isShared(): boolean {
+    return this._meta.scoreIsShared || false;
+  }
 
 
   scoreURL() {
@@ -182,7 +186,6 @@ class ScoreDoc {
 class ScoresList {
   loading = true;
   scores: ScoreDoc[] = [];
-  updatingScoresMessage = false;
   timeSignatures: string[] = [];
   tuneTypes: string[] = [];
   checkedTuneTypeLabel = '';
@@ -198,7 +201,7 @@ class ScoresList {
   }
 
   async refreshScores() {
-    this.scores = await getScoreDocuments(userId, this);
+    this.scores = (await getScoreDocuments(userId, this)).filter((doc) => doc._meta.scoreIsShared);
     this.scores.sort((score1, score2) =>
       score1.name() === score2.name()
         ? 0
@@ -218,22 +221,9 @@ class ScoresList {
     m.redraw();
   }
 
-  showUpdatingScoresMessage() {
-    this.updatingScoresMessage = true;
-    m.redraw();
-  }
 
   view() {
     if (this.loading) {
-      if (this.updatingScoresMessage) {
-        return [
-          m(
-            'p',
-            'Updating PipeScore scores - this will only happen once. This may take a little while, please wait!'
-          ),
-          m('div.loading', m('div.spinner')),
-        ];
-      }
       return [m('div.loading', m('div.spinner'))];
     }
 
@@ -339,15 +329,13 @@ document.addEventListener('DOMContentLoaded', () => {
     copyToClipboard(`${window.location.href.replace('scores', 'shared')}/${userId}`);
   });
   function copyToClipboard(text: string): void {
-    navigator.clipboard.writeText(text)
-      .then(() => {
-        var myToast = Toast.getOrCreateInstance('#myToast')
-        myToast?.show();
-      })
-      .catch((err) => {
-        var myToast = Toast.getOrCreateInstance('#errorToast', {})
-        myToast?.show();
-      });
+    try {
+      navigator.clipboard.writeText(text)
+      displayToastMessage('Shared Scores', 'A link to your scores has been copied to the clipboard.');
+    }
+    catch (e) {
+      displayToastWarning('Shared Scores', `Failed to copy to clipboard - ${(e as Error).message}`);
+    }
   }
-
 });
+

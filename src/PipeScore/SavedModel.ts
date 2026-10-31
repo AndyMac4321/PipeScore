@@ -126,7 +126,7 @@ export function updateScoreVersion(
     const name = score.textBoxes[0]?.texts?.[0]?._text || 'My Tune';
     const composer = score.textBoxes[0]?.texts?.[1]?._text || 'Composer';
     const tuneType = score.textBoxes[0]?.texts?.[2]?._text || 'Tune Type';
-    
+
     const ts1 = score._staves[0].bars[0].timeSignature.ts[0];
     const ts2 = score._staves[0].bars[0].timeSignature.ts[1];
     var timeSignature = '4/4'; // default
@@ -151,6 +151,7 @@ export function updateScoreVersion(
       scoreTuneType: tuneType,
       scoreComposer: composer,
       scoreBpm: bpm,
+      scoreIsShared: false,
       landscape: score.landscape,
       textBoxes: score.textBoxes,
       tunes: [
@@ -240,6 +241,7 @@ export function updateScoreVersion(
       scoreTuneType: tuneType,
       scoreComposer: composer,
       scoreBpm: bpm,
+      scoreIsShared: false,
       version: 'v4',
     };
   }
@@ -275,6 +277,7 @@ export type SavedScorev1 = {
 
 export type SavedScorev2 = {
   version: undefined;
+  scoreIsShared: boolean;
   landscape: boolean;
   tunes: (SavedTunev1 | SavedTunev2)[];
   textBoxes: SavedTextBoxPage[];
@@ -283,11 +286,13 @@ export type SavedScorev2 = {
   showBarNumbers: boolean;
   showCanntaireachd: boolean;
   settings: SavedSettings;
+  isShared: boolean;
 };
 
 export type SavedScorev3 = {
   version: 'v3';
   scoreName: string;
+  scoreIsShared: boolean;
   landscape: boolean;
   tunes: SavedTunev2[];
   textBoxes: SavedTextBoxPage[];
@@ -304,6 +309,7 @@ export type SavedScorev4 = {
   scoreTuneType: string;
   scoreComposer: string;
   scoreBpm: string;
+  scoreIsShared: boolean;
   landscape: boolean;
   tunes: SavedTunev2[];
   textBoxes: SavedTextBoxPage[];

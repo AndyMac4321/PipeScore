@@ -51,6 +51,7 @@ export class Score extends IScore {
   private _composer: string;
   private _tunes: ITune[];
   private _bpm: string;
+  private _isShared: boolean;
 
   // an array rather than a set since it makes rendering easier (with map)
   private _textBoxes: IMovableTextBox[][];
@@ -68,7 +69,8 @@ export class Score extends IScore {
     tuneType: string,
     numberOfParts: number,
     repeatParts: boolean,
-    timeSignature: ITimeSignature
+    timeSignature: ITimeSignature,
+    isShared: boolean
   ) {
     super();
     this.landscape = true;
@@ -92,13 +94,13 @@ export class Score extends IScore {
       ),
     ];
     this._textBoxes = [[]];
-
     this._timings = [];
     this.zoom = (100 * 0.9 * Math.max(window.innerWidth, 800)) / this.width();
+    this._isShared = isShared;
   }
 
   static blank() {
-    return new Score('My Score', '', '', 2, true, new TimeSignature());
+    return new Score('My Score', '', '', 2, true, new TimeSignature(), false);
   }
 
   static fromJSON(o: SavedScorev4) {
@@ -107,9 +109,9 @@ export class Score extends IScore {
 
     s._name = o.scoreName;
     s._timeSignature = o.scoreTimeSignature,
-      s._tuneType = o.scoreTuneType,
-      s._bpm = o.scoreBpm,
-      s.landscape = o.landscape;
+    s._tuneType = o.scoreTuneType,
+    s._bpm = o.scoreBpm,
+    s.landscape = o.landscape;
     s._textBoxes = o.textBoxes.map((p) => p.texts.map(MovableTextBox.fromJSON));
     s._timings = o.secondTimings.map(Timing.fromJSON);
     s.showNumberOfPages = o.showNumberOfPages;
@@ -119,7 +121,7 @@ export class Score extends IScore {
     s._tunes = o.tunes.map(Tune.fromJSON);
     s._composer = s._tunes[0].composer().text();
     s._tuneType = s._tunes[0].tuneType().text();
-
+    s._isShared = s._isShared;
 
     if (s._tunes.length === 1) {
       s._tunes[0].setName(o.scoreName);
@@ -142,6 +144,7 @@ export class Score extends IScore {
       scoreTuneType: this._tuneType,
       scoreComposer: this._composer,
       scoreBpm: `${settings.bpm} BPM`,
+      scoreIsShared: this._isShared,
       landscape: this.landscape,
       showNumberOfPages: this.showNumberOfPages,
       showBarNumbers: this.showBarNumbers,
